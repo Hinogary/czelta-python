@@ -25,9 +25,8 @@ public:
     EventReader(const EventReader&) = delete;
     inline Station* getStation(){return station;};
     void setStation(uint8_t);
-    bool save(string file_name);
-    inline Event& _item(int index){return events[index];};
-    inline Event& _item(int run, int index){return _item(runs[run].beginIndex+index);};
+    inline Event& item(int index){return events[index];};
+    inline Event& item(int run, int index){return item(runs[run].beginIndex+index);};
     inline int numberOfEvents(){return events.size();};
     inline int numberOfEvents(int run){return runs[run].endIndex-runs[run].beginIndex;};
     inline int numberOfRuns(){return runs.size();};
@@ -49,7 +48,11 @@ public:
     void checkRuns(int maxDiffbetweenEvents = 0);
     Overlap overlap(EventReader &other);
     const static string binaryFileHead;
-    static array<int,2> fileFromTo(string filename);
+    static array<int,2> fileFromTo(char* filename);
+    bool loadDatFile(char* filename);
+    bool loadTxtFile(char* filename);
+    bool saveDatFile(char* filename);
+    bool saveTxtFile(char* filename);
 private:
     void clear();
     double _progress;
@@ -57,7 +60,7 @@ private:
     bool _clearedCalibs;
     bool _calculeddirs;
     int _maxDiffbetweenEvents;
-    string loadedFrom;
+    char* loadedFrom;
     static string files_directory;
     vector<Event> events;
     struct Run{
@@ -65,10 +68,6 @@ private:
     };
     vector<Run> runs;
     Station *station;
-    bool loadDatFile(string filename);
-    bool loadTxtFile(string filename);
-    bool saveDatFile(string filename);
-    bool saveTxtFile(string filename);
 };
 
 

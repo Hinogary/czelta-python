@@ -24,13 +24,13 @@ void EventReader::setFilesDirectory(string dir){
     files_directory = dir;
 }
 
-bool EventReader::loadDatFile(string filename){
+bool EventReader::loadDatFile(char* filename){
     clear();
     _progress = 0;
     ifstream in;
     in.open(filename, ios_base::binary);
     if(!in.is_open()){
-        return false;
+        return true;
     }
     in.seekg(0,ifstream::end);
     int length = in.tellg()>>5;
@@ -42,7 +42,7 @@ bool EventReader::loadDatFile(string filename){
     const string head = "CzeltaDataFile.1";
     if(!(head==buffer)){
         cout<<"Hlavička souboru \""<<filename<<"\" neodpoví­dá \"CzeltaDataFile.1\"."<<endl;
-        return false;
+        return true;
     }
     events.resize(length);
     _progress=0.1;
@@ -52,10 +52,10 @@ bool EventReader::loadDatFile(string filename){
     _progress=0.9;
     checkRuns();
     _progress = 1;
-    return true;
+    return false;
 }
 
-bool EventReader::loadTxtFile(string filename){
+bool EventReader::loadTxtFile(char* filename){
     clear();
     bool nextRun = false;
     char line[90];
@@ -67,7 +67,7 @@ bool EventReader::loadTxtFile(string filename){
     int year,month,day,hour,minute,second;
     char temp[4][5];
     in.open(filename);
-    if(!in.is_open())return false;
+    if(!in.is_open())return true;
     in.seekg(0,ios_base::end);
     int len = in.tellg();
     in.seekg(0,ios_base::beg);
@@ -82,7 +82,7 @@ bool EventReader::loadTxtFile(string filename){
             cout<<line<<endl;
             cout<<c<<" "<<year<<" "<<month<<" "<<day<<" "<<hour<<" "<<minute<<" "<<second<<" "<<_double<<" "<<e._TDC[0]<<" "<<e._TDC[1]<<" "<<e._TDC[2]<<" "<<e._ADC[0]<<" "<<e._ADC[1]<<" "<<e._ADC[2]<<" "<<temp[0]<<" "<<temp[1]<<" "<<temp[2]<<" "<<temp[3]<<endl;
             clear();
-            return false;
+            return true;
         };
         if(c=='x'){
             nextRun = true;
@@ -105,39 +105,29 @@ bool EventReader::loadTxtFile(string filename){
     runs.shrink_to_fit();
     loadedFrom = filename;
     _progress = 1;
-    return true;
+    return false;
 }
 
-bool EventReader::save(string file_name){
-    string konc = file_name.substr(file_name.length()-3,3);
-    transform(konc.begin(),konc.end(),konc.begin(),::tolower);
-    if(konc=="dat")
-        return saveDatFile(file_name);
-    else if(konc=="txt")
-        return saveTxtFile(file_name);
-    else return false;
-}
-
-bool EventReader::saveDatFile(string filename){
+bool EventReader::saveDatFile(char* filename){
     ofstream out;
     out.open(filename,ios::binary);
-    if(!out.is_open())return false;
+    if(!out.is_open())return true;
     out.write((char*)events.data(),sizeof(Event)*events.size());
     out.close();
-    return true;
+    return false;
 }
 
-bool EventReader::saveTxtFile(string filename){
+bool EventReader::saveTxtFile(char* filename){
     ofstream out;
     out.open(filename);
-    if(!out.is_open())return false;
+    if(!out.is_open())return true;
     for(uint i=0;i<events.size();i++){
         if(events[i].isRun()){
             out<<"x 0 0 0 0 0 0 0.0 0 0 0 0 0 0 0.0 0.0 0.0 0.0"<<endl;
         }
         out<<events[i]<<endl;
     }
-    return true;
+    return false;
 }
 
 void EventReader::addRun(int endIndex){
@@ -250,14 +240,14 @@ Overlap EventReader::overlap(EventReader &other){
         if(to-from>0){
             auto max = lastEarlierThan(to);
             for(int i=firstOlderThan(from);i<=max;i++){
-                if(_item(i).isCalib())
+                if(item(i).isCalib())
                     rtn.calibration_events[0]++;
                 else
                     rtn.normal_events[0]++;
             }
             max = other.lastEarlierThan(to);
             for(int i=other.firstOlderThan(from);i<=max;i++){
-                if(other._item(i).isCalib())
+                if(other.item(i).isCalib())
                     rtn.calibration_events[1]++;
                 else
                     rtn.normal_events[1]++;
@@ -272,7 +262,7 @@ Overlap EventReader::overlap(EventReader &other){
     return rtn;
 }
 
-array<int,2> EventReader::fileFromTo(string filename){
+array<int,2> EventReader::fileFromTo(char* filename){
     ifstream in(filename);
     char line[90];
     array<int,2> rtn = {0,0};
