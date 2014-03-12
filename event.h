@@ -30,7 +30,7 @@ public:
     inline int timestamp() const{return _timestamp;};
     inline double last_second() const{return _last_second;};
     inline int64_t tenthOfNSTimestamp() const{return int64_t(timestamp())*10000000000L+int64_t(last_second()*10);};
-    inline array<short,3> TDC() const{return array<short,3>{_TDC[0],_TDC[1],_TDC[2]};};
+    inline short* TDC() const{static short static_TDC[3] = {_TDC[0],_TDC[1],_TDC[2]};return static_TDC;};
     array<short,3> correctedTDC (Station* st)const;
     inline array<short,3> correctedTDC(int st) const{return correctedTDC(Station::getStation(st));};
     inline short TDC0() const{return _TDC[0];};
@@ -39,12 +39,12 @@ public:
     inline short TDC0corrected(Station *st) const{return correctedTDC(st)[0];};
     inline short TDC1corrected(Station *st) const{return correctedTDC(st)[1];};
     inline short TDC2corrected(Station *st) const{return correctedTDC(st)[2];};
-    inline array<short,3> ADC() const{return array<short,3>{_ADC[0],_ADC[1],_ADC[2]};};
+    inline short* ADC() const{static short static_ADC[3] = {_ADC[0],_ADC[1],_ADC[2]}; return static_ADC;};
     inline short ADC0() const{return _ADC[0];};
     inline short ADC1() const{return _ADC[1];};
     inline short ADC2() const{return _ADC[2];};
-    inline array<short,4> tempsRaw() const{return array<short,4>{_t[0],_t[1],_t[2],_t_crate};};
-    inline array<float,4> temps() const{return array<float,4>{_t[0]/2.0f,_t[1]/2.0f,_t[2]/2.0f,_t_crate/2.0f};};
+    inline short* tempsRaw() const{static short static_raw_temps[4] = {_t[0],_t[1],_t[2],_t_crate}; return static_raw_temps;};
+    inline float* temps() const{static float static_temps[4] = {_t[0]/2.0f,_t[1]/2.0f,_t[2]/2.0f,_t_crate/2.0f}; return static_temps;};
     inline short t0raw() const{return _t[0];};
     inline short t1raw() const{return _t[1];};
     inline short t2raw() const{return _t[2];};

@@ -25,14 +25,14 @@ void Coincidence::calc(double limit){
     int i[] = {0,0};
     int64_t a,b;
     while(i[0]<readers[0]->numberOfEvents() && i[1]<readers[1]->numberOfEvents()){
-        if(!readers[0]->_item(i[0]).isCalib() && !readers[1]->_item(i[1]).isCalib()){
-            a = readers[0]->_item(i[0]).tenthOfNSTimestamp();
-            b = readers[1]->_item(i[1]).tenthOfNSTimestamp();
+        if(!readers[0]->item(i[0]).isCalib() && !readers[1]->item(i[1]).isCalib()){
+            a = readers[0]->item(i[0]).tenthOfNSTimestamp();
+            b = readers[1]->item(i[1]).tenthOfNSTimestamp();
             if(abs(a-b)<_limit){
                 numberOfCoincidences++;
                 delta.push_back(abs(a-b)/1e10);
-                events[0].push_back(readers[0]->_item(i[0]));
-                events[1].push_back(readers[1]->_item(i[1]));
+                events[0].push_back(readers[0]->item(i[0]));
+                events[1].push_back(readers[1]->item(i[1]));
             }
         }
         if(a>b)

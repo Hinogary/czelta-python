@@ -2,10 +2,12 @@
 # vim: set fileencoding=UTF-8 :
 #import os, sys
 from subprocess import call
-call('./setup.py build_ext -i',shell=True)
+assert call('./setup.py build_ext -i',shell=True)==0
 
 import czelta
 print "\n"*2
-a = czelta.eventreader()
+a = czelta.event_reader()
 a.load("test.dat")
-print a.number_of_events()
+assert a.number_of_events()==92933
+a.test()
+print "success"

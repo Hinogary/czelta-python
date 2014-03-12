@@ -9,7 +9,7 @@ public:
     void calc(double limit);
     EventReader *readers[2];
     vector<double> delta;
-    vector<_Event> events[2];
+    vector<Event> events[2];
     double limit;
     int numberOfCoincidences;
     Overlap overlap;

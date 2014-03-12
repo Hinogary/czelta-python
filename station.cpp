@@ -8,8 +8,8 @@
 #include "station.h"
 #include <climits>
 
-Station Station::__stations[256];
-bitset<256> Station::__actives;
+Station Station::_stations[256];
+bitset<256> Station::_actives;
 array<short,3> Station::null_correction = {0,0,0};
 
 Station::Station() {
@@ -24,12 +24,12 @@ Station::~Station() {
 }
 
 Station* Station::getStation(uint8_t ID){
-    return &__stations[ID];
+    return &_stations[ID];
 }
 
 Station* Station::getStation(string name){
     for(uint i=0;i<256;i++){
-        if(active(i) && name==getStation(i)->name()) return &__stations[i];
+        if(active(i) && name==getStation(i)->name()) return &_stations[i];
     }
     return NULL;
 }
