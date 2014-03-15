@@ -15,8 +15,11 @@
 
 #ifndef STATION_H
 #define	STATION_H
-class Station;
 using namespace std;
+struct TDCCorrection{
+    time_t from;
+    short tdc[3];
+}
 class Station {
 public:
     Station();
@@ -39,8 +42,8 @@ public:
     short _ID;
     string _name;
     vector<string> _name_files;
-    double _position[4];
-    double _detectorPos[4];
-    vector<tuple<time_t,short,short,short>> _TDCCorection;
+    double _gpsposition[4];
+    double _detectorpos[4];
+    vector<TDCCorrection> _TDCCorection;
 };
 #endif	/* STATION_H */

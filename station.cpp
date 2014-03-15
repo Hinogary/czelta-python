@@ -35,19 +35,19 @@ Station* Station::getStation(string name){
 }
 
 short* Station::lastCorrection(){
-    int i = _TDCCorection.size()-1;
+    int i = _TDCCorections.size()-1;
     if(i==-1)return &null_correction[0];
-    else return &get<1>(_TDCCorection[i]);
+    else return &get<1>(_TDCCorections[i]);
 }
 
 short* Station::TDCCorrection(time_t time){
     int r = INT_MAX;
-    for(int i=_TDCCorection.size()-1;i>=0;i--){
-        if(get<0>(_TDCCorection[i])<time)
+    for(int i=_TDCCorections.size()-1;i>=0;i--){
+        if(get<0>(_TDCCorections[i])<time)
             r=i;
         else break;
     }
-    return &get<1>(_TDCCorection[r]);
+    return &get<1>(_TDCCorections[r]);
 }
 
 double* Station::detectorPos(){
