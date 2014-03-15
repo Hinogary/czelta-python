@@ -3,12 +3,12 @@ Czelta file loading and analysis library
 ========================================
 
 Compilation requirement:
-========================
+------------------------
 * C++11 compiler for use with C++ code
 * Cython compiler and Python itself for use with Python code
 
 Example Python code:
-====================
+--------------------
 ```
 import czelta
 

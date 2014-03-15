@@ -75,12 +75,14 @@ bool EventReader::loadTxtFile(char* filename){
         in.getline(line,90);
         if(in.eof())break;
         if((d = sscanf(line,"%c %d %d %d %d %d %d %s %d %d %d %d %d %d %s %s %s %s",
-                &c,&year,&month,&day,&hour,&minute,&second,&_double,&e._TDC[0],&e._TDC[1],&e._TDC[2],&e._ADC[0],&e._ADC[1],&e._ADC[2],&temp[0],&temp[1],&temp[2],&temp[3]))
-                !=18 && c!='x'){
+                &c,&year,&month,&day,&hour,&minute,&second,&_double,
+                &e._TDC0, &e._TDC1, &e._TDC2,
+                &e._ADC0, &e._ADC1, &e._ADC2,
+                &temp[0], &temp[1], &temp[2], &temp[3])
+                )!=18 && c!='x'){
             cout<<d<<endl;
             cout<<"špatný formát na řádku "<<(events.size()+runs.size()+1)<<endl;
             cout<<line<<endl;
-            cout<<c<<" "<<year<<" "<<month<<" "<<day<<" "<<hour<<" "<<minute<<" "<<second<<" "<<_double<<" "<<e._TDC[0]<<" "<<e._TDC[1]<<" "<<e._TDC[2]<<" "<<e._ADC[0]<<" "<<e._ADC[1]<<" "<<e._ADC[2]<<" "<<temp[0]<<" "<<temp[1]<<" "<<temp[2]<<" "<<temp[3]<<endl;
             clear();
             return true;
         };
@@ -91,9 +93,9 @@ bool EventReader::loadTxtFile(char* filename){
         }
         e._last_second = atof(_double);
         e._timestamp = date(year,month,day,hour,minute,second);
-        e._t[0] = atof(temp[0])*2;
-        e._t[1] = atof(temp[1])*2;
-        e._t[2] = atof(temp[2])*2;
+        e._t0 = atof(temp[0])*2;
+        e._t1 = atof(temp[1])*2;
+        e._t2 = atof(temp[2])*2;
         e._t_crate = atof(temp[3])*2;
         e._byte = (nextRun?4:0)|(c=='c'?1:0);
         events.push_back(*((Event*)&e));

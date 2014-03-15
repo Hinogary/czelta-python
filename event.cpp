@@ -17,15 +17,15 @@ Event::Event(){
 Event::Event(int32_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t t_crate, uint8_t byte){
     this->_timestamp = timestamp;
     this->_last_second = last_secod;
-    this->_TDC[0] = TDC0;
-    this->_TDC[1] = TDC1;
-    this->_TDC[2] = TDC2;
-    this->_ADC[0] = ADC0;
-    this->_ADC[1] = ADC1;
-    this->_ADC[2] = ADC2;
-    this->_t[0] = t0;
-    this->_t[1] = t1;
-    this->_t[2] = t2;
+    this->_TDC0 = TDC0;
+    this->_TDC1 = TDC1;
+    this->_TDC2 = TDC2;
+    this->_ADC0 = ADC0;
+    this->_ADC1 = ADC1;
+    this->_ADC2 = ADC2;
+    this->_t0 = t0;
+    this->_t1 = t1;
+    this->_t2 = t2;
     this->_t_crate = t_crate;
     this->_byte = byte;
 }
@@ -34,19 +34,13 @@ Event::Event(const Event& orig){
     memcpy(this,&orig,sizeof(Event));
 }
 
-
-array<short,3> Event::correctedTDC(Station *st) const{
-    short* correction = st->TDCCorrection(timestamp());
-    return array<short,3>{_TDC[0]+correction[0],_TDC[1]+correction[1],_TDC[2]+correction[2]};
-}
-
 /**
  *
  * @param station
  * @return {horizont, azimuth}
  */
 array<float,2> Event::calculateDir(Station *st) const{
-    array<short,3> TDC = correctedTDC(st);
+    array<short,3> TDC;// = correctedTDC(st);
     const double t1 = (TDC[1] - TDC[0])*25 * 1e-12;
     const double t2 = (TDC[2] - TDC[0])*25 * 1e-12;
     const double x1 = st->detectorPos()[0];
@@ -88,9 +82,9 @@ string Event::toString() const{
     const tm tm = getTime();
     sprintf(buffer,
                 "%s %d %02d %02d %02d %02d %02d %.1f %d %d %d %d %d %d %.1f %.1f %.1f %.1f",
-                (_byte & 1) ? "c" : "a",
+                isCalib() ? "c" : "a",
                 tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,
-                _last_second, _TDC[0], _TDC[1], _TDC[2], _ADC[0], _ADC[1], _ADC[2], _t[0] / 2.0, _t[1] / 2.0, _t[2] / 2.0, _t_crate / 2.0
+                last_second(), TDC0(), TDC1(), TDC2(), ADC0(), ADC1(), ADC2(), t0(), t1(), t2(), tCrate()
            );
     return string(buffer);
 };

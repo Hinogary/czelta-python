@@ -30,6 +30,10 @@ public:
     inline int numberOfEvents(){return events.size();};
     inline int numberOfEvents(int run){return runs[run].endIndex-runs[run].beginIndex;};
     inline int numberOfRuns(){return runs.size();};
+    struct Run{
+        int beginTimestamp, beginIndex, endTimestamp, endIndex;
+    };
+    inline Run run(int i){return runs[i];};
     inline int runStartIndex(int i){return runs[i].beginIndex;};
     inline int runStart(int i){return runs[i].beginTimestamp;};
     inline int runEndIndex(int i){return runs[i].endIndex;};
@@ -63,9 +67,6 @@ private:
     char* loadedFrom;
     static string files_directory;
     vector<Event> events;
-    struct Run{
-        int beginTimestamp, beginIndex, endTimestamp, endIndex;
-    };
     vector<Run> runs;
     Station *station;
 };

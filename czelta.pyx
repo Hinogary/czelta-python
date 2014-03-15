@@ -1,3 +1,16 @@
+from libcpp.string cimport string
+
+cdef extern from "station.h" nogil:
+    cppclass Station:
+        Station() except +
+        short* lastTDCCorrect()
+        short* TDCCorrect(int timestamp)
+        double* detectorPos()
+        inline char* name()
+        
+
+
+
 cdef extern from "event_reader.h" nogil:
     cppclass EventReader:
         EventReader() except +
@@ -9,6 +22,10 @@ cdef extern from "event_reader.h" nogil:
         bint saveTxtFile(char* filename)
         inline Event& item(int index)
         inline Event& item(int run, int index)
+        int filterCalibs()
+ 
+ 
+
         
 cdef extern from "event.h" nogil:
     cppclass Event:
@@ -17,9 +34,9 @@ cdef extern from "event.h" nogil:
         Event(const Event& orig)
         inline int timestamp()
         inline double last_second()
+        inline double time_since_second()
         inline long tenthOfNSTimestamp()
         inline short* TDC()
-        #inline short* correctedTDC(int st)
         inline short TDC0()
         inline short TDC1()
         inline short TDC2()
@@ -38,7 +55,8 @@ cdef extern from "event.h" nogil:
         inline short tCrateRaw()
         inline float tCrate()
         inline bint isCalib()
-        inline bint isRun()
+        #string toString() const;
+
 
 
 import datetime
@@ -49,31 +67,42 @@ cdef class event:
         pass
     cdef void set(self, Event e):
         self.e = e
-    cpdef int timestamp(self):
+    cpdef timestamp(self):
         return self.e.timestamp()
     cpdef datetime(self):
         return datetime.datetime.utcfromtimestamp(self.e.timestamp())
+    cpdef time_since_second(self):
+        ""
+        return self.e.time_since_second();
     cpdef TDC(self):
+        ""
         cdef short* tdc = self.e.TDC()
         return (tdc[0], tdc[1], tdc[2])
     cpdef ADC(self):
+        "Relative energy absorbed in each detector. Probably not comparable along different stations. Minimum value is 0 and Maximum is 2047. If it is 2047 it shloud be more."
         cdef short* adc = self.e.ADC()
         return (adc[0], adc[1], adc[2])
-    cpdef temps(self):
+    cpdef temps(self):     
+        "First three temps are temperature value from detectors, fourth is from crate. Temperature are in Celsius. Minimum step is 0.5."
         cdef float* temps = self.e.temps()
         return (temps[0], temps[1], temps[2], temps[3])
     cpdef temps_raw(self):
+        "First three temps are temperature value from detectors, fourth is from crate. Temperature are have to be divided by 2 to get them in Celsius. Data type is int."
         cdef short* temps_raw = self.e.tempsRaw()
         return (temps_raw[0], temps_raw[1], temps_raw[2], temps_raw[3])
-    cpdef calib(self):
+    cpdef calibration(self):
+        "Calibration events are events actived by LED diod in each detectors."
         return self.e.isCalib()
-    cpdef run(self):
-        return self.e.isRun()
 
 cdef class event_reader:
     cdef EventReader er
-    def __init__(self):
-        pass
+    def __init__(self, bytes path = b""):
+        if(len(path)!=0):
+            self.load(path)
+    def __len__(self):
+        return self.er.numberOfEvents()
+    def __getitem__(self, int i):
+        return self.item(i)
     cpdef load(self, bytes path):
         if(path[-4:].lower()==".txt"):
             if(self.er.loadTxtFile(path)):
@@ -81,13 +110,14 @@ cdef class event_reader:
         elif(path[-4:].lower()==".dat"):
             if(self.er.loadDatFile(path)):
                 raise IOError("can't open or read file: "+path)
+        else:
+            raise NotImplementedError("path must be a file with .txt or .dat")
     cpdef int number_of_events(self):
         return self.er.numberOfEvents()
-    cpdef test(self):
-        cdef short* tdc = self.er.item(0).TDC()
-        print str(tdc[0])+", "+str(tdc[1])+", "+str(tdc[2])
     cpdef item(self, int index):
         e = event()
         e.set(self.er.item(index))
         return e
+    cpdef filter_calibrations(self):
+        return self.er.filterCalibs()
         
