@@ -6,8 +6,13 @@
  */
 
 #include "station.h"
+#include <stdexcept>
 
 Station Station::_stations[256];
+Station* Station::_p_stations[257];
+for(int i=0;i<257;i++){
+    Station::_p_stations[i] = &_stations[0];
+}
 bitset<256> Station::_actives;
 short* Station::null_correction = new short[3]{0,0,0};
 
@@ -25,7 +30,6 @@ Station::Station(int id) {
         _gpsposition[i]=0;
         _detectorpos[i]=0;
     }
-    addStation(*this);
 }
 
 Station::~Station() {
@@ -41,6 +45,16 @@ Station& Station::getStation(string name){
         if(active(i) && name==getStation(i).name()) return _stations[i];
     }
     return _stations[0];
+}
+
+vector<Station*> Station::getStations(){
+    vector<Station*> stations(256);
+    for(int i=0;i<256;i++){
+        if(_stations[i].exist())
+            stations.push_back(&_stations[i]);
+    }
+    stations.shrink_to_fit();
+    return &stations;
 }
 
 bool Station::addStation(Station station){
@@ -71,4 +85,8 @@ short* Station::TDCCorrect(time_t time){
 
 double* Station::detectorPosition(){
     return _detectorpos;
+}
+
+void Station::setName(char* name){
+    _name = name;
 }

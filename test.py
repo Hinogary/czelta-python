@@ -32,4 +32,14 @@ for i in range(er.number_of_events()):
 assert calibrations == 34016
 assert er.filter_calibrations() == 34016
 assert len(er) == length-calibrations
+
+
+czelta.station.load()
+kladno_sps = czelta.station(5)
+assert kladno_sps.name() == "kladno_sps"
+assert kladno_sps.exist()
+assert kladno_sps.id() == 5
+praha_utef = czelta.station(6)
+assert praha_utef.name() == "praha_utef"
+assert not czelta.station(125).exist()
 print "success"

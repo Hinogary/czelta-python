@@ -19,7 +19,7 @@ using namespace std;
 class Station {
 public:
     Station();
-    //automatically added to stations, or rejected
+    //after create have to be added with addStation(), if you want use it with events
     Station(int ID);
     short* lastTDCCorrect();
     short* TDCCorrect(time_t time);
@@ -28,8 +28,13 @@ public:
     ~Station();
     inline const char* name(){return _name.c_str();};
     inline int id(){return _ID;};
+    
+    void setName(char* name);
+    
+    //static methods
     static Station& getStation(uint8_t ID);
     static Station& getStation(string name);
+    static vector<Station*>* getStations();
     //return true if added
     static bool addStation(Station station);
     inline static bool active(uint8_t index){
@@ -41,6 +46,7 @@ public:
     };
 private:
     static Station _stations[256];
+    static Station* _p_stations[257];
     static bitset<256> _actives;
     static short* null_correction;
     int _ID;

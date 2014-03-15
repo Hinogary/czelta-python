@@ -1,17 +1,23 @@
 from libcpp.string cimport string
+from libcpp.vector cimport vector
 
 cdef extern from "station.h" nogil:
     cppclass Station:
         Station() except +
+        Station(int ID) except +
+        inline int id()
         inline char* name()
         short* lastTDCCorrect()
         short* TDCCorrect(int timestamp)
         double* detectorPosition()
         double* GPSPosition()
+        
+        void setName(char* name)
 cdef extern from "station.h" namespace "Station" nogil:
     bint addStation(Station)
     Station& getStation(int)
     Station& getStation(string)
+    Station* getStations()
         
 
 
@@ -34,7 +40,7 @@ cdef extern from "event_reader.h" nogil:
 cdef extern from "event.h" nogil:
     cppclass Event:
         Event() except +
-        Event(int timestamp,double last_secod, int TDC0, int TDC1, int TDC2, int ADC0, int ADC1, int ADC2, int t0, int t1, int t2, int tCrateRaw, bool calibration, bool run) except +
+        Event(int timestamp,double last_secod, int TDC0, int TDC1, int TDC2, int ADC0, int ADC1, int ADC2, int t0, int t1, int t2, int tCrateRaw, bint calibration, bint run) except +
         Event(const Event& orig)
         inline int timestamp()
         inline double last_second()
@@ -64,11 +70,30 @@ cdef extern from "event.h" nogil:
 
 
 import datetime
+import json
 
 cdef class station:
     cdef Station* st
     def __init__(self, int id):
         self.st = &getStation(id)
+    cpdef id(self):
+        return self.st.id()
+    cpdef exist(self):
+        return self.id()!=0;
+    cpdef name(self):
+        return self.st.name()
+    @staticmethod
+    def load(file = None):
+        cdef Station st
+        if(file==None):
+            file = open("config_data.JSON")
+        cfg = json.load(file)
+        file.close()
+        for station in cfg['stations']:
+            st = Station(int(station['ID']))
+            st.setName(station['name'])
+            if(not addStation(st)):
+                print "Station can't be added, id: "+str(st.id())+", name: "+st.name()
 
 cdef class event:
     cdef Event e
