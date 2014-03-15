@@ -18,6 +18,16 @@ Station::Station() {
         _detectorpos[i]=0;
     }
 }
+
+Station::Station(int id) {
+    _ID = id;
+    for(int i=0;i<4;i++){
+        _gpsposition[i]=0;
+        _detectorpos[i]=0;
+    }
+    addStation(*this);
+}
+
 Station::~Station() {
 
 }
@@ -33,10 +43,11 @@ Station& Station::getStation(string name){
     return _stations[0];
 }
 
-bool Station::addStation(Station& station){
+bool Station::addStation(Station station){
     if(station.id()<1 || station.id()>255 || active(station.id()))return false;
     _actives[station.id()] = true;
     _stations[station.id()] = station;
+    return true;
 }
 
 short* Station::lastTDCCorrect(){
@@ -58,6 +69,6 @@ short* Station::TDCCorrect(time_t time){
         return null_correction;
 }
 
-double* Station::detectorPos(){
+double* Station::detectorPosition(){
     return _detectorpos;
 }

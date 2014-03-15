@@ -19,15 +19,19 @@ using namespace std;
 class Station {
 public:
     Station();
+    //automatically added to stations, or rejected
+    Station(int ID);
     short* lastTDCCorrect();
     short* TDCCorrect(time_t time);
-    double* detectorPos();
+    double* detectorPosition();
+    double* GPSPosition();
     ~Station();
     inline const char* name(){return _name.c_str();};
     inline int id(){return _ID;};
     static Station& getStation(uint8_t ID);
     static Station& getStation(string name);
-    static bool addStation(Station& station);
+    //return true if added
+    static bool addStation(Station station);
     inline static bool active(uint8_t index){
         return _actives[index];
     };
@@ -35,13 +39,13 @@ public:
         time_t from;
         short tdc[3];
     };
-//private:
+private:
     static Station _stations[256];
     static bitset<256> _actives;
     static short* null_correction;
     int _ID;
     string _name;
-    vector<string> _name_files;
+    vector<string> _file_names;
     double _gpsposition[4];
     double _detectorpos[4];
     vector<TDCCorrection> _TDCCorections;

@@ -34,6 +34,7 @@ class Event {
     friend class EventReader;
 public:
     Event();
+    Event(WebEvent e);
     Event(int32_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, uint8_t byte);
     Event(const Event& orig);
     inline int timestamp() const{return _timestamp;};

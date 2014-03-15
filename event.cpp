@@ -14,7 +14,23 @@ Event::Event(){
 
 }
 
-Event::Event(int32_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t t_crate, uint8_t byte){
+Event::Event(WebEvent e){
+    _timestamp = e.timestamp;
+    _last_second = e.last_second;
+    _TDC0 = e.TDC[0];
+    _TDC1 = e.TDC[1];
+    _TDC2 = e.TDC[2];
+    _ADC0 = e.ADC[0];
+    _ADC1 = e.ADC[1];
+    _ADC2 = e.ADC[2];
+    _t0 = e.t[0];
+    _t1 = e.t[1];
+    _t2 = e.t[2];
+    _t_crate = e.t_crate;
+    _byte = e.byte;
+}
+
+Event::Event(int32_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t t_crate, bool calibration, bool run){
     this->_timestamp = timestamp;
     this->_last_second = last_secod;
     this->_TDC0 = TDC0;
@@ -27,7 +43,7 @@ Event::Event(int32_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, in
     this->_t1 = t1;
     this->_t2 = t2;
     this->_t_crate = t_crate;
-    this->_byte = byte;
+    this->_byte = (calibration?1:0)|(run?4:0);
 }
 
 Event::Event(const Event& orig){
@@ -43,10 +59,10 @@ array<float,2> Event::calculateDir(Station *st) const{
     array<short,3> TDC;// = correctedTDC(st);
     const double t1 = (TDC[1] - TDC[0])*25 * 1e-12;
     const double t2 = (TDC[2] - TDC[0])*25 * 1e-12;
-    const double x1 = st->detectorPos()[0];
-    const double x2 = st->detectorPos()[1];
-    const double y1 = st->detectorPos()[2];
-    const double y2 = st->detectorPos()[3];
+    const double x1 = st->detectorPosition()[0];
+    const double x2 = st->detectorPosition()[1];
+    const double y1 = st->detectorPosition()[2];
+    const double y2 = st->detectorPosition()[3];
     const double c2 = SPEED_OF_LIGHT*SPEED_OF_LIGHT;
     double x = c2 * (t2 * y1 - t1 * y2) / (x1 * y2 - x2 * y1);
     double y = c2 * (t2 * x1 - t1 * x2) / (y1 * x2 - y2 * x1);

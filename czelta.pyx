@@ -3,10 +3,15 @@ from libcpp.string cimport string
 cdef extern from "station.h" nogil:
     cppclass Station:
         Station() except +
+        inline char* name()
         short* lastTDCCorrect()
         short* TDCCorrect(int timestamp)
-        double* detectorPos()
-        inline char* name()
+        double* detectorPosition()
+        double* GPSPosition()
+cdef extern from "station.h" namespace "Station" nogil:
+    bint addStation(Station)
+    Station& getStation(int)
+    Station& getStation(string)
         
 
 
@@ -24,13 +29,12 @@ cdef extern from "event_reader.h" nogil:
         inline Event& item(int run, int index)
         int filterCalibs()
  
- 
 
         
 cdef extern from "event.h" nogil:
     cppclass Event:
         Event() except +
-        Event(int timestamp,double last_secod, int TDC0, int TDC1, int TDC2, int ADC0, int ADC1, int ADC2, int t0, int t1, int t2, int tCrateRaw, int byte) except +
+        Event(int timestamp,double last_secod, int TDC0, int TDC1, int TDC2, int ADC0, int ADC1, int ADC2, int t0, int t1, int t2, int tCrateRaw, bool calibration, bool run) except +
         Event(const Event& orig)
         inline int timestamp()
         inline double last_second()
@@ -60,6 +64,11 @@ cdef extern from "event.h" nogil:
 
 
 import datetime
+
+cdef class station:
+    cdef Station* st
+    def __init__(self, int id):
+        self.st = &getStation(id)
 
 cdef class event:
     cdef Event e
