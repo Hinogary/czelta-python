@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # vim: set fileencoding=UTF-8 :
-#import os, sys
+
+#auto rebuild for debuging process
 from subprocess import call
 assert call('./setup.py build_ext -i',shell=True)==0
 
