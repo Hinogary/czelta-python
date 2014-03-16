@@ -8,10 +8,18 @@ import czelta
 reload(czelta)
 import datetime
 print "\n"*2
+
+
 er = czelta.event_reader()
 er.load("test.dat")
+
+assert er.number_of_runs()==6
+assert er.number_of_events(0)==13692
+assert er.number_of_events(5)==9298
 length = er.number_of_events()
 assert length==92933
+
+
 e = er.item(0)
 assert e.TDC() == (976, 2509, 3759)
 assert e.ADC() == (1026, 707, 884)
@@ -40,12 +48,19 @@ kladno_sps = czelta.station(5)
 assert kladno_sps.name() == "kladno_sps"
 assert kladno_sps.exist()
 assert kladno_sps.id() == 5
+assert kladno_sps.gps_position() == (50.1404958, 14.1009331, 446.18)
 praha_utef = czelta.station(6)
 assert praha_utef.name() == "praha_utef"
+assert kladno_sps.distance_to(praha_utef) == 24.34704590484944
 assert not czelta.station(125).exist()
 stations = czelta.station.get_stations()
 assert stations[0].id() == 2
 assert stations[0].name() == "pardubice_gd"
 assert stations[1].id() == 3
 assert stations[1].name() == "opava_mg" 
+
+txt = czelta.event_reader('test.txt')
+assert str(txt[16000])=="a 2014 02 24 19 58 17 222931733.5 1231 2395 3762 1022 404 770 10.0 9.5 8.5 26.5"
+assert len(txt)==16981
+assert txt.filter_calibrations() == 6391
 print "success"

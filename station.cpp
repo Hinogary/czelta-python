@@ -7,6 +7,7 @@
 
 #include "station.h"
 #include <stdexcept>
+#include "math.h"
 
 Station Station::_stations[256];
 bitset<256> Station::_actives;
@@ -79,10 +80,49 @@ short* Station::TDCCorrect(time_t time){
         return null_correction;
 }
 
+void Station::setGPSPosition(double latitude, double longitude, double height){
+    _gpsposition[0] = latitude;
+    _gpsposition[1] = longitude;
+    _gpsposition[2] = height;
+}
+
+void Station::setDetectorPosition(double x1, double y1, double x2, double y2){
+    _detectorpos[0] = x1;
+    _detectorpos[1] = y1;
+    _detectorpos[2] = x2;
+    _detectorpos[3] = y2;
+}
+
 double* Station::detectorPosition(){
     return _detectorpos;
 }
 
 void Station::setName(char* name){
     _name = name;
+}
+
+double Station::distanceTo(Station& st){
+   //haversine method
+    double dlong = (st.GPSPosition()[1] - this->GPSPosition()[1]) * M_PI / 180.0;
+    double dlat = (st.GPSPosition()[0] - this->GPSPosition()[0]) * M_PI / 180.0;
+    double a = pow(sin(dlat/2.0), 2) + cos(st.GPSPosition()[0] * M_PI / 180.0) * cos(this->GPSPosition()[0] * M_PI / 180.0) * pow(sin(dlong/2.0), 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1-a));
+    return 6367 * c;
+}
+
+double* Station::GPSPosition(){
+    return _gpsposition;
+}
+
+void Station::clearTDCCorrect(int capacity){
+    _TDCCorections.clear();
+    _TDCCorections.reserve(capacity);
+}
+
+void Station::pushTDCCorrect(time_t from, short tdc0, short tdc1, short tdc2){
+    _TDCCorections.push_back(TDCCorrection{from, tdc0, tdc1, tdc2});
+}
+
+void Station::pushTDCCorrect(string from, short tdc0, short tdc1, short tdc2){
+    pushTDCCorrect(date(from), tdc0, tdc1, tdc2);
 }

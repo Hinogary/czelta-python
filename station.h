@@ -28,8 +28,14 @@ public:
     ~Station();
     inline const char* name(){return _name.c_str();};
     inline int id(){return _ID;};
+    double distanceTo(Station& st);
     
     void setName(char* name);
+    void setGPSPosition(double latitude, double longitude, double height);
+    void setDetectorPosition(double x1, double y1, double x2, double y2);
+    void clearTDCCorrect(int capacity=1);
+    void pushTDCCorrect(time_t from, short tdc0, short tdc1, short tdc2);
+    void pushTDCCorrect(string from, short tdc0, short tdc1, short tdc2);
     
     //static methods
     static Station& getStation(uint8_t ID);
@@ -51,7 +57,7 @@ private:
     int _ID;
     string _name;
     vector<string> _file_names;
-    double _gpsposition[4];
+    double _gpsposition[3];
     double _detectorpos[4];
     vector<TDCCorrection> _TDCCorections;
 };
