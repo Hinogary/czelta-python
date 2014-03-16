@@ -1,6 +1,5 @@
 from libcpp.string cimport string
 from libcpp.vector cimport vector
-from cython.operator cimport dereference as deref
 
 cdef extern from "station.h" nogil:
     cppclass Station:
@@ -97,7 +96,7 @@ cdef class station:
         return (dp[0], dp[1], dp[2], dp[3])
     cpdef distance_to(self, station st):
         "Calculate distance to other station using haversine method. The return number is in kilometres."
-        return self.st.distanceTo(deref(st.st))
+        return self.st.distanceTo(st.st[0])
     cpdef gps_position(self):
         cdef double* gp = self.st.GPSPosition()
         return (gp[0], gp[1], gp[2])

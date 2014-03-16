@@ -44,6 +44,7 @@ bool EventReader::loadDatFile(char* filename){
         cout<<"Hlavička souboru \""<<filename<<"\" neodpoví­dá \"CzeltaDataFile.1\"."<<endl;
         return true;
     }
+    static_assert(sizeof(WebEvent) >= sizeof(Event),"Event cannot be bigger than WebEvent");
     events.reserve(length*sizeof(WebEvent)/sizeof(Event)+1);
     WebEvent* wevents = (WebEvent*)events.data();
     WebEvent wevent;
@@ -53,9 +54,11 @@ bool EventReader::loadDatFile(char* filename){
     _progress=0.5;
     for(int i=0;i<length;i++){
         wevent = wevents[i];
+        if(wevent.byte&4)
+            addRun(i);
         events.push_back(wevent);
     }
-    events.resize(length);
+    addRun(length);
     events.shrink_to_fit();
     loadedFrom = filename;
     _progress=0.9;
@@ -104,8 +107,7 @@ bool EventReader::loadTxtFile(char* filename){
             TDC0, TDC1, TDC2, 
             ADC0, ADC1, ADC2, 
             (int)(atof(temp[0])*2), (int)(atof(temp[1])*2), (int)(atof(temp[2])*2), (int)(atof(temp[3])*2),
-            c=='c'?true:false,
-            nextRun?true:false));
+            c=='c'?true:false));
         nextRun = false;
         _progress = double(in.tellg())/len;
     }
@@ -145,12 +147,13 @@ void EventReader::addRun(int endIndex){
     }
     int startIndex = 0;
     if(runs.size()>0)
-        startIndex = runs[runs.size()-1].endIndex+1;
+        startIndex = runs[runs.size()-1].endIndex;
     if(startIndex>=endIndex)return;
     runs.push_back(Run{events[startIndex].timestamp(),startIndex,events[endIndex].timestamp(),endIndex});
 }
 
 void EventReader::checkRuns(int maxDiffbetweenEvents){
+    /*
     if(events.size()==0)return;
     if(maxDiffbetweenEvents==0)
         maxDiffbetweenEvents = _maxDiffbetweenEvents;
@@ -174,6 +177,7 @@ void EventReader::checkRuns(int maxDiffbetweenEvents){
         }
     addRun(events.size()-1);
     runs.shrink_to_fit();
+    */
 }
 
 

@@ -35,7 +35,7 @@ class Event {
 public:
     Event();
     Event(WebEvent e);
-    Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration, bool run);
+    Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration);
     Event(const Event& orig);
     inline int timestamp() const{return _timestamp;};
     inline double last_second() const{return _last_second;};
@@ -86,7 +86,7 @@ private:
     int16_t _t0, _t1, _t2;
     int8_t _t_crate;
     uint8_t _byte;
-    uint8_t station;
+    //uint8_t station;
 };
 inline ostream& operator << (ostream& os, const Event& e){os<<e.toString();return os;}
 #pragma pack(0)

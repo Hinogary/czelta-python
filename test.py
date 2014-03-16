@@ -14,8 +14,12 @@ er = czelta.event_reader()
 er.load("test.dat")
 
 assert er.number_of_runs()==6
-assert er.number_of_events(0)==13692
-assert er.number_of_events(5)==9298
+assert er.number_of_events(0)==13693
+assert er.number_of_events(5)==9299
+l = 0
+for i in range(er.number_of_runs()):
+    l+= er.number_of_events(i)
+assert l==len(er)
 length = er.number_of_events()
 assert length==92933
 
@@ -39,7 +43,7 @@ for event in er:
     if(event.calibration()):
         calibrations+=1
 assert calibrations == 34016
-assert er.filter_calibrations() == 34016
+assert er.filter_calibrations() == calibrations
 assert len(er) == length-calibrations
 
 

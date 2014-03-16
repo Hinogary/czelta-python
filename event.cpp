@@ -27,10 +27,10 @@ Event::Event(WebEvent e){
     _t1 = e.t[1];
     _t2 = e.t[2];
     _t_crate = e.t_crate;
-    _byte = e.byte;
+    _byte = e.byte&1;
 }
 
-Event::Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t t_crate, bool calibration, bool run){
+Event::Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t t_crate, bool calibration){
     this->_timestamp = timestamp;
     this->_last_second = last_secod;
     this->_TDC0 = TDC0;
@@ -43,7 +43,7 @@ Event::Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int
     this->_t1 = t1;
     this->_t2 = t2;
     this->_t_crate = t_crate;
-    this->_byte = (calibration?1:0)|(run?4:0);
+    this->_byte = (calibration?1:0);
 }
 
 Event::Event(const Event& orig){
