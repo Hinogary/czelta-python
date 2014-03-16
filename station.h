@@ -35,7 +35,7 @@ public:
     static Station& getStation(uint8_t ID);
     static Station& getStation(string name);
     static vector<Station*> getStations();
-    //return true if added
+    //return false if added
     static bool addStation(Station station);
     inline static bool active(uint8_t index){
         return _actives[index];

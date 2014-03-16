@@ -54,10 +54,10 @@ vector<Station*> Station::getStations(){
 }
 
 bool Station::addStation(Station station){
-    if(station.id()<1 || station.id()>255 || active(station.id()))return false;
+    if(station.id()<1 || station.id()>255 || active(station.id()))return true;
     _actives[station.id()] = true;
     _stations[station.id()] = station;
-    return true;
+    return false;
 }
 
 short* Station::lastTDCCorrect(){

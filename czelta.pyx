@@ -80,7 +80,7 @@ cdef class station:
     cpdef id(self):
         return self.st.id()
     cpdef exist(self):
-        return self.id()!=0;
+        return self.st.id()!=0;
     cpdef name(self):
         return self.st.name()
     @staticmethod
@@ -93,7 +93,7 @@ cdef class station:
         for station in cfg['stations']:
             st = Station(int(station['ID']))
             st.setName(station['name'])
-            if(not addStation(st)):
+            if(addStation(st)):
                 print "Station can't be added, already exist, id: "+str(st.id())+", name: "+st.name()
     @staticmethod
     def get_stations():
@@ -109,7 +109,7 @@ cdef class event:
     def __init__(self):
         pass
     def __str__(self):
-        self.e.toString()
+        return self.e.toString()
     cdef void set(self, Event e):
         self.e = e
     cpdef timestamp(self):
@@ -141,6 +141,7 @@ cdef class event:
 
 cdef class event_reader:
     cdef EventReader er
+    cdef int i
     def __init__(self, bytes path = b""):
         if(len(path)!=0):
             self.load(path)
@@ -148,6 +149,15 @@ cdef class event_reader:
         return self.er.numberOfEvents()
     def __getitem__(self, int i):
         return self.item(i)
+    def __iter__(self):
+        self.i = -1
+        return self
+    def __next__(self):
+        self.i+=1
+        if(self.i>len(self)):
+            raise StopIteration
+        else:
+            return self[self.i]
     cpdef load(self, bytes path):
         if(path[-4:].lower()==".txt"):
             if(self.er.loadTxtFile(path)):

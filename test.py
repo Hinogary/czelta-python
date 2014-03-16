@@ -4,8 +4,8 @@
 #auto rebuild for debuging process
 from subprocess import call
 assert call('./setup.py build_ext -i',shell=True)==0
-
 import czelta
+reload(czelta)
 import datetime
 print "\n"*2
 er = czelta.event_reader()
@@ -25,9 +25,10 @@ assert e.ADC() == (130, 100, 113)
 assert e.temps() == (5.5, 5.0, 5.0, 25.0)
 assert e.calibration() == False
 assert e.timestamp() == 1391126394
+assert str(er[157]) == "c 2014 01 04 18 12 02 764.0 4095 1755 3773 908 862 661 10.5 10.0 10.5 24.0"
 calibrations = 0
-for i in range(er.number_of_events()):
-    if(er.item(i).calibration()):
+for event in er:
+    if(event.calibration()):
         calibrations+=1
 assert calibrations == 34016
 assert er.filter_calibrations() == 34016
