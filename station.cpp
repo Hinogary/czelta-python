@@ -9,10 +9,6 @@
 #include <stdexcept>
 
 Station Station::_stations[256];
-Station* Station::_p_stations[257];
-for(int i=0;i<257;i++){
-    Station::_p_stations[i] = &_stations[0];
-}
 bitset<256> Station::_actives;
 short* Station::null_correction = new short[3]{0,0,0};
 
@@ -48,13 +44,13 @@ Station& Station::getStation(string name){
 }
 
 vector<Station*> Station::getStations(){
-    vector<Station*> stations(256);
+    vector<Station*> stations;
     for(int i=0;i<256;i++){
-        if(_stations[i].exist())
+        if(_stations[i].id()!=0)
             stations.push_back(&_stations[i]);
     }
     stations.shrink_to_fit();
-    return &stations;
+    return stations;
 }
 
 bool Station::addStation(Station station){

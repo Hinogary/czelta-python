@@ -34,7 +34,7 @@ public:
     //static methods
     static Station& getStation(uint8_t ID);
     static Station& getStation(string name);
-    static vector<Station*>* getStations();
+    static vector<Station*> getStations();
     //return true if added
     static bool addStation(Station station);
     inline static bool active(uint8_t index){
@@ -46,7 +46,6 @@ public:
     };
 private:
     static Station _stations[256];
-    static Station* _p_stations[257];
     static bitset<256> _actives;
     static short* null_correction;
     int _ID;

@@ -13,11 +13,12 @@ cdef extern from "station.h" nogil:
         double* GPSPosition()
         
         void setName(char* name)
+ctypedef Station* p_Station
 cdef extern from "station.h" namespace "Station" nogil:
     bint addStation(Station)
     Station& getStation(int)
     Station& getStation(string)
-    Station* getStations()
+    vector[p_Station] getStations()
         
 
 
@@ -65,7 +66,7 @@ cdef extern from "event.h" nogil:
         inline short tCrateRaw()
         inline float tCrate()
         inline bint isCalib()
-        #string toString() const;
+        string toString()
 
 
 
@@ -93,12 +94,22 @@ cdef class station:
             st = Station(int(station['ID']))
             st.setName(station['name'])
             if(not addStation(st)):
-                print "Station can't be added, id: "+str(st.id())+", name: "+st.name()
+                print "Station can't be added, already exist, id: "+str(st.id())+", name: "+st.name()
+    @staticmethod
+    def get_stations():
+        cdef vector[p_Station] stations = getStations()
+        rtn = []
+        for st in stations:
+            rtn.append(station(st.id()))
+        return rtn
+        
 
 cdef class event:
     cdef Event e
     def __init__(self):
         pass
+    def __str__(self):
+        self.e.toString()
     cdef void set(self, Event e):
         self.e = e
     cpdef timestamp(self):

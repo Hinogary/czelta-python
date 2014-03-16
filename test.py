@@ -42,4 +42,9 @@ assert kladno_sps.id() == 5
 praha_utef = czelta.station(6)
 assert praha_utef.name() == "praha_utef"
 assert not czelta.station(125).exist()
+stations = czelta.station.get_stations()
+assert stations[0].id() == 2
+assert stations[0].name() == "pardubice_gd"
+assert stations[1].id() == 3
+assert stations[1].name() == "opava_mg" 
 print "success"
