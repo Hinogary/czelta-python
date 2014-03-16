@@ -44,10 +44,19 @@ bool EventReader::loadDatFile(char* filename){
         cout<<"Hlavička souboru \""<<filename<<"\" neodpoví­dá \"CzeltaDataFile.1\"."<<endl;
         return true;
     }
-    events.resize(length);
+    events.reserve(length*sizeof(WebEvent)/sizeof(Event)+1);
+    WebEvent* wevents = (WebEvent*)events.data();
+    WebEvent wevent;
     _progress=0.1;
     in.read((char*)events.data(),length<<5);
     in.close();
+    _progress=0.5;
+    for(int i=0;i<length;i++){
+        wevent = wevents[i];
+        events.push_back(wevent);
+    }
+    events.resize(length);
+    events.shrink_to_fit();
     loadedFrom = filename;
     _progress=0.9;
     checkRuns();
@@ -61,10 +70,9 @@ bool EventReader::loadTxtFile(char* filename){
     char line[90];
     char _double[10];
     ifstream in;
-    Event e;
     char c;
     int d;
-    int year,month,day,hour,minute,second;
+    int year,month,day,hour,minute,second, TDC0, TDC1, TDC2, ADC0, ADC1, ADC2;
     char temp[4][5];
     in.open(filename);
     if(!in.is_open())return true;
@@ -76,8 +84,8 @@ bool EventReader::loadTxtFile(char* filename){
         if(in.eof())break;
         if((d = sscanf(line,"%c %d %d %d %d %d %d %s %d %d %d %d %d %d %s %s %s %s",
                 &c,&year,&month,&day,&hour,&minute,&second,&_double,
-                &e._TDC0, &e._TDC1, &e._TDC2,
-                &e._ADC0, &e._ADC1, &e._ADC2,
+                &TDC0, &TDC1, &TDC2,
+                &ADC0, &ADC1, &ADC2,
                 &temp[0], &temp[1], &temp[2], &temp[3])
                 )!=18 && c!='x'){
             cout<<d<<endl;
@@ -91,14 +99,13 @@ bool EventReader::loadTxtFile(char* filename){
             addRun(events.size()-1);
             continue;
         }
-        e._last_second = atof(_double);
-        e._timestamp = date(year,month,day,hour,minute,second);
-        e._t0 = atof(temp[0])*2;
-        e._t1 = atof(temp[1])*2;
-        e._t2 = atof(temp[2])*2;
-        e._t_crate = atof(temp[3])*2;
-        e._byte = (nextRun?4:0)|(c=='c'?1:0);
-        events.push_back(*((Event*)&e));
+        events.push_back(Event(date(year,month,day,hour,minute,second), 
+            atof(_double), 
+            TDC0, TDC1, TDC2, 
+            ADC0, ADC1, ADC2, 
+            (int)(atof(temp[0])*2), (int)(atof(temp[1])*2), (int)(atof(temp[2])*2), (int)(atof(temp[3])*2),
+            c=='c'?true:false,
+            nextRun?true:false));
         nextRun = false;
         _progress = double(in.tellg())/len;
     }

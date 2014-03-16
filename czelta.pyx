@@ -1,5 +1,6 @@
 from libcpp.string cimport string
 from libcpp.vector cimport vector
+from cython.operator cimport dereference as deref
 
 cdef extern from "station.h" nogil:
     cppclass Station:
@@ -12,15 +13,20 @@ cdef extern from "station.h" nogil:
         double* detectorPosition()
         double* GPSPosition()
         
+        double distanceTo(Station& st)
+        
         void setName(char* name)
+        void setGPSPosition(double latitude, double longitude, double height)
+        void setDetectorPosition(double x1, double y1, double x2, double y2)
+        void clearTDCCorrect(int capacity)
+        void pushTDCCorrect(int fr, short tdc0, short tdc1, short tdc2)
+        void pushTDCCorrect(string fr, short tdc0, short tdc1, short tdc2)
 ctypedef Station* p_Station
 cdef extern from "station.h" namespace "Station" nogil:
     bint addStation(Station)
     Station& getStation(int)
     Station& getStation(string)
     vector[p_Station] getStations()
-        
-
 
 
 cdef extern from "event_reader.h" nogil:
@@ -35,6 +41,9 @@ cdef extern from "event_reader.h" nogil:
         inline Event& item(int index)
         inline Event& item(int run, int index)
         int filterCalibs()
+        
+        inline int numberOfRuns()
+        inline int numberOfEvents(int run)
  
 
         
@@ -83,17 +92,42 @@ cdef class station:
         return self.st.id()!=0;
     cpdef name(self):
         return self.st.name()
+    cpdef detector_position(self):
+        cdef double* dp = self.st.detectorPosition()
+        return (dp[0], dp[1], dp[2], dp[3])
+    cpdef distance_to(self, station st):
+        "Calculate distance to other station using haversine method. The return number is in kilometres."
+        return self.st.distanceTo(deref(st.st))
+    cpdef gps_position(self):
+        cdef double* gp = self.st.GPSPosition()
+        return (gp[0], gp[1], gp[2])
     @staticmethod
     def load(file = None):
         cdef Station st
-        if(file==None):
+        if file==None:
             file = open("config_data.JSON")
         cfg = json.load(file)
         file.close()
         for station in cfg['stations']:
             st = Station(int(station['ID']))
             st.setName(station['name'])
-            if(addStation(st)):
+            if 'GPSposition' in station and len(station['GPSposition'])>2:
+                pos = station['GPSposition']
+                st.setGPSPosition(pos[0],pos[1],pos[2])
+            if 'detectorsPos' in station and len(station['detectorsPos'])==4:
+                pos = station['detectorsPos']
+                st.setDetectorPosition(pos[0], pos[1], pos[2], pos[3])
+            if 'TDCCorrection' in station and len(station['TDCCorrection'])>0:
+                st.clearTDCCorrect(len(station['TDCCorrection']))
+                for correction in station['TDCCorrection']:
+                    tdc = correction['correction']
+                    if not 'from' in correction:
+                        correction['from'] = 0
+                    if type(correction['from'])==int:
+                        st.pushTDCCorrect(<int>correction['from'], <short>tdc[0], <short>tdc[1], <short>tdc[2])
+                    else:
+                        st.pushTDCCorrect(<string>correction['from'], <short>tdc[0], <short>tdc[1], <short>tdc[2])
+            if addStation(st):
                 print "Station can't be added, already exist, id: "+str(st.id())+", name: "+st.name()
     @staticmethod
     def get_stations():
@@ -167,8 +201,13 @@ cdef class event_reader:
                 raise IOError("can't open or read file: "+path)
         else:
             raise NotImplementedError("path must be a file with .txt or .dat")
-    cpdef int number_of_events(self):
-        return self.er.numberOfEvents()
+    cpdef int number_of_events(self, int run = -1):
+        if(run==-1):
+            return self.er.numberOfEvents()
+        else:
+            return self.er.numberOfEvents(run)
+    cpdef int number_of_runs(self):
+        return self.er.numberOfRuns()
     cpdef item(self, int index):
         e = event()
         e.set(self.er.item(index))

@@ -30,7 +30,7 @@ Event::Event(WebEvent e){
     _byte = e.byte;
 }
 
-Event::Event(int32_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t t_crate, bool calibration, bool run){
+Event::Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t t_crate, bool calibration, bool run){
     this->_timestamp = timestamp;
     this->_last_second = last_secod;
     this->_TDC0 = TDC0;

@@ -35,12 +35,12 @@ class Event {
 public:
     Event();
     Event(WebEvent e);
-    Event(int32_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration, bool run);
+    Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration, bool run);
     Event(const Event& orig);
     inline int timestamp() const{return _timestamp;};
     inline double last_second() const{return _last_second;};
     inline double time_since_second() const{return _last_second*1e-9;};
-    inline int64_t tenthOfNSTimestamp() const{return int64_t(timestamp())*10000000000L+int64_t(last_second()*10);};
+    inline int64_t tenthOfNSTimestamp() const{return int64_t(timestamp())*10000000000L + int64_t(last_second()*10);};
     inline short TDC0() const{return _TDC0;};
     inline short TDC1() const{return _TDC1;};
     inline short TDC2() const{return _TDC2;};
@@ -79,13 +79,14 @@ public:
     array<float,2> calculateDir(Station *st) const;
     string toString() const;
 private:
-    int32_t _timestamp; 
+    uint32_t _timestamp; 
     double _last_second;
-    int16_t _TDC0, _TDC1, _TDC2;
-    int16_t _ADC0, _ADC1, _ADC2;
+    uint16_t _TDC0, _TDC1, _TDC2;
+    uint16_t _ADC0, _ADC1, _ADC2;
     int16_t _t0, _t1, _t2;
     int8_t _t_crate;
     uint8_t _byte;
+    uint8_t station;
 };
 inline ostream& operator << (ostream& os, const Event& e){os<<e.toString();return os;}
 #pragma pack(0)
