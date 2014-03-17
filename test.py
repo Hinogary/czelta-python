@@ -7,9 +7,11 @@ assert call('./setup.py build_ext -i',shell=True)==0
 import czelta
 reload(czelta)
 import datetime
+from time import time
 print "\n"*2
 
 
+b = time()
 er = czelta.event_reader()
 er.load("test.dat")
 
@@ -23,6 +25,13 @@ assert l==len(er)
 length = er.number_of_events()
 assert length==92933
 
+l = []
+for run in er.runs():
+    local_l = 0
+    for event in run:
+        local_l+=1
+    l.append(local_l)
+assert l==[13693, 19615, 27063, 19198, 4065, 9299]
 
 e = er.item(0)
 assert e.TDC() == (976, 2509, 3759)

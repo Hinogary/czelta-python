@@ -20,6 +20,9 @@ cdef extern from "station.h" nogil:
         void clearTDCCorrect(int capacity)
         void pushTDCCorrect(int fr, short tdc0, short tdc1, short tdc2)
         void pushTDCCorrect(string fr, short tdc0, short tdc1, short tdc2)
+        void pushFileName(string name)
+        
+        
 ctypedef Station* p_Station
 cdef extern from "station.h" namespace "Station" nogil:
     bint addStation(Station)
@@ -83,8 +86,11 @@ import json
 
 cdef class station:
     cdef Station* st
-    def __init__(self, int id):
-        self.st = &getStation(id)
+    def __init__(self, id):
+        if(type(id)==int):
+            self.st = &getStation(<int>id)
+        else:
+            self.st = &getStation(<string>id)
     cpdef id(self):
         return self.st.id()
     cpdef exist(self):
@@ -108,26 +114,33 @@ cdef class station:
         cfg = json.load(file)
         file.close()
         for station in cfg['stations']:
-            st = Station(int(station['ID']))
-            st.setName(station['name'])
-            if 'GPSposition' in station and len(station['GPSposition'])>2:
-                pos = station['GPSposition']
-                st.setGPSPosition(pos[0],pos[1],pos[2])
-            if 'detectorsPos' in station and len(station['detectorsPos'])==4:
-                pos = station['detectorsPos']
-                st.setDetectorPosition(pos[0], pos[1], pos[2], pos[3])
-            if 'TDCCorrection' in station and len(station['TDCCorrection'])>0:
-                st.clearTDCCorrect(len(station['TDCCorrection']))
-                for correction in station['TDCCorrection']:
-                    tdc = correction['correction']
-                    if not 'from' in correction:
-                        correction['from'] = 0
-                    if type(correction['from'])==int:
-                        st.pushTDCCorrect(<int>correction['from'], <short>tdc[0], <short>tdc[1], <short>tdc[2])
-                    else:
-                        st.pushTDCCorrect(<string>correction['from'], <short>tdc[0], <short>tdc[1], <short>tdc[2])
-            if addStation(st):
-                print "Station can't be added, already exist, id: "+str(st.id())+", name: "+st.name()
+            try:
+                st = Station(int(station['ID']))
+                st.setName(station['name'])
+                if 'GPSposition' in station and len(station['GPSposition'])>2:
+                    pos = station['GPSposition']
+                    st.setGPSPosition(pos[0],pos[1],pos[2])
+                if 'detectorsPos' in station and len(station['detectorsPos'])==4:
+                    pos = station['detectorsPos']
+                    st.setDetectorPosition(pos[0], pos[1], pos[2], pos[3])
+                if 'file_names' in station:
+                    for name in station['file_names']:
+                        st.pushFileName(name)
+                if 'TDCCorrection' in station and len(station['TDCCorrection'])>0:
+                    st.clearTDCCorrect(len(station['TDCCorrection']))
+                    for correction in station['TDCCorrection']:
+                        tdc = correction['correction']
+                        if not 'from' in correction:
+                            correction['from'] = 0
+                        if type(correction['from'])==int:
+                            st.pushTDCCorrect(<int>correction['from'], <short>tdc[0], <short>tdc[1], <short>tdc[2])
+                        else:
+                            st.pushTDCCorrect(<string>correction['from'], <short>tdc[0], <short>tdc[1], <short>tdc[2])
+                if addStation(st):
+                    print "Station can't be added, already exist, id: "+str(st.id())+", name: "+st.name()
+            except:
+                print "Station can't be added, bad format of JSON, id: "+str(st.id())+", name: "+st.name()
+                
     @staticmethod
     def get_stations():
         cdef vector[p_Station] stations = getStations()
@@ -187,10 +200,14 @@ cdef class event_reader:
         return self
     def __next__(self):
         self.i+=1
-        if(self.i>len(self)):
-            raise StopIteration
-        else:
+        if self.i < self.er.numberOfEvents():
             return self[self.i]
+        else:
+            raise StopIteration
+    cpdef run(self, int run_id):
+        return event_reader_run(self, run_id)
+    cpdef runs(self):
+        return event_reader_runs(self)
     cpdef load(self, bytes path):
         if(path[-4:].lower()==".txt"):
             if(self.er.loadTxtFile(path)):
@@ -213,4 +230,43 @@ cdef class event_reader:
         return e
     cpdef filter_calibrations(self):
         return self.er.filterCalibs()
-        
+cdef class event_reader_runs:
+    cdef event_reader er
+    cdef int i
+    def __init__(self, event_reader reader):
+        self.er = reader
+    def __iter__(self):
+        self.i = -1
+        return self
+    def __next__(self):
+        self.i+=1
+        if self.i < self.er.er.numberOfRuns():
+            return self[self.i]
+        else:
+            raise StopIteration
+    def __len__(self):
+        return self.er.er.numberOfRuns()
+    def __getitem__(self, int i):
+        return event_reader_run(self.er, i)
+cdef class event_reader_run:
+    cdef event_reader er
+    cdef int run_id
+    cdef int i
+    def __init__(self, event_reader reader, int run_id):
+        self.er = reader
+        self.run_id = run_id
+    def __iter__(self):
+        self.i = -1
+        return self
+    def __next__(self):
+        self.i+=1
+        if self.i < self.er.er.numberOfEvents(self.run_id):
+            return self[self.i]
+        else:
+            raise StopIteration
+    def __len__(self):
+        return self.er.er.numberOfEvents(self.run_id)
+    def __getitem__(self, int i):
+        e = event()
+        e.set(self.er.er.item(self.run_id, i))
+        return e
