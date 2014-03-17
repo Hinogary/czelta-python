@@ -36,6 +36,7 @@ public:
     void clearTDCCorrect(int capacity=1);
     void pushTDCCorrect(time_t from, short tdc0, short tdc1, short tdc2);
     void pushTDCCorrect(string from, short tdc0, short tdc1, short tdc2);
+    void pushFileName(string name);
     
     //static methods
     static Station& getStation(uint8_t ID);

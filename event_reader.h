@@ -23,7 +23,6 @@ struct Overlap{
 public:
     EventReader();
     EventReader(const EventReader&) = delete;
-    inline Station* getStation(){return station;};
     void setStation(uint8_t);
     inline Event& item(int index){return events[index];};
     inline Event& item(int run, int index){return item(runs[run].beginIndex+index);};
@@ -68,7 +67,6 @@ private:
     static string files_directory;
     vector<Event> events;
     vector<Run> runs;
-    Station *station;
 };
 
 

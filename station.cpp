@@ -62,8 +62,7 @@ bool Station::addStation(Station station){
 }
 
 short* Station::lastTDCCorrect(){
-    int i = _TDCCorections.size()-1;
-    if(i==-1)return &null_correction[0];
+    if(_TDCCorections.size()==0)return null_correction;
     else return _TDCCorections.back().tdc;
 }
 
@@ -125,4 +124,8 @@ void Station::pushTDCCorrect(time_t from, short tdc0, short tdc1, short tdc2){
 
 void Station::pushTDCCorrect(string from, short tdc0, short tdc1, short tdc2){
     pushTDCCorrect(date(from), tdc0, tdc1, tdc2);
+}
+
+void Station::pushFileName(string name){
+    _file_names.push_back(name);
 }

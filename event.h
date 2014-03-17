@@ -83,10 +83,10 @@ private:
     double _last_second;
     uint16_t _TDC0, _TDC1, _TDC2;
     uint16_t _ADC0, _ADC1, _ADC2;
-    int16_t _t0, _t1, _t2;
+    int8_t _t0, _t1, _t2;
     int8_t _t_crate;
     uint8_t _byte;
-    //uint8_t station;
+    uint8_t station;
 };
 inline ostream& operator << (ostream& os, const Event& e){os<<e.toString();return os;}
 #pragma pack(0)
