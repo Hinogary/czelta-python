@@ -216,7 +216,7 @@ cdef class event_reader:
         cdef int ii, start, stop, step
         if type(i)==slice:
             start = 0 if not i.start else i.start if i.start>=0 else self.er.numberOfEvents()+i.start
-            stop = self.er.numberOfEvents()+1 if not i.stop else i.stop if i.stop>=0 else self.er.numberOfEvents()+i.stop
+            stop = self.er.numberOfEvents() if not i.stop else i.stop if i.stop>=0 else self.er.numberOfEvents()+i.stop
             step = i.step if i.step else 1
             es = []
             for ii in range(start, stop, step):
@@ -283,7 +283,7 @@ cdef class event_reader_runs:
         cdef int ii, start, stop, step
         if type(i)==slice:
             start = 0 if not i.start else i.start if i.start>=0 else self.er.er.numberOfRuns()+i.start
-            stop = self.er.er.numberOfRuns()+1 if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfRuns()+i.stop
+            stop = self.er.er.numberOfRuns() if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfRuns()+i.stop
             step = i.step if i.step else 1
             runs = []
             for ii in range(start, stop, step):
@@ -316,7 +316,7 @@ cdef class event_reader_run:
         cdef int ii, start, stop, step
         if type(i)==slice:
             start = 0 if not i.start else i.start if i.start>=0 else self.er.er.numberOfEvents(self.run_id)+i.start
-            stop = self.er.er.numberOfEvents(self.run_id)+1 if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfEvents(self.run_id)+i.stop
+            stop = self.er.er.numberOfEvents(self.run_id) if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfEvents(self.run_id)+i.stop
             step = i.step if i.step else 1
             es = []
             for ii in range(start, stop, step):
