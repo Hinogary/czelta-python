@@ -101,6 +101,7 @@ void Station::setName(char* name){
 }
 
 double Station::distanceTo(Station& st){
+    if(this->id()==0 || st.id()==0)return 0;
    //haversine method
     double dlong = (st.GPSPosition()[1] - this->GPSPosition()[1]) * M_PI / 180.0;
     double dlat = (st.GPSPosition()[0] - this->GPSPosition()[0]) * M_PI / 180.0;
