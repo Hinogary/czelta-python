@@ -1,14 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # vim: set fileencoding=UTF-8 :
 
 #auto rebuild for debuging process
 from subprocess import call
 assert call('./setup.py build_ext -i',shell=True)==0
 import czelta
-reload(czelta)
 import datetime
 from time import time
-print "\n"*2
+print("\n"*2)
 
 
 b = time()
@@ -76,4 +75,4 @@ txt = czelta.event_reader('test.txt')
 assert str(txt[16000])=="a 2014 02 24 19 58 17 222931733.5 1231 2395 3762 1022 404 770 10.0 9.5 8.5 26.5"
 assert len(txt)==16981
 assert txt.filter_calibrations() == 6391
-print "success"
+print("success")
