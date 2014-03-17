@@ -1,6 +1,5 @@
 /*
- * File:   Event.cpp
- * Author: martin
+ * Author: Martin Quarda
  *
  * Created on 6. listopad 2013, 8:54
  */

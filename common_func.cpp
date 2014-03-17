@@ -1,6 +1,5 @@
 /*
- * File:   commonFunc.cpp
- * Author: martin
+ * Author: Martin Quarda
  *
  * Created on 5. listopad 2013, 21:15
  */

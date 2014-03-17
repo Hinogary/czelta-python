@@ -1,6 +1,5 @@
 /* 
  * File:   Event.h
- * Author: martin
  *
  * Created on 6. listopad 2013, 8:54
  */
