@@ -85,32 +85,39 @@ import datetime
 import json
 
 cdef class station:
+    ""
     cdef Station* st
     def __init__(self, station):
-        "parameter can be `station name` or `station id`"
+        "Parameter can be `station name` or `station id`. Only look into list of loaded stations with :py:meth:`load`."
         if(type(station)==int):
             self.st = &getStation(<int>station)
         else:
             self.st = &getStation(<string>station)
     cpdef id(self):
-        "return `station id`, if return zero, station did'nt exist."
+        "Return `station id`, if return zero, station did'nt exist."
         return self.st.id()
     cpdef exist(self):
-        "return ``True`` if station exist"
+        "Return ``True`` if station exist."
         return self.st.id()!=0;
     cpdef name(self):
-        "return code name of station. Example: \"praha_utef\", \"pardubice_gd\" or similar."
+        "Return code name of station. Example: ``\'praha_utef\'``, ``\'pardubice_gd\'`` or similar."
         return (<char*>self.st.name()).decode('utf-8')
     cpdef detector_position(self):
-        "Return position of detectors in format (x1, y1, x2, y2) where x1 and y1 are relative position of detector 1 to detector 0. x2 and y2 are relative position of detector 2 to detector 0. All values are in metres."
+        "Return position of detectors in format ``(x1, y1, x2, y2)`` where ``x1`` and ``y1`` are relative position of detector 1 to detector 0. ``x2`` and ``y2`` are relative position of detector 2 to detector 0. All values are in metres."
         cdef double* dp = self.st.detectorPosition()
         return (dp[0], dp[1], dp[2], dp[3])
     cpdef distance_to(self, station other_station):
         "Calculate distance to other station using haversine method. The return number is in kilometres."
-        return self.st.distanceTo(other_station.st[0])
+        cdef double distance = self.st.distanceTo(other_station.st[0])
+        if distance==0:
+            return None
+        else:
+            return distance
     cpdef gps_position(self):
-        "returns GPS position of station"
+        "Returns GPS position of station. Return ``(latitude, longitude)`` or ``None`` if gps_position is not defined."
         cdef double* gp = self.st.GPSPosition()
+        if gp[0]==0 and gp[1]==0:
+            return None
         return (gp[0], gp[1], gp[2])
     @staticmethod
     def load(file = None):
@@ -154,6 +161,7 @@ cdef class station:
                 
     @staticmethod
     def get_stations():
+        "Return list of all available stations."
         cdef vector[p_Station] stations = getStations()
         rtn = []
         for st in stations:
@@ -204,8 +212,25 @@ cdef class event_reader:
             self.load(path)
     def __len__(self):
         return self.er.numberOfEvents()
-    def __getitem__(self, int i):
-        return self.item(i)
+    def __getitem__(self, i):
+        cdef int ii, start, stop, step
+        if type(i)==slice:
+            start = 0 if not i.start else i.start if i.start>=0 else self.er.numberOfEvents()+i.start
+            stop = self.er.numberOfEvents()+1 if not i.stop else i.stop if i.stop>=0 else self.er.numberOfEvents()+i.stop
+            step = i.step if i.step else 1
+            es = []
+            for ii in range(start, stop, step):
+                e = event()
+                e.set(self.er.item(ii))
+                es.append(e)
+            return es
+        else:
+            e = event()
+            if i<0:
+                e.set(self.er.item(self.er.numberOfEvents()+i))
+            else:
+                e.set(self.er.item(i))
+            return e
     def __iter__(self):
         self.i = -1
         return self
@@ -236,10 +261,6 @@ cdef class event_reader:
             return self.er.numberOfEvents(run)
     cpdef int number_of_runs(self):
         return self.er.numberOfRuns()
-    cpdef item(self, int index):
-        e = event()
-        e.set(self.er.item(index))
-        return e
     cpdef filter_calibrations(self):
         return self.er.filterCalibs()
 cdef class event_reader_runs:
@@ -258,8 +279,21 @@ cdef class event_reader_runs:
             raise StopIteration
     def __len__(self):
         return self.er.er.numberOfRuns()
-    def __getitem__(self, int i):
-        return event_reader_run(self.er, i)
+    def __getitem__(self, i):
+        cdef int ii, start, stop, step
+        if type(i)==slice:
+            start = 0 if not i.start else i.start if i.start>=0 else self.er.er.numberOfRuns()+i.start
+            stop = self.er.er.numberOfRuns()+1 if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfRuns()+i.stop
+            step = i.step if i.step else 1
+            runs = []
+            for ii in range(start, stop, step):
+                runs.append(event_reader_run(self.er, ii))
+            return runs
+        else:
+            if i<0:
+                return event_reader_run(self.er, self.er.er.numberOfRuns()+i)
+            else:
+                return event_reader_run(self.er, i)
 cdef class event_reader_run:
     cdef event_reader er
     cdef int run_id
@@ -278,7 +312,22 @@ cdef class event_reader_run:
             raise StopIteration
     def __len__(self):
         return self.er.er.numberOfEvents(self.run_id)
-    def __getitem__(self, int i):
-        e = event()
-        e.set(self.er.er.item(self.run_id, i))
-        return e
+    def __getitem__(self, i):
+        cdef int ii, start, stop, step
+        if type(i)==slice:
+            start = 0 if not i.start else i.start if i.start>=0 else self.er.er.numberOfEvents(self.run_id)+i.start
+            stop = self.er.er.numberOfEvents(self.run_id)+1 if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfEvents(self.run_id)+i.stop
+            step = i.step if i.step else 1
+            es = []
+            for ii in range(start, stop, step):
+                e = event()
+                e.set(self.er.er.item(self.run_id, ii))
+                es.append(e)
+            return es
+        else:
+            e = event()
+            if i<0:
+                e.set(self.er.er.item(self.run_id, self.er.er.numberOfEvents(self.run_id)+i))
+            else:
+                e.set(self.er.er.item(self.run_id, i))
+            return e
