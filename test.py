@@ -32,7 +32,10 @@ for run in er.runs():
     l.append(local_l)
 assert l==[13693, 19615, 27063, 19198, 4065, 9299]
 
-e = er.item(0)
+
+assert er[0].timestamp() == er.runs()[0][0].timestamp()
+assert er.runs()[0][-1].timestamp() == 1389163699
+e = er[0]
 assert e.TDC() == (976, 2509, 3759)
 assert e.ADC() == (1026, 707, 884)
 assert e.temps() == (9.5, 9.0, 9.5, 24.0)
