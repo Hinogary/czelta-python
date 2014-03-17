@@ -5,7 +5,7 @@
 
 .. autoclass:: station
 
-   .. automethod:: load(file)
+   .. automethod:: load(file = open("config_data.JSON"))
    .. automethod:: get_stations
    .. automethod:: __init__(station)
    .. automethod:: exist
