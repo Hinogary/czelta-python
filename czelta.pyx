@@ -215,21 +215,27 @@ cdef class event_reader:
     def __getitem__(self, i):
         cdef int ii, start, stop, step
         if type(i)==slice:
-            start = 0 if not i.start else i.start if i.start>=0 else self.er.numberOfEvents()+i.start
-            stop = self.er.numberOfEvents() if not i.stop else i.stop if i.stop>=0 else self.er.numberOfEvents()+i.stop
+            start = 0 if i.start==None else i.start if i.start>=0 else self.er.numberOfEvents()+i.start
+            stop = self.er.numberOfEvents() if i.stop==None else i.stop if i.stop>=0 else self.er.numberOfEvents()+i.stop
             step = i.step if i.step else 1
+            if step <= 0:
+                raise NotImplementedError
             es = []
-            for ii in range(start, stop, step):
+            #currently not optimized to c loop (17.1.2014)
+            #for ii in range(start, stop, step):
+            #deprecated but optimized to c loop
+            for ii from start <= ii < stop by step:
                 e = event()
                 e.set(self.er.item(ii))
                 es.append(e)
             return es
         else:
+            ii = i
             e = event()
-            if i<0:
-                e.set(self.er.item(self.er.numberOfEvents()+i))
+            if ii<0:
+                e.set(self.er.item(self.er.numberOfEvents()+ii))
             else:
-                e.set(self.er.item(i))
+                e.set(self.er.item(ii))
             return e
     def __iter__(self):
         self.i = -1
@@ -285,8 +291,13 @@ cdef class event_reader_runs:
             start = 0 if not i.start else i.start if i.start>=0 else self.er.er.numberOfRuns()+i.start
             stop = self.er.er.numberOfRuns() if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfRuns()+i.stop
             step = i.step if i.step else 1
+            if step <= 0:
+                raise NotImplementedError
             runs = []
-            for ii in range(start, stop, step):
+            #currently not optimized to c loop (17.1.2014)
+            #for ii in range(start, stop, step):
+            #deprecated but optimized to c loop
+            for ii from start <= ii < stop by step:
                 runs.append(event_reader_run(self.er, ii))
             return runs
         else:
@@ -318,16 +329,22 @@ cdef class event_reader_run:
             start = 0 if not i.start else i.start if i.start>=0 else self.er.er.numberOfEvents(self.run_id)+i.start
             stop = self.er.er.numberOfEvents(self.run_id) if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfEvents(self.run_id)+i.stop
             step = i.step if i.step else 1
+            if step <= 0:
+                raise NotImplementedError
             es = []
-            for ii in range(start, stop, step):
+            #currently not optimized to c loop (17.1.2014)
+            #for ii in range(start, stop, step):
+            #deprecated but optimized to c loop
+            for ii from start <= ii < stop by step:
                 e = event()
                 e.set(self.er.er.item(self.run_id, ii))
                 es.append(e)
             return es
         else:
+            ii = i
             e = event()
-            if i<0:
-                e.set(self.er.er.item(self.run_id, self.er.er.numberOfEvents(self.run_id)+i))
+            if ii<0:
+                e.set(self.er.er.item(self.run_id, self.er.er.numberOfEvents(self.run_id)+ii))
             else:
-                e.set(self.er.er.item(self.run_id, i))
+                e.set(self.er.er.item(self.run_id, ii))
             return e
