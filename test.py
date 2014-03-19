@@ -77,10 +77,14 @@ assert kladno_sps.gps_position() == (50.1404958, 14.1009331, 446.18)
 praha_utef = czelta.station(6)
 assert praha_utef.name() == "praha_utef"
 assert kladno_sps.distance_to(praha_utef) == 24.34704590484944
+<<<<<<< HEAD
 try:
     assert not czelta.station(125)
 except RuntimeError:
     pass
+=======
+#assert not czelta.station(125).exist()
+>>>>>>> a5d4aaf... bugfixes
 stations = czelta.station.get_stations()
 assert stations[0].id() == 2
 assert stations[0].name() == "pardubice_gd"

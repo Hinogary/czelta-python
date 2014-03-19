@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 #author: Martin Quarda
 from libcpp.string cimport string
 from libcpp.vector cimport vector
@@ -56,8 +54,8 @@ cdef extern from "event_reader.h" nogil:
         inline int numberOfEvents(int run)
         
 cdef extern from "event_reader.h" namespace "EventReader" nogil:
-    static void setFilesDirectory(string dir)
-    inline static string getFilesDirectory()
+    void setFilesDirectory(string dir)
+    inline string getFilesDirectory()
 
         
 cdef extern from "event.h" nogil:
@@ -284,7 +282,11 @@ cdef class event_reader:
         "Filter all events marked as calibration."
         return self.er.filterCalibs()
     cpdef int filter_maximum_TDC(self):
+<<<<<<< HEAD
         "Filter all events which have at least one TDC chanel equal maximum value (4095). Events with maximum value have bad measured TDC and sky direction can't be determined right."
+=======
+        "Filter all events which have at least one TDC chanel equal maximum value (4095). Events with maximum value have bad measured TDC and sky direction can't determined righ."
+>>>>>>> a5d4aaf... bugfixes
         return self.er.filterMaxTDC()
     cpdef int filter_maximum_ADC(self):
         "Filter all events which have at least one ADC(energy) channel equal maximum value(2047)." 
