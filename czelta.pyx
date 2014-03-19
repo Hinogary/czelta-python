@@ -42,11 +42,19 @@ cdef extern from "event_reader.h" nogil:
         bint saveTxtFile(char* filename)
         inline Event& item(int index)
         inline Event& item(int run, int index)
+        
+        #filters
         int filterCalibs()
+        inline int filterMaxTDC()
+        inline int filterMaxADC()
+        inline int filterMinADC()
         
         inline int numberOfRuns()
         inline int numberOfEvents(int run)
- 
+        
+cdef extern from "event_reader.h" namespace "EventReader" nogil:
+    static void setFilesDirectory(string dir)
+    inline static string getFilesDirectory()
 
         
 cdef extern from "event.h" nogil:
@@ -93,12 +101,11 @@ cdef class station:
             self.st = &getStation(<int>station)
         else:
             self.st = &getStation(<string>station)
+        if sel.st.id()==0:
+            raise RuntimeError("Station not exist, have you loaded config file?")
     cpdef id(self):
-        "Return `station id`, if return zero, station did'nt exist."
+        "Return `station id`, probably same as on czelta website."
         return self.st.id()
-    cpdef exist(self):
-        "Return ``True`` if station exist."
-        return self.st.id()!=0;
     cpdef name(self):
         "Return code name of station. Example: ``\'praha_utef\'``, ``\'pardubice_gd\'`` or similar."
         return (<char*>self.st.name()).decode('utf-8')
@@ -231,11 +238,10 @@ cdef class event_reader:
             return es
         else:
             ii = i
-            e = event()
             if ii<0:
-                e.set(self.er.item(self.er.numberOfEvents()+ii))
-            else:
-                e.set(self.er.item(ii))
+                ii += self.er.numberOfEvents()
+            e = event()
+            e.set(self.er.item(ii))
             return e
     def __iter__(self):
         self.i = -1
@@ -266,9 +272,27 @@ cdef class event_reader:
         else:
             return self.er.numberOfEvents(run)
     cpdef int number_of_runs(self):
+        "Return number of runs. Same result have ``len(event_reader.runs())``.
         return self.er.numberOfRuns()
-    cpdef filter_calibrations(self):
+    cdef Event& c_item(int i):
+        return self.er.item(i)
+    cpdef event item(int i):
+        event e()
+        e.set(self.er.item(i))
+        return e
+    #filters
+    cpdef int filter_calibrations(self):
+        "filter all events marked as calibration"
         return self.er.filterCalibs()
+    cpdef int filter_maximum_TDC():
+        "Filter all events which have at least one TDC chanel equal maximum value (4095). Events with maximum value have bad measured TDC and sky direction can't determined righ."
+        return self.er.filterMaxTDC()
+    cpdef int filter_maximum_ADC():
+        "Filter all events which have at least one ADC(energy) channel equal maximum value(2047)." 
+        return self.er.filterMaxADC()
+    cpdef int filter_minimum_ADC():
+        "Filter all events which have at least one ADC(energy) channel equal zero (Not measured)."
+        return self.er.filterMinADC()
 cdef class event_reader_runs:
     cdef event_reader er
     cdef int i
@@ -301,10 +325,10 @@ cdef class event_reader_runs:
                 runs.append(event_reader_run(self.er, ii))
             return runs
         else:
-            if i<0:
-                return event_reader_run(self.er, self.er.er.numberOfRuns()+i)
-            else:
-                return event_reader_run(self.er, i)
+            ii = i
+            if ii<0:
+                ii += self.er.er.numberOfRuns()
+            return event_reader_run(self.er, ii)
 cdef class event_reader_run:
     cdef event_reader er
     cdef int run_id
@@ -342,9 +366,8 @@ cdef class event_reader_run:
             return es
         else:
             ii = i
-            e = event()
             if ii<0:
-                e.set(self.er.er.item(self.run_id, self.er.er.numberOfEvents(self.run_id)+ii))
-            else:
-                e.set(self.er.er.item(self.run_id, ii))
+                ii+=self.er.er.numberOfEvents(self.run_id)
+            e = event()
+            e.set(self.er.er.item(self.run_id, ii))
             return e
