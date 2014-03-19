@@ -1,3 +1,6 @@
+/*
+ * Author: Martin Quarda
+ */
 #include "coincidence.h"
 
 Coincidence::Coincidence()
