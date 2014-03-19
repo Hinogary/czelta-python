@@ -1,3 +1,6 @@
+/*
+ * Author: Martin Quarda
+ */
 #ifndef COINCIDENCE_H
 #define COINCIDENCE_H
 #include "event_reader.h"
