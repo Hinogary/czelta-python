@@ -2,8 +2,10 @@
 # vim: set fileencoding=UTF-8 :
 
 #auto rebuild for debuging process
-from subprocess import call
-assert call('./setup.py build_ext -i',shell=True)==0
+import sys
+if not sys.argv[0]:
+    from subprocess import call
+    assert call('./setup.py build_ext -i',shell=True)==0
 import czelta
 import datetime
 from time import time
