@@ -1,7 +1,5 @@
 /*
  * Author: Martin Quarda
- *
- * Created on 5. listopad 2013, 21:15
  */
 
 #include <string.h>
