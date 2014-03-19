@@ -1,3 +1,4 @@
+#author: Martin Quarda
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
