@@ -45,6 +45,7 @@ public:
     inline bool clearedCalibs(){return _clearedCalibs;};
     //return number of events being filtered
     int filter(function<bool(Event&)>);
+    inline int filter(bool (func*)(Event&)){retun filter(function<bool(Event&)>(func));};
     int firstOlderThan(int timestamp) const;
     int lastEarlierThan(int timestamp) const;
     ~EventReader();
