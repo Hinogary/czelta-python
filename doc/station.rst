@@ -8,7 +8,6 @@
    .. automethod:: load(file = open("config_data.JSON"))
    .. automethod:: get_stations
    .. automethod:: __init__(station)
-   .. automethod:: exist
    .. automethod:: id
    .. automethod:: name
    .. automethod:: detector_position
