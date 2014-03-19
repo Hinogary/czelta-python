@@ -36,14 +36,14 @@ public:
     inline int runEnd(int i){return runs[i].endTimestamp;};
     int measurelength();
     inline int filterCalibs(){if(!_clearedCalibs && (_clearedCalibs=true))return filter(function<bool(Event&)>([](Event& e)->bool{return e.isCalib();}));else return true;};
-    inline int filterMaxTDC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.TDC0()==4095 || e.TDC1()==4095 || e.TDC2()==4095}));};
-    inline int filterMaxADC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.ADC0()==2047 || e.ADC1()==2047 || e.ADC2()==2047}));};
-    inline int filterMinADC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.ADC0()==0 || e.ADC1()==0 || e.ADC2()==0}));};
+    inline int filterMaxTDC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.TDC0()==4095 || e.TDC1()==4095 || e.TDC2()==4095;}));};
+    inline int filterMaxADC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.ADC0()==2047 || e.ADC1()==2047 || e.ADC2()==2047;}));};
+    inline int filterMinADC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.ADC0()==0 || e.ADC1()==0 || e.ADC2()==0;}));};
     inline double progress(){return _progress;};
     inline bool clearedCalibs(){return _clearedCalibs;};
     //return number of events being filtered
     int filter(function<bool(Event&)>);
-    inline int filter(bool (func*)(Event&)){retun filter(function<bool(Event&)>(func));};
+    inline int filter(bool (*func)(Event&)){return filter(function<bool(Event&)>(func));};
     int firstOlderThan(int timestamp) const;
     int lastEarlierThan(int timestamp) const;
     ~EventReader();

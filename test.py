@@ -70,13 +70,12 @@ assert l==[8576, 12239, 17336, 12167, 2641, 5958]
 czelta.station.load()
 kladno_sps = czelta.station(5)
 assert kladno_sps.name() == "kladno_sps"
-assert kladno_sps.exist()
 assert kladno_sps.id() == 5
 assert kladno_sps.gps_position() == (50.1404958, 14.1009331, 446.18)
 praha_utef = czelta.station(6)
 assert praha_utef.name() == "praha_utef"
 assert kladno_sps.distance_to(praha_utef) == 24.34704590484944
-assert not czelta.station(125).exist()
+#assert not czelta.station(125).exist()
 stations = czelta.station.get_stations()
 assert stations[0].id() == 2
 assert stations[0].name() == "pardubice_gd"

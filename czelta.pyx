@@ -54,8 +54,8 @@ cdef extern from "event_reader.h" nogil:
         inline int numberOfEvents(int run)
         
 cdef extern from "event_reader.h" namespace "EventReader" nogil:
-    static void setFilesDirectory(string dir)
-    inline static string getFilesDirectory()
+    void setFilesDirectory(string dir)
+    inline string getFilesDirectory()
 
         
 cdef extern from "event.h" nogil:
@@ -102,7 +102,7 @@ cdef class station:
             self.st = &getStation(<int>station)
         else:
             self.st = &getStation(<string>station)
-        if sel.st.id()==0:
+        if self.st.id()==0:
             raise RuntimeError("Station not exist, have you loaded config file?")
     cpdef id(self):
         "Return `station id`, probably same as on czelta website."
@@ -273,25 +273,25 @@ cdef class event_reader:
         else:
             return self.er.numberOfEvents(run)
     cpdef int number_of_runs(self):
-        "Return number of runs. Same result have ``len(event_reader.runs())``.
+        "Return number of runs. Same result have ``len(event_reader.runs())``."
         return self.er.numberOfRuns()
-    cdef Event& c_item(int i):
+    cdef Event c_item(self, int i):
         return self.er.item(i)
-    cpdef event item(int i):
-        event e()
+    cpdef event item(self, int i):
+        e = event()
         e.set(self.er.item(i))
         return e
     #filters
     cpdef int filter_calibrations(self):
         "filter all events marked as calibration"
         return self.er.filterCalibs()
-    cpdef int filter_maximum_TDC():
+    cpdef int filter_maximum_TDC(self):
         "Filter all events which have at least one TDC chanel equal maximum value (4095). Events with maximum value have bad measured TDC and sky direction can't determined righ."
         return self.er.filterMaxTDC()
-    cpdef int filter_maximum_ADC():
+    cpdef int filter_maximum_ADC(self):
         "Filter all events which have at least one ADC(energy) channel equal maximum value(2047)." 
         return self.er.filterMaxADC()
-    cpdef int filter_minimum_ADC():
+    cpdef int filter_minimum_ADC(self):
         "Filter all events which have at least one ADC(energy) channel equal zero (Not measured)."
         return self.er.filterMinADC()
 cdef class event_reader_runs:
