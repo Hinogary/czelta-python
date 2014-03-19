@@ -1,8 +1,5 @@
 /*
- * File:   station.h
- * Author: martin
- *
- * Created on 5. listopad 2013, 20:35
+ * Author: Martin Quarda
  */
 #include <string>
 #include <vector>

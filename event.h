@@ -1,9 +1,6 @@
-/* 
- * File:   Event.h
- *
- * Created on 6. listopad 2013, 8:54
+/*
+ * Author: Martin Quarda
  */
-
 #ifndef EVENT_H
 #define	EVENT_H
 #ifndef M_PI

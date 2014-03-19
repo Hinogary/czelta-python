@@ -1,8 +1,5 @@
 /*
- * File:   station.cpp
- * Author: martin
- *
- * Created on 5. listopad 2013, 20:35
+ * Author: Martin Quarda
  */
 
 #include "station.h"
