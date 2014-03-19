@@ -1,109 +1,19 @@
-from libcpp.string cimport string
-from libcpp.vector cimport vector
-
-cdef extern from "station.h" nogil:
-    cppclass Station:
-        Station() except +
-        Station(int ID) except +
-        inline int id()
-        inline char* name()
-        short* lastTDCCorrect()
-        short* TDCCorrect(int timestamp)
-        double* detectorPosition()
-        double* GPSPosition()
-        
-        double distanceTo(Station& st)
-        
-        void setName(char* name)
-        void setGPSPosition(double latitude, double longitude, double height)
-        void setDetectorPosition(double x1, double y1, double x2, double y2)
-        void clearTDCCorrect(int capacity)
-        void pushTDCCorrect(int fr, short tdc0, short tdc1, short tdc2)
-        void pushTDCCorrect(string fr, short tdc0, short tdc1, short tdc2)
-        void pushFileName(string name)
-        
-        
-ctypedef Station* p_Station
-cdef extern from "station.h" namespace "Station" nogil:
-    bint addStation(Station)
-    Station& getStation(int)
-    Station& getStation(string)
-    vector[p_Station] getStations()
-
-
-cdef extern from "event_reader.h" nogil:
-    cppclass EventReader:
-        EventReader() except +
-        setStation(int id)
-        inline int numberOfEvents()
-        bint loadDatFile(char* filename)
-        bint loadTxtFile(char* filename)
-        bint saveDatFile(char* filename)
-        bint saveTxtFile(char* filename)
-        inline Event& item(int index)
-        inline Event& item(int run, int index)
-        
-        #filters
-        int filterCalibs()
-        inline int filterMaxTDC()
-        inline int filterMaxADC()
-        inline int filterMinADC()
-        
-        inline int numberOfRuns()
-        inline int numberOfEvents(int run)
-        
-cdef extern from "event_reader.h" namespace "EventReader" nogil:
-    static void setFilesDirectory(string dir)
-    inline static string getFilesDirectory()
-
-        
-cdef extern from "event.h" nogil:
-    cppclass Event:
-        Event() except +
-        Event(int timestamp,double last_secod, int TDC0, int TDC1, int TDC2, int ADC0, int ADC1, int ADC2, int t0, int t1, int t2, int tCrateRaw, bint calibration, bint run) except +
-        Event(const Event& orig)
-        inline int timestamp()
-        inline double last_second()
-        inline double time_since_second()
-        inline long tenthOfNSTimestamp()
-        inline short* TDC()
-        inline short TDC0()
-        inline short TDC1()
-        inline short TDC2()
-        inline short* ADC()
-        inline short ADC0()
-        inline short ADC1()
-        inline short ADC2()
-        inline short* tempsRaw()
-        inline float* temps()
-        inline short t0raw()
-        inline short t1raw()
-        inline short t2raw()
-        inline float t0()
-        inline float t1()
-        inline float t2()
-        inline short tCrateRaw()
-        inline float tCrate()
-        inline bint isCalib()
-        string toString()
-
-
-
 import datetime
 import json
 
+cimport czelta
+
 cdef class station:
     ""
-    cdef Station* st
     def __init__(self, station):
         "Parameter can be `station name` or `station id`. Only look into list of loaded stations with :py:meth:`load`."
         if(type(station)==int):
             self.st = &getStation(<int>station)
         else:
             self.st = &getStation(<string>station)
-        if sel.st.id()==0:
+        if self.st.id()==0:
             raise RuntimeError("Station not exist, have you loaded config file?")
-    cpdef id(self):
+    cpdef int id(self):
         "Return `station id`, probably same as on czelta website."
         return self.st.id()
     cpdef name(self):
@@ -177,7 +87,6 @@ cdef class station:
         
 
 cdef class event:
-    cdef Event e
     def __init__(self):
         pass
     def __str__(self):
@@ -212,8 +121,6 @@ cdef class event:
         return self.e.isCalib()
 
 cdef class event_reader:
-    cdef EventReader er
-    cdef int i
     def __init__(self, str path = ""):
         if(len(path)!=0):
             self.load(path)
@@ -272,30 +179,28 @@ cdef class event_reader:
         else:
             return self.er.numberOfEvents(run)
     cpdef int number_of_runs(self):
-        "Return number of runs. Same result have ``len(event_reader.runs())``.
+        "Return number of runs. Same result have ``len(event_reader.runs())``."
         return self.er.numberOfRuns()
-    cdef Event& c_item(int i):
+    cdef Event c_item(self, int i):
         return self.er.item(i)
-    cpdef event item(int i):
-        event e()
+    cpdef event item(self, int i):
+        e = event()
         e.set(self.er.item(i))
         return e
     #filters
     cpdef int filter_calibrations(self):
         "filter all events marked as calibration"
         return self.er.filterCalibs()
-    cpdef int filter_maximum_TDC():
+    cpdef int filter_maximum_TDC(self):
         "Filter all events which have at least one TDC chanel equal maximum value (4095). Events with maximum value have bad measured TDC and sky direction can't determined righ."
         return self.er.filterMaxTDC()
-    cpdef int filter_maximum_ADC():
+    cpdef int filter_maximum_ADC(self):
         "Filter all events which have at least one ADC(energy) channel equal maximum value(2047)." 
         return self.er.filterMaxADC()
-    cpdef int filter_minimum_ADC():
+    cpdef int filter_minimum_ADC(self):
         "Filter all events which have at least one ADC(energy) channel equal zero (Not measured)."
         return self.er.filterMinADC()
 cdef class event_reader_runs:
-    cdef event_reader er
-    cdef int i
     def __init__(self, event_reader reader):
         self.er = reader
     def __str__(self):
@@ -332,9 +237,6 @@ cdef class event_reader_runs:
                 ii += self.er.er.numberOfRuns()
             return event_reader_run(self.er, ii)
 cdef class event_reader_run:
-    cdef event_reader er
-    cdef int run_id
-    cdef int i
     def __init__(self, event_reader reader, int run_id):
         self.er = reader
         self.run_id = run_id
