@@ -1,8 +1,5 @@
-/* 
- * File:   commonFunc.h
- * Author: martin
- *
- * Created on 5. listopad 2013, 21:15
+/*
+ * Author: Martin Quarda
  */
 #include <math.h>
 #include <string>

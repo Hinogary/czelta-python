@@ -1,7 +1,5 @@
 /*
  * Author: Martin Quarda
- *
- * Created on 6. listopad 2013, 9:48
  */
 
 #ifndef EVENTREADER_H
@@ -38,14 +36,19 @@ public:
     inline int runEnd(int i){return runs[i].endTimestamp;};
     int measurelength();
     inline int filterCalibs(){if(!_clearedCalibs && (_clearedCalibs=true))return filter(function<bool(Event&)>([](Event& e)->bool{return e.isCalib();}));else return true;};
+    inline int filterMaxTDC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.TDC0()==4095 || e.TDC1()==4095 || e.TDC2()==4095}));};
+    inline int filterMaxADC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.ADC0()==2047 || e.ADC1()==2047 || e.ADC2()==2047}));};
+    inline int filterMinADC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.ADC0()==0 || e.ADC1()==0 || e.ADC2()==0}));};
     inline double progress(){return _progress;};
     inline bool clearedCalibs(){return _clearedCalibs;};
     //return number of events being filtered
     int filter(function<bool(Event&)>);
+    inline int filter(bool (func*)(Event&)){retun filter(function<bool(Event&)>(func));};
     int firstOlderThan(int timestamp) const;
     int lastEarlierThan(int timestamp) const;
     ~EventReader();
     static void setFilesDirectory(string dir);
+    inline static string getFilesDirectory(){return files_directory;};
     //max distance beetween events in seconds with adding custom run, 0 = withoutadding
     void checkRuns(int maxDiffbetweenEvents = 0);
     Overlap overlap(EventReader &other);
