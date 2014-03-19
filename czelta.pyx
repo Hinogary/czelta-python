@@ -274,6 +274,8 @@ cdef class event_reader_runs:
     cdef int i
     def __init__(self, event_reader reader):
         self.er = reader
+    def __str__(self):
+        return "<czelta.event_reader_runs object with %i runs from event_reader: %s>"%(len(self),str(self.er))
     def __iter__(self):
         self.i = -1
         return self

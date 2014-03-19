@@ -55,12 +55,12 @@ Event::Event(const Event& orig){
  * @return {horizont, azimuth}
  */
 array<float,2> Event::calculateDir(Station *st) const{
-    array<short,3> TDC;// = correctedTDC(st);
+    short* TDC;// = correctedTDC(st);
     const double t1 = (TDC[1] - TDC[0])*25 * 1e-12;
     const double t2 = (TDC[2] - TDC[0])*25 * 1e-12;
     const double x1 = st->detectorPosition()[0];
-    const double x2 = st->detectorPosition()[1];
-    const double y1 = st->detectorPosition()[2];
+    const double y1 = st->detectorPosition()[1];
+    const double x2 = st->detectorPosition()[2];
     const double y2 = st->detectorPosition()[3];
     const double c2 = SPEED_OF_LIGHT*SPEED_OF_LIGHT;
     double x = c2 * (t2 * y1 - t1 * y2) / (x1 * y2 - x2 * y1);

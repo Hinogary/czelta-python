@@ -54,9 +54,18 @@ for event in er:
     if(event.calibration()):
         calibrations+=1
 assert calibrations == 34016
-assert er.filter_calibrations() == calibrations
+calibrations = er.filter_calibrations()
+assert 34016 == calibrations, "Calibrations: %i"%calibrations
 assert len(er) == length-calibrations
 
+#test that runs are allright after filter
+l = []
+for run in er.runs():
+    local_l = 0
+    for event in run:
+        local_l+=1
+    l.append(local_l)
+assert l==[8576, 12239, 17336, 12167, 2641, 5958]
 
 czelta.station.load()
 kladno_sps = czelta.station(5)
