@@ -1,7 +1,5 @@
 /*
  * Author: Martin Quarda
- *
- * Created on 6. listopad 2013, 9:48
  */
 
 #include "event_reader.h"
