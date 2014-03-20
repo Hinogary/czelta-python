@@ -3,7 +3,7 @@
 
 #auto rebuild for debuging process
 import sys
-if not sys.argv[0]:
+if len(sys.argv):
     from subprocess import call
     assert call('./setup.py build_ext -i',shell=True)==0
 import czelta
