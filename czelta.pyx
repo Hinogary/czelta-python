@@ -1,12 +1,9 @@
 import datetime
 import json
 
-cimport czelta
-
 cdef class station:
     ""
     def __init__(self, station):
-        "Parameter can be `station name` or `station id`. Only look into list of loaded stations with :py:meth:`load`."
         if(type(station)==int):
             self.st = &getStation(<int>station)
         else:
@@ -189,10 +186,10 @@ cdef class event_reader:
         return e
     #filters
     cpdef int filter_calibrations(self):
-        "filter all events marked as calibration"
+        "Filter all events marked as calibration."
         return self.er.filterCalibs()
     cpdef int filter_maximum_TDC(self):
-        "Filter all events which have at least one TDC chanel equal maximum value (4095). Events with maximum value have bad measured TDC and sky direction can't determined righ."
+        "Filter all events which have at least one TDC chanel equal maximum value (4095). Events with maximum value have bad measured TDC and sky direction can't be determined right."
         return self.er.filterMaxTDC()
     cpdef int filter_maximum_ADC(self):
         "Filter all events which have at least one ADC(energy) channel equal maximum value(2047)." 
@@ -239,23 +236,23 @@ cdef class event_reader_runs:
 cdef class event_reader_run:
     def __init__(self, event_reader reader, int run_id):
         self.er = reader
-        self.run_id = run_id
+        self._run_id = run_id
     def __iter__(self):
         self.i = -1
         return self
     def __next__(self):
         self.i+=1
-        if self.i < self.er.er.numberOfEvents(self.run_id):
+        if self.i < self.er.er.numberOfEvents(self._run_id):
             return self[self.i]
         else:
             raise StopIteration
     def __len__(self):
-        return self.er.er.numberOfEvents(self.run_id)
+        return self.er.er.numberOfEvents(self._run_id)
     def __getitem__(self, i):
         cdef int ii, start, stop, step
         if type(i)==slice:
-            start = 0 if not i.start else i.start if i.start>=0 else self.er.er.numberOfEvents(self.run_id)+i.start
-            stop = self.er.er.numberOfEvents(self.run_id) if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfEvents(self.run_id)+i.stop
+            start = 0 if not i.start else i.start if i.start>=0 else self.er.er.numberOfEvents(self._run_id)+i.start
+            stop = self.er.er.numberOfEvents(self._run_id) if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfEvents(self._run_id)+i.stop
             step = i.step if i.step else 1
             if step <= 0:
                 raise NotImplementedError
@@ -265,13 +262,15 @@ cdef class event_reader_run:
             #deprecated but optimized to c loop
             for ii from start <= ii < stop by step:
                 e = event()
-                e.set(self.er.er.item(self.run_id, ii))
+                e.set(self.er.er.item(self._run_id, ii))
                 es.append(e)
             return es
         else:
             ii = i
             if ii<0:
-                ii+=self.er.er.numberOfEvents(self.run_id)
+                ii+=self.er.er.numberOfEvents(self._run_id)
             e = event()
-            e.set(self.er.er.item(self.run_id, ii))
+            e.set(self.er.er.item(self._run_id, ii))
             return e
+    cpdef int run_id(self):
+        return self._run_id

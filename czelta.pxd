@@ -89,9 +89,6 @@ cdef extern from "event.h" nogil:
 
 
 
-import datetime
-import json
-
 cdef class station:
     cdef Station* st
     cpdef int id(self)
@@ -138,5 +135,6 @@ cdef class event_reader_runs:
     
 cdef class event_reader_run:
     cdef event_reader er
-    cdef int run_id
+    cdef int _run_id
     cdef int i
+    cpdef int run_id(self)
