@@ -6,10 +6,10 @@ import json
 cdef class station:
     ""
     def __init__(self, station):
-        if(type(station)==int):
+        if type(station)==int:
             self.st = &getStation(<int>station)
         else:
-            self.st = &getStation(<string>station)
+            self.st = &getStation(<string>station.encode('utf8'))
         if self.st.id()==0:
             raise RuntimeError("Station not exist, have you loaded config file?")
     cpdef int id(self):
