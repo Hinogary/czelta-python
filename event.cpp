@@ -57,6 +57,7 @@ Event::Event(const Event& orig){
 float* Event::calculateDir() const{
     static float rtn[2];
     rtn[0] = 0;rtn[1] = 0;
+    if(isCalib())return rtn;
     short* TDC = TDCCorrected();
     double *detPos = Station::getStation(station).detectorPosition(); 
     const double t1 = (TDC[1] - TDC[0])*25 * 1e-12;
@@ -94,6 +95,8 @@ float* Event::calculateDir() const{
         rtn[0] = 0;rtn[1] = 0;
         return rtn;
     };
+    rtn[0]*=180/M_PI;
+    rtn[1]*=180/M_PI;
     return rtn;
 }
 
