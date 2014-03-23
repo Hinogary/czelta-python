@@ -127,18 +127,33 @@ cdef class event_reader:
     def __len__(self):
         return self.er.numberOfEvents()
     def __getitem__(self, i):
-        cdef int ii, start, stop, step
+        cdef int ii, start, stop
         if type(i)==slice:
-            start = 0 if i.start==None else i.start if i.start>=0 else self.er.numberOfEvents()+i.start
-            stop = self.er.numberOfEvents() if i.stop==None else i.stop if i.stop>=0 else self.er.numberOfEvents()+i.stop
-            step = i.step if i.step else 1
-            if step <= 0:
-                raise NotImplementedError
+            if i.start==None:
+                start = 0
+            elif type(i.start)==datetime.datetime:
+                d = i.start
+                start = date(d.year, d.month, d.day, d.hour, d.minute, d.second) 
+                start = self.er.firstOlderThan(start)
+            else:
+                start = i.start
+                start = start if start>=0 else self.er.numberOfEvents()+start
+            
+            if i.stop==None:
+                stop = self.er.numberOfEvents()
+            elif type(i.stop)==datetime.datetime:
+                d = i.stop
+                stop = date(d.year, d.month, d.day, d.hour, d.minute, d.second) 
+                stop = self.er.firstOlderThan(stop)
+            else:
+                stop = i.stop
+                stop = stop if stop>=0 else self.er.numberOfEvents()+stop
+                
+            if i.step != None:
+                raise NotImplementedError("step can't be defined")
+                
             es = []
-            #currently not optimized to c loop (17.1.2014)
-            #for ii in range(start, stop, step):
-            #deprecated but optimized to c loop
-            for ii from start <= ii < stop by step:
+            for ii in range(start, stop):
                 e = event()
                 e.set(self.er.item(ii))
                 es.append(e)
