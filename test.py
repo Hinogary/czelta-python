@@ -77,6 +77,7 @@ assert kladno_sps.gps_position() == (50.1404958, 14.1009331, 446.18)
 praha_utef = czelta.station(6)
 assert praha_utef.name() == "praha_utef"
 assert kladno_sps.distance_to(praha_utef) == 24.34704590484944
+assert czelta.station("pardubice_gd").id() == 2 
 try:
     assert not czelta.station(125)
 except RuntimeError:
@@ -88,6 +89,8 @@ assert stations[1].id() == 3
 assert stations[1].name() == "opava_mg" 
 
 txt = czelta.event_reader('test.txt')
+assert str(txt[1000])=='a 2014 02 18 12 22 02 450020121.2 1712 2927 3776 139 136 145 15.0 13.5 12.5 23.5'
+assert str(txt[7999])=='a 2014 02 21 00 17 50 662546970.9 1532 2241 3772 856 479 722 4.5 5.0 5.0 22.5'
 try:
     assert str(txt[16000])=="a 2014 02 24 19 58 17 222931733.5 1231 2395 3762 1022 404 770 10.0 9.5 8.5 26.5"
 except AssertionError:
