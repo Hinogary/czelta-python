@@ -9,6 +9,8 @@
 #define	COMMONFUNC_H
 using namespace std;
 
+extern char * strptime(const char *s, const char *format, struct tm *tm);
+
 double deltaDirection(double hor1, double az1, double hor2, double az2);
 inline double deltaDirection(array<float,2> a, array<float,2> b){return deltaDirection(a[0],a[1],b[0],b[1]);};
 time_t date(string date);

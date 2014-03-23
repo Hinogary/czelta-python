@@ -54,22 +54,24 @@ Event::Event(const Event& orig){
  * @param station
  * @return {horizont, azimuth}
  */
-array<float,2> Event::calculateDir(Station *st) const{
-    short* TDC;// = correctedTDC(st);
+float* Event::calculateDir() const{
+    static float rtn[2];
+    rtn[0] = 0;rtn[1] = 0;
+    short* TDC = TDCCorrected();
+    double *detPos = Station::getStation(station).detectorPosition(); 
     const double t1 = (TDC[1] - TDC[0])*25 * 1e-12;
     const double t2 = (TDC[2] - TDC[0])*25 * 1e-12;
-    const double x1 = st->detectorPosition()[0];
-    const double y1 = st->detectorPosition()[1];
-    const double x2 = st->detectorPosition()[2];
-    const double y2 = st->detectorPosition()[3];
+    const double x1 = detPos[0];
+    const double y1 = detPos[1];
+    const double x2 = detPos[2];
+    const double y2 = detPos[3];
     const double c2 = SPEED_OF_LIGHT*SPEED_OF_LIGHT;
     double x = c2 * (t2 * y1 - t1 * y2) / (x1 * y2 - x2 * y1);
     double y = c2 * (t2 * x1 - t1 * x2) / (y1 * x2 - y2 * x1);
     double size = sqrt(x * x + y * y);
     const double a = c2 - x * x - y * y;
-    if (a < 0)return array<float,2>{0,0};
+    if (a < 0)return rtn;
     double z = sqrt(a);
-    array<float,2> rtn;
     rtn[0] = (float) atan(z / size);
     if (x <= 0) {
         if (y <= 0) {
@@ -88,7 +90,10 @@ array<float,2> Event::calculateDir(Station *st) const{
             rtn[1] = M_PI + asin(x / size);
         }
     }
-    if (rtn[0]!=rtn[0] || rtn[1]!=rtn[1])return array<float,2>{0,0};
+    if (rtn[0]!=rtn[0] || rtn[1]!=rtn[1]){
+        rtn[0] = 0;rtn[1] = 0;
+        return rtn;
+    };
     return rtn;
 }
 
@@ -102,4 +107,25 @@ string Event::toString() const{
                 last_second(), TDC0(), TDC1(), TDC2(), ADC0(), ADC1(), ADC2(), t0(), t1(), t2(), tCrate()
            );
     return string(buffer);
-};
+}
+
+short* Event::TDCCorrected() const{
+    static short static_TDCCorrected[3];
+    short* correction = Station::getStation(station).TDCCorrect(timestamp());
+    static_TDCCorrected[0] = TDC0()+correction[0];
+    static_TDCCorrected[1] = TDC1()+correction[1];
+    static_TDCCorrected[2] = TDC2()+correction[2];
+    return static_TDCCorrected;
+}
+
+short Event::TDC0Corrected() const{
+    return TDC0()+Station::getStation(station).TDCCorrect(timestamp())[0];
+}
+
+short Event::TDC1Corrected() const{
+    return TDC1()+Station::getStation(station).TDCCorrect(timestamp())[1];
+}
+
+short Event::TDC2Corrected() const{
+    return TDC2()+Station::getStation(station).TDCCorrect(timestamp())[2];
+}

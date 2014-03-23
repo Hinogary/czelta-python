@@ -93,6 +93,11 @@ cdef extern from "event.h" nogil:
         inline float tCrate()
         inline bint isCalib()
         string toString()
+        short* TDCCorrected()
+        short TDC0Corrected()
+        short TDC1Corrected()
+        short TDC2Corrected()
+        float* calculateDir()
 
 cdef extern from "common_func.h" nogil:
     double deltaDirection(double hor1, double az1, double hor2, double az2)
@@ -122,6 +127,7 @@ cdef class event:
     cpdef temps(self)
     cpdef temps_raw(self)
     cpdef calibration(self)
+    cpdef HAdirection(self)
 
 cdef class event_reader:
     cdef EventReader er

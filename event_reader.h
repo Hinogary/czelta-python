@@ -4,7 +4,7 @@
 
 #ifndef EVENTREADER_H
 #define	EVENTREADER_H
-#include <algorithm>
+#include <functional>
 #include <fstream>
 #include <iostream>
 #include "event.h"
@@ -20,7 +20,6 @@ struct Overlap{
 public:
     EventReader();
     EventReader(const EventReader&) = delete;
-    void setStation(uint8_t);
     inline Event& item(int index){return events[index];};
     inline Event& item(int run, int index){return item(runs[run].beginIndex+index);};
     inline int numberOfEvents(){return events.size();};
@@ -58,6 +57,7 @@ public:
     bool loadTxtFile(char* filename);
     bool saveDatFile(char* filename);
     bool saveTxtFile(char* filename);
+    void setStation(uint8_t station);
 private:
     void clear();
     double _progress;

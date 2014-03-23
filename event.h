@@ -16,7 +16,7 @@ typedef unsigned int uint;
 #define SPEED_OF_LIGHT 299792458.0
 using namespace std;
 
-#pragma pack(1)
+#pragma pack(push, 1)
 struct WebEvent {
     int32_t timestamp; 
     double last_second;
@@ -44,6 +44,10 @@ public:
         static short static_TDC[3];
         static_TDC[0]=TDC0(); static_TDC[1]=TDC1(); static_TDC[2]=TDC2();
         return static_TDC;};
+    short* TDCCorrected() const;
+    short TDC0Corrected() const;
+    short TDC1Corrected() const;
+    short TDC2Corrected() const;
     inline short ADC0() const{return _ADC0;};
     inline short ADC1() const{return _ADC1;};
     inline short ADC2() const{return _ADC2;};
@@ -72,8 +76,9 @@ public:
     inline bool isRun() const{return _byte&4;};
     inline bool isCalib() const{return _byte&1;};
     inline tm getTime() const{time_t tm = _timestamp;return *gmtime(&tm);};
-    array<float,2> calculateDir(Station *st) const;
+    float* calculateDir() const;
     string toString() const;
+    inline void setStation(uint8_t st){station=st;};
 private:
     uint32_t _timestamp; 
     double _last_second;
@@ -85,5 +90,5 @@ private:
     uint8_t station;
 };
 inline ostream& operator << (ostream& os, const Event& e){os<<e.toString();return os;}
-#pragma pack(0)
+#pragma pack(pop)
 #endif	/* EVENT_H */

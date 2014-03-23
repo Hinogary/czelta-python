@@ -302,3 +302,10 @@ array<int,2> EventReader::fileFromTo(char* filename){
     }
     return rtn;
 }
+
+void EventReader::setStation(uint8_t station){
+    if(station!=0 && Station::getStation(station).id()==0)return;
+    for(int i=0;i<numberOfEvents();i++){
+        item(i).setStation(station);
+    }
+}
