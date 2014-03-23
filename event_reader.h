@@ -4,7 +4,7 @@
 
 #ifndef EVENTREADER_H
 #define	EVENTREADER_H
-#include <algorithm>
+#include <functional>
 #include <fstream>
 #include <iostream>
 #include "event.h"
