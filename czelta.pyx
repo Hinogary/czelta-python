@@ -119,6 +119,10 @@ cdef class event:
     cpdef calibration(self):
         "Calibration events are events actived by LED diod in each detectors."
         return self.e.isCalib()
+    
+    cpdef HAdirection(self):
+        cdef float *HA = self.e.calculateDir()
+        return (HA[0],HA[1])
 
 cdef class event_reader:
     def __init__(self, str path = ""):
