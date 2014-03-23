@@ -38,7 +38,6 @@ cdef extern from "station.h" namespace "Station" nogil:
 cdef extern from "event_reader.h" nogil:
     cppclass EventReader:
         EventReader() except +
-        setStation(int id)
         inline int numberOfEvents()
         bint loadDatFile(char* filename)
         bint loadTxtFile(char* filename)
@@ -46,6 +45,8 @@ cdef extern from "event_reader.h" nogil:
         bint saveTxtFile(char* filename)
         inline Event& item(int index)
         inline Event& item(int run, int index)
+        
+        void setStation(int station)
         
         int firstOlderThan(int timestamp)
         int lastEarlierThan(int timestamp) 
@@ -127,6 +128,7 @@ cdef class event:
     cpdef temps(self)
     cpdef temps_raw(self)
     cpdef calibration(self)
+    cpdef TDC_corrected(self)
     cpdef HAdirection(self)
 
 cdef class event_reader:
@@ -139,6 +141,8 @@ cdef class event_reader:
     cpdef int number_of_runs(self)
     cdef Event c_item(self, int i)
     cpdef event item(self, int i)
+    
+    cpdef set_station(self, object st)
     
     #filters
     cpdef int filter_calibrations(self)

@@ -119,7 +119,9 @@ cdef class event:
     cpdef calibration(self):
         "Calibration events are events actived by LED diod in each detectors."
         return self.e.isCalib()
-    
+    cpdef TDC_corrected(self):
+        cdef short* tdc = self.e.TDCCorrected()
+        return (tdc[0], tdc[1], tdc[2])
     cpdef HAdirection(self):
         cdef float *HA = self.e.calculateDir()
         return (HA[0],HA[1])
@@ -192,6 +194,17 @@ cdef class event_reader:
                 raise IOError("can't open or read file: "+path)
         else:
             raise NotImplementedError("path must be a file with .txt or .dat")
+    cpdef set_station(self, object st):
+        cdef int _id
+        if type(st)==int:
+            _id = st
+        elif type(st)==str:
+            _id = station(st).id()
+        elif type(st)==station:
+            _id = st.id()
+        else:
+            raise ValueError("Unknown type of station")
+        self.er.setStation(_id)
     cpdef int number_of_events(self, int run = -1):
         if(run==-1):
             return self.er.numberOfEvents()
