@@ -122,7 +122,7 @@ cdef class event:
     cpdef TDC_corrected(self):
         cdef short* tdc = self.e.TDCCorrected()
         return (tdc[0], tdc[1], tdc[2])
-    cpdef HAdirection(self):
+    cpdef HA_direction(self):
         cdef float *HA = self.e.calculateDir()
         return (HA[0],HA[1])
 

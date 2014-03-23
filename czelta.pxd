@@ -129,7 +129,7 @@ cdef class event:
     cpdef temps_raw(self)
     cpdef calibration(self)
     cpdef TDC_corrected(self)
-    cpdef HAdirection(self)
+    cpdef HA_direction(self)
 
 cdef class event_reader:
     cdef EventReader er
