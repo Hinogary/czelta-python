@@ -92,7 +92,7 @@ bool EventReader::loadTxtFile(char* filename){
             return true;
         };
         if(c=='x'){
-            addRun(events.size()-1);
+            addRun(events.size());
             continue;
         }
         events.push_back(Event(date(year,month,day,hour,minute,second), 
@@ -103,6 +103,7 @@ bool EventReader::loadTxtFile(char* filename){
             c=='c'?true:false));
         _progress = double(in.tellg())/len;
     }
+    addRun(events.size());
     in.close();
     events.shrink_to_fit();
     runs.shrink_to_fit();
