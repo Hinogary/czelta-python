@@ -1,6 +1,10 @@
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
+cdef extern from "Python.h":
+    enum:
+        PY_MAJOR_VERSION
+
 cdef extern from "station.h" nogil:
     cppclass Station:
         Station() except +
@@ -43,8 +47,11 @@ cdef extern from "event_reader.h" nogil:
         inline Event& item(int index)
         inline Event& item(int run, int index)
         
+        int firstOlderThan(int timestamp)
+        int lastEarlierThan(int timestamp) 
+        
         #filters
-        int filterCalibs()
+        inline int filterCalibs()
         inline int filterMaxTDC()
         inline int filterMaxADC()
         inline int filterMinADC()
@@ -87,6 +94,12 @@ cdef extern from "event.h" nogil:
         inline bint isCalib()
         string toString()
 
+cdef extern from "common_func.h" nogil:
+    double deltaDirection(double hor1, double az1, double hor2, double az2)
+    int date(string date)
+    int date(int year, int month, int day)
+    int date(int year, int month, int day, int hour, int minute)
+    int date(int year, int month, int day, int hour, int minute, int second)
 
 
 cdef class station:
