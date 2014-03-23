@@ -2,9 +2,9 @@
 
 import datetime
 import json
-
+__version__ = '0.1'
 cdef class station:
-    ""
+    "Class for working with station data."
     def __init__(self, station):
         if type(station)==int:
             self.st = &getStation(<int>station)
@@ -39,6 +39,7 @@ cdef class station:
     def load(file = None):
         "Loads configuration file of stations. Must be called if you want to work with ``czelta.station``."
         cdef Station st
+        cdef object pos
         if file==None:
             file = open("config_data.JSON")
         cfg = json.load(file)
@@ -46,17 +47,17 @@ cdef class station:
         for station in cfg['stations']:
             try:
                 st = Station(int(station['ID']))
-                st_name = station['name'].encode('utf-8')
+                st_name = station['name'].encode('utf8')
                 st.setName(st_name)
-                if 'GPSposition' in station and len(station['GPSposition'])>2:
+                if 'GPSposition' in station and len(station['GPSposition'])>=2:
                     pos = station['GPSposition']
-                    st.setGPSPosition(pos[0],pos[1],pos[2])
+                    st.setGPSPosition(pos[0],pos[1],pos[2] if len(pos)>2 else 0)
                 if 'detectorsPos' in station and len(station['detectorsPos'])==4:
                     pos = station['detectorsPos']
                     st.setDetectorPosition(pos[0], pos[1], pos[2], pos[3])
                 if 'file_names' in station:
                     for name in station['file_names']:
-                        file_name = name.encode('utf-8')
+                        file_name = name.encode('utf8')
                         st.pushFileName(file_name)
                 if 'TDCCorrection' in station and len(station['TDCCorrection'])>0:
                     st.clearTDCCorrect(len(station['TDCCorrection']))
@@ -67,12 +68,12 @@ cdef class station:
                         if type(correction['from'])==int:
                             st.pushTDCCorrect(<int>correction['from'], <short>tdc[0], <short>tdc[1], <short>tdc[2])
                         else:
-                            from_cor = correction['from'].encode('utf-8')
+                            from_cor = correction['from'].encode('utf8')
                             st.pushTDCCorrect(<string>from_cor, <short>tdc[0], <short>tdc[1], <short>tdc[2])
                 if addStation(st):
                     print "Station can't be added, already exist, id: "+str(st.id())+", name: "+st.name()
             except Warning:
-                st_name = (<char*>st.name()).decode('utf-8')
+                st_name = (<char*>st.name()).decode('utf8')
                 print "Station can't be added, bad format of JSON, id: "+str(st.id())+", name: "+st_name
                 
     @staticmethod
