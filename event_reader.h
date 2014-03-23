@@ -49,6 +49,7 @@ public:
     static void setFilesDirectory(string dir);
     inline static string getFilesDirectory(){return files_directory;};
     //max distance beetween events in seconds with adding custom run, 0 = withoutadding
+    //not functional
     void checkRuns(int maxDiffbetweenEvents = 0);
     Overlap overlap(EventReader &other);
     const static string binaryFileHead;
