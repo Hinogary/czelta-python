@@ -97,5 +97,16 @@ except AssertionError:
     #win32 ...
     assert str(txt[16000])=="a 2014 02 24 19 58 17 222931733.1 1231 2395 3762 1022 404 770 10.0 9.5 8.5 26.5",str(txt[16000])
 assert len(txt)==16981
+evs = txt[datetime.datetime(2014,2,18,6,13):datetime.datetime(2014,2,18,6,14)]
+assert str(evs[0])=='a 2014 02 18 06 13 03 606212753.5 1704 2650 3769 237 292 139 8.5 0.5 1.0 21.5'
+assert str(evs[1])=='a 2014 02 18 06 13 34 148539574.9 3782 3650 4095 41 45 0 8.0 0.5 1.0 21.5'
+assert str(evs[2])=='c 2014 02 18 06 13 51 878.0 4095 4095 3742 1044 1094 806 8.0 0.5 1.0 21.5'
+
+assert er.filter_minimum_ADC() == 854
+assert er.filter_maximum_ADC() == 2710
+assert er.filter_maximum_TDC() == 974
 assert txt.filter_calibrations() == 6391
+assert txt.filter_maximum_TDC() == 281
+assert txt.filter_maximum_ADC() == 439
+assert txt.filter_minimum_ADC() == 1
 print("success")
