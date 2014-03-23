@@ -26,7 +26,7 @@ public:
     inline const char* name(){return _name.c_str();};
     inline int id(){return _ID;};
     double distanceTo(Station& st);
-    
+
     void setName(char* name);
     void setGPSPosition(double latitude, double longitude, double height);
     void setDetectorPosition(double x1, double y1, double x2, double y2);

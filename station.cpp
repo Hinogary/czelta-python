@@ -64,11 +64,12 @@ short* Station::lastTDCCorrect(){
 }
 
 short* Station::TDCCorrect(time_t time){
-    int r = -1;
+    int r = _TDCCorections.size()-1;
     for(int i=_TDCCorections.size()-1;i>=0;i--){
-        if(_TDCCorections[i].from<time)
-            r=i;
-        else break;
+        if(_TDCCorections[i].from>time)
+            r=i-1;
+        else
+            break;
     }
     if(r>=0)
         return _TDCCorections[r].tdc;
