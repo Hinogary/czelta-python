@@ -54,5 +54,5 @@ void Coincidence::calc(double limit){
         if(0.5*i==i || i!=i) break;
         chance -= i;
     }
-    chance = abs(chance);
+    if(chance<0)chance=0;
 }
