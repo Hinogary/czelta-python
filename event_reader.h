@@ -68,6 +68,7 @@ private:
     int _maxDiffbetweenEvents;
     char* loadedFrom;
     static string files_directory;
+    uint8_t _station;
     vector<Event> events;
     vector<Run> runs;
 };

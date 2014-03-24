@@ -10,6 +10,7 @@ const static string binaryFileHead = "CzeltaDataFile.1";
 
 EventReader::EventReader(){
     _maxDiffbetweenEvents = 0;
+    _station = 0;
 }
 
 EventReader::~EventReader() {
@@ -44,16 +45,14 @@ bool EventReader::loadDatFile(char* filename){
     static_assert(sizeof(WebEvent) >= sizeof(Event),"Event cannot be bigger than WebEvent");
     events.reserve(length*sizeof(WebEvent)/sizeof(Event)+1);
     WebEvent* wevents = (WebEvent*)events.data();
-    WebEvent wevent;
     _progress=0.1;
     in.read((char*)events.data(),length<<5);
     in.close();
     _progress=0.5;
     for(int i=0;i<length;i++){
-        wevent = wevents[i];
-        if(wevent.byte&4)
+        if(wevents[i].byte&4)
             addRun(i);
-        events.push_back(wevent);
+        events.push_back(Event(wevents[i],_station));
     }
     addRun(0);
     events.shrink_to_fit();
@@ -100,7 +99,7 @@ bool EventReader::loadTxtFile(char* filename){
             TDC0, TDC1, TDC2, 
             ADC0, ADC1, ADC2, 
             (int)(atof(temp[0])*2), (int)(atof(temp[1])*2), (int)(atof(temp[2])*2), (int)(atof(temp[3])*2),
-            c=='c'?true:false));
+            c=='c'?true:false,_station));
         _progress = double(in.tellg())/len;
     }
     addRun(events.size());
@@ -305,7 +304,7 @@ array<int,2> EventReader::fileFromTo(char* filename){
 }
 
 void EventReader::setStation(uint8_t station){
-    if(station!=0 && Station::getStation(station).id()==0)return;
+    _station = station;
     for(int i=0;i<numberOfEvents();i++){
         item(i).setStation(station);
     }

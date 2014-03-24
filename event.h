@@ -30,8 +30,8 @@ class Event {
     friend class EventReader;
 public:
     Event();
-    Event(WebEvent e);
-    Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration);
+    Event(WebEvent& e, uint8_t station);
+    Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration, uint8_t station);
     Event(const Event& orig);
     inline int timestamp() const{return _timestamp;};
     inline double last_second() const{return _last_second;};
@@ -78,7 +78,7 @@ public:
     inline tm getTime() const{time_t tm = _timestamp;return *gmtime(&tm);};
     float* calculateDir() const;
     string toString() const;
-    inline void setStation(uint8_t st){station=st;};
+    inline void setStation(uint8_t st){_station=st;};
 private:
     uint32_t _timestamp; 
     double _last_second;
@@ -87,7 +87,7 @@ private:
     int8_t _t0, _t1, _t2;
     int8_t _t_crate;
     uint8_t _byte;
-    uint8_t station;
+    uint8_t _station;
 };
 inline ostream& operator << (ostream& os, const Event& e){os<<e.toString();return os;}
 #pragma pack(pop)
