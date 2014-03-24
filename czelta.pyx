@@ -2,14 +2,17 @@
 
 import datetime
 import json
+import sys
+
 __version__ = '0.1'
+system_encoding = sys.getfilesystemencoding()
 cdef class station:
     "Class for working with station data."
     def __init__(self, station):
         if type(station)==int:
             self.st = &getStation(<int>station)
         else:
-            self.st = &getStation(<string>station.encode('utf8'))
+            self.st = &getStation(<string>station.encode(system_encoding))
         if self.st.id()==0:
             raise RuntimeError("Station not exist, have you loaded config file?")
     cpdef int id(self):
@@ -17,7 +20,7 @@ cdef class station:
         return self.st.id()
     cpdef name(self):
         "Return code name of station. Example: ``\'praha_utef\'``, ``\'pardubice_gd\'`` or similar."
-        return (<char*>self.st.name()).decode('utf-8')
+        return (<char*>self.st.name()).decode(system_encoding)
     cpdef detector_position(self):
         "Return position of detectors in format ``(x1, y1, x2, y2)`` where ``x1`` and ``y1`` are relative position of detector 1 to detector 0. ``x2`` and ``y2`` are relative position of detector 2 to detector 0. All values are in metres."
         cdef double* dp = self.st.detectorPosition()
@@ -47,7 +50,7 @@ cdef class station:
         for station in cfg['stations']:
             try:
                 st = Station(int(station['ID']))
-                st_name = station['name'].encode('utf8')
+                st_name = station['name'].encode(system_encoding)
                 st.setName(st_name)
                 if 'GPSposition' in station and len(station['GPSposition'])>=2:
                     pos = station['GPSposition']
@@ -57,7 +60,7 @@ cdef class station:
                     st.setDetectorPosition(pos[0], pos[1], pos[2], pos[3])
                 if 'file_names' in station:
                     for name in station['file_names']:
-                        file_name = name.encode('utf8')
+                        file_name = name.encode(system_encoding)
                         st.pushFileName(file_name)
                 if 'TDCCorrection' in station and len(station['TDCCorrection'])>0:
                     st.clearTDCCorrect(len(station['TDCCorrection']))
@@ -68,12 +71,12 @@ cdef class station:
                         if type(correction['from'])==int:
                             st.pushTDCCorrect(<int>correction['from'], <short>tdc[0], <short>tdc[1], <short>tdc[2])
                         else:
-                            from_cor = correction['from'].encode('utf8')
+                            from_cor = correction['from'].encode(system_encoding)
                             st.pushTDCCorrect(<string>from_cor, <short>tdc[0], <short>tdc[1], <short>tdc[2])
                 if addStation(st):
                     print "Station can't be added, already exist, id: "+str(st.id())+", name: "+st.name()
             except Warning:
-                st_name = (<char*>st.name()).decode('utf8')
+                st_name = (<char*>st.name()).decode(system_encoding)
                 print "Station can't be added, bad format of JSON, id: "+str(st.id())+", name: "+st_name
                 
     @staticmethod
@@ -90,7 +93,7 @@ cdef class event:
     def __init__(self):
         pass
     def __str__(self):
-        return self.e.toString().decode('utf-8')
+        return self.e.toString().decode(system_encoding)
     cdef void set(self, Event e):
         self.e = e
     cpdef timestamp(self):
@@ -190,7 +193,7 @@ cdef class event_reader:
     cpdef runs(self):
         return event_reader_runs(self)
     cpdef load(self, str path):
-        bytes_path = path.encode('utf-8')
+        bytes_path = path.encode(system_encoding)
         if path[-4:].lower()==".txt":
             if self.er.loadTxtFile(bytes_path):
                 raise IOError("can't open or read file: "+path)
