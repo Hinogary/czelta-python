@@ -127,6 +127,8 @@ cdef class event:
     cpdef ADC(self)
     cpdef temps(self)
     cpdef temps_raw(self)
+    cpdef temps_detector(self)
+    cpdef float temp_crate(self)
     cpdef calibration(self)
     cpdef TDC_corrected(self)
     cpdef HA_direction(self)
