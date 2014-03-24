@@ -112,6 +112,11 @@ cdef class event:
         "First three temps are temperature value from detectors, fourth is from crate. Temperature are in Celsius. Minimum step is 0.5."
         cdef float* temps = self.e.temps()
         return (temps[0], temps[1], temps[2], temps[3])
+    cpdef temps_detector(self):
+        cdef float* temps = self.e.temps()
+        return (temps[0], temps[1], temps[2])
+    cpdef float temp_crate(self):
+        return self.e.tCrate()
     cpdef temps_raw(self):
         "First three temps are temperature value from detectors, fourth is from crate. Temperature are have to be divided by 2 to get them in Celsius. Data type is int."
         cdef short* temps_raw = self.e.tempsRaw()
