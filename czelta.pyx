@@ -90,6 +90,7 @@ cdef class station:
         
 
 cdef class event:
+    "Basic czelta class for holding information about events. This time is imposible to define own event"
     def __init__(self):
         pass
     def __str__(self):
@@ -97,14 +98,16 @@ cdef class event:
     cdef void set(self, Event e):
         self.e = e
     cpdef timestamp(self):
+        "Return timestamp of event, fastest way to get time of event."
         return self.e.timestamp()
     cpdef datetime(self):
+        "Return python datetime object."
         return datetime.datetime.utcfromtimestamp(self.e.timestamp())
     cpdef time_since_second(self):
-        ""
+        "Return time elapsed since last second (0-0.999999... sec)."
         return self.e.time_since_second();
     cpdef TDC(self):
-        ""
+        "Relative time of activation each detector. TDC*25/1e12 = sec."
         cdef short* tdc = self.e.TDC()
         return (tdc[0], tdc[1], tdc[2])
     cpdef ADC(self):
@@ -116,9 +119,11 @@ cdef class event:
         cdef float* temps = self.e.temps()
         return (temps[0], temps[1], temps[2], temps[3])
     cpdef temps_detector(self):
+        "Return 3 temps of each detector in time of event-"
         cdef float* temps = self.e.temps()
         return (temps[0], temps[1], temps[2])
     cpdef float temp_crate(self):
+        "Return Temperature in crate in time of event."
         return self.e.tCrate()
     cpdef temps_raw(self):
         "First three temps are temperature value from detectors, fourth is from crate. Temperature are have to be divided by 2 to get them in Celsius. Data type is int."
@@ -128,11 +133,15 @@ cdef class event:
         "Calibration events are events actived by LED diod in each detectors."
         return self.e.isCalib()
     cpdef TDC_corrected(self):
+        "Relative time of activation each detector. Corrected and can be used to calculate diraction. Correction options are in config_data.JSON. TDC*25/1e12 = sec."
         cdef short* tdc = self.e.TDCCorrected()
         return (tdc[0], tdc[1], tdc[2])
     cpdef HA_direction(self):
+        "Return (horizon, azimuth) direction of shower. Azimuth is from south clockwise. Both values are in Degres."
         cdef float *HA = self.e.calculateDir()
         return (HA[0],HA[1])
+    cpdef set_station(self, station_id):
+        self.e.setStation(<int>station_id)
 
 cdef class event_reader:
     def __init__(self, str path = ""):
@@ -191,8 +200,10 @@ cdef class event_reader:
     cpdef run(self, int run_id):
         return event_reader_run(self, run_id)
     cpdef runs(self):
+        "Return iterable object containing all runs."
         return event_reader_runs(self)
     cpdef load(self, str path):
+        "Load events from file. This delete all current events and tryes to load events from file"
         bytes_path = path.encode(system_encoding)
         if path[-4:].lower()==".txt":
             if self.er.loadTxtFile(bytes_path):
@@ -203,6 +214,7 @@ cdef class event_reader:
         else:
             raise NotImplementedError("path must be a file with .txt or .dat")
     cpdef set_station(self, object st):
+        "Set station for event_reader. Station is also set for all current events."
         cdef int _id
         if type(st)==int:
             _id = st

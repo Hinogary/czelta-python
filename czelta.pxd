@@ -99,6 +99,7 @@ cdef extern from "event.h" nogil:
         short TDC1Corrected()
         short TDC2Corrected()
         float* calculateDir()
+        inline void setStation(int station)
 
 cdef extern from "common_func.h" nogil:
     double deltaDirection(double hor1, double az1, double hor2, double az2)
@@ -132,6 +133,7 @@ cdef class event:
     cpdef calibration(self)
     cpdef TDC_corrected(self)
     cpdef HA_direction(self)
+    cpdef set_station(self, station_id)
 
 cdef class event_reader:
     cdef EventReader er
