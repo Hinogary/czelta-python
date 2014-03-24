@@ -6,6 +6,9 @@ import sys
 
 __version__ = '0.1'
 system_encoding = sys.getfilesystemencoding()
+
+
+
 cdef class station:
     "Class for working with station data."
     def __init__(self, station):
@@ -87,7 +90,8 @@ cdef class station:
         for st in stations:
             rtn.append(station(st.id()))
         return rtn
-        
+
+
 
 cdef class event:
     "Basic czelta class for holding information about events. This time is imposible to define own event"
@@ -133,7 +137,7 @@ cdef class event:
         "Calibration events are events actived by LED diod in each detectors."
         return self.e.isCalib()
     cpdef TDC_corrected(self):
-        "Relative time of activation each detector. Corrected and can be used to calculate diraction. Correction options are in config_data.JSON. TDC*25/1e12 = sec."
+        "Relative time of activation each detector. Corrected and can be used to calculate diraction. Correction options are in `config_data.JSON`. TDC*25/1e12 = sec."
         cdef short* tdc = self.e.TDCCorrected()
         return (tdc[0], tdc[1], tdc[2])
     cpdef HA_direction(self):
@@ -141,7 +145,10 @@ cdef class event:
         cdef float *HA = self.e.calculateDir()
         return (HA[0],HA[1])
     cpdef set_station(self, station_id):
+        "Set station to correct tdc and calculate direction, it is better to change station of entire ``czelta.event_reader``."
         self.e.setStation(<int>station_id)
+
+
 
 cdef class event_reader:
     def __init__(self, str path = ""):
@@ -150,6 +157,7 @@ cdef class event_reader:
     def __len__(self):
         return self.er.numberOfEvents()
     def __getitem__(self, i):
+        "some doc"
         cdef int ii, start, stop
         if type(i)==slice:
             if i.start==None:
@@ -226,6 +234,7 @@ cdef class event_reader:
             raise ValueError("Unknown type of station")
         self.er.setStation(_id)
     cpdef int number_of_events(self, int run = -1):
+        "Return number of events in ``event_reader``. Same result have ``len(event_reader)``."
         if(run==-1):
             return self.er.numberOfEvents()
         else:
@@ -252,7 +261,11 @@ cdef class event_reader:
     cpdef int filter_minimum_ADC(self):
         "Filter all events which have at least one ADC(energy) channel equal zero (Not measured)."
         return self.er.filterMinADC()
+
+
+
 cdef class event_reader_runs:
+    "Iteratable class for runs of ``czelta.event_reader``."
     def __init__(self, event_reader reader):
         self.er = reader
     def __str__(self):
@@ -288,6 +301,9 @@ cdef class event_reader_runs:
             if ii<0:
                 ii += self.er.er.numberOfRuns()
             return event_reader_run(self.er, ii)
+
+
+
 cdef class event_reader_run:
     def __init__(self, event_reader reader, int run_id):
         self.er = reader
