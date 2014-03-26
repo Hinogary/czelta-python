@@ -213,15 +213,15 @@ cdef class event_reader:
     cpdef runs(self):
         "Return iterable object containing all runs."
         return event_reader_runs(self)
-    cpdef load(self, str path):
-        "Load events from file. This delete all current events and tryes to load events from file"
-        bytes_path = path.encode(system_encoding)
-        if path[-4:].lower()==".txt":
+    cpdef load(self, str path_to_file):
+        "Load events from file. This delete all current events and tries to load events from file"
+        bytes_path = path_to_file.encode(system_encoding)
+        if path_to_file[-4:].lower()==".txt":
             if self.er.loadTxtFile(bytes_path):
-                raise IOError("can't open or read file: "+path)
-        elif path[-4:].lower()==".dat":
+                raise IOError("can't open or read file: "+path_to_file)
+        elif path_to_file[-4:].lower()==".dat":
             if self.er.loadDatFile(bytes_path):
-                raise IOError("can't open or read file: "+path)
+                raise IOError("can't open or read file: "+path_to_file)
         else:
             raise NotImplementedError("path must be a file with .txt or .dat")
     cpdef set_station(self, object st):
@@ -253,14 +253,20 @@ cdef class event_reader:
         return e
     #filters
     cpdef int filter(self, filter_func):
+        "Custom-filter function. As parameter give a function, which is ready to be called with parameter event object, which return True if you want remove event and False if you want let event in event_reader."
         global _filter_func_event
         global _filter_func_object
+        
+        #test
         try:
             e = event()
             e.set(self.er.item(0))
             filter_func(e)
-        except:
-            raise ValueError("Function can't be used on events")
+        except TypeError as te:
+            raise TypeError("function must have one parameter (czelta.event)")
+        except AttributeError as ae:
+            raise ae
+        #real filtering
         _filter_func_object = filter_func
         _filter_func_event = event()
         return self.er.filter(&_filter_func)
