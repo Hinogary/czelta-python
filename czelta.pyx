@@ -146,7 +146,10 @@ cdef class event:
         "Return (horizon, azimuth) direction of shower. Azimuth is from south clockwise. Both values are in Degres."
         def __get__(self):
             cdef float *HA = self.e.calculateDir()
-            return (HA[0],HA[1])
+            if HA[0]==0 and HA[1]==0:
+                return None
+            else:
+                return (HA[0],HA[1])
     cpdef set_station(self, station_id):
         "Set station to correct tdc and calculate direction, it is better to change station of entire ``czelta.event_reader``."
         self.e.setStation(<int>station_id)
@@ -213,15 +216,25 @@ cdef class event_reader:
     cpdef runs(self):
         "Return iterable object containing all runs."
         return event_reader_runs(self)
-    cpdef load(self, str path_to_file):
+    cpdef load(self, path_to_file):
         "Load events from file. This delete all current events and tries to load events from file"
-        bytes_path = path_to_file.encode(system_encoding)
-        if path_to_file[-4:].lower()==".txt":
+        cdef bytes bytes_path = path_to_file.encode(system_encoding)
+        if bytes_path[-4:].lower()==b".txt":
             if self.er.loadTxtFile(bytes_path):
                 raise IOError("can't open or read file: "+path_to_file)
-        elif path_to_file[-4:].lower()==".dat":
+        elif bytes_path[-4:].lower()==b".dat":
             if self.er.loadDatFile(bytes_path):
                 raise IOError("can't open or read file: "+path_to_file)
+        else:
+            raise NotImplementedError("path must be a file with .txt or .dat")
+    cpdef save(self, path_to_file):
+        bytes_path = path_to_file.encode(system_encoding)
+        if bytes_path[-4:].lower()==b".txt":
+            if self.er.saveTxtFile(bytes_path):
+                raise IOError("can't write file: "+path_to_file)
+        elif bytes_path[-4:].lower()==b".dat":
+            if self.er.saveDatFile(bytes_path):
+                raise IOError("can't write file: "+path_to_file)
         else:
             raise NotImplementedError("path must be a file with .txt or .dat")
     cpdef set_station(self, object st):

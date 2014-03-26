@@ -139,7 +139,8 @@ cdef class event_reader:
     cdef int i
     cpdef run(self, int run_id)
     cpdef runs(self)
-    cpdef load(self, str path)
+    cpdef load(self, path_to_file)
+    cpdef save(self, path_to_file)
     cpdef int number_of_events(self, int run = ?)
     cpdef int number_of_runs(self)
     cdef Event c_item(self, int i)
