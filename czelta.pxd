@@ -121,18 +121,16 @@ cdef class station:
 cdef class event:
     cdef Event e
     cdef void set(self, Event e)
-    cpdef timestamp(self)
-    cpdef datetime(self)
-    cpdef time_since_second(self)
-    cpdef TDC(self)
-    cpdef ADC(self)
-    cpdef temps(self)
-    cpdef temps_raw(self)
-    cpdef temps_detector(self)
-    cpdef float temp_crate(self)
-    cpdef calibration(self)
-    cpdef TDC_corrected(self)
-    cpdef HA_direction(self)
+    #property timestamp
+    #property datetime
+    #property time_since_second
+    #property TDC
+    #property TDC_corrected
+    #property ADC
+    #property temps_detector
+    #property temp_crate
+    #property calibration
+    #property HA_direction
     cpdef set_station(self, station_id)
 
 cdef class event_reader:

@@ -35,25 +35,27 @@ for run in er.runs():
 assert l==[13693, 19615, 27063, 19198, 4065, 9299]
 
 
-assert er[0].timestamp() == er.runs()[0][0].timestamp()
-assert er.runs()[0][-1].timestamp() == 1389163699
+assert er[0].timestamp == er.runs()[0][0].timestamp
+assert er.runs()[0][-1].timestamp == 1389163699
 e = er[0]
-assert e.TDC() == (976, 2509, 3759)
-assert e.ADC() == (1026, 707, 884)
-assert e.temps() == (9.5, 9.0, 9.5, 24.0)
-assert e.timestamp() == 1388856009
-assert e.calibration() == False
-assert e.datetime() == datetime.datetime(2014, 1, 4, 17, 20, 9)
+assert e.TDC == (976, 2509, 3759)
+assert e.ADC == (1026, 707, 884)
+assert e.temps_detector == (9.5, 9.0, 9.5)
+assert e.temp_crate == 24.0
+assert e.timestamp == 1388856009
+assert e.calibration == False
+assert e.datetime == datetime.datetime(2014, 1, 4, 17, 20, 9)
 e = er[len(er)-1]
-assert e.TDC() == (1306, 3762, 3461)
-assert e.ADC() == (130, 100, 113)
-assert e.temps() == (5.5, 5.0, 5.0, 25.0)
-assert e.calibration() == False
-assert e.timestamp() == 1391126394
+assert e.TDC == (1306, 3762, 3461)
+assert e.ADC == (130, 100, 113)
+assert e.temps_detector == (5.5, 5.0, 5.0)
+assert e.temp_crate == 25.0
+assert e.calibration == False
+assert e.timestamp == 1391126394
 assert str(er[157]) == "c 2014 01 04 18 12 02 764.0 4095 1755 3773 908 862 661 10.5 10.0 10.5 24.0"
 calibrations = 0
 for event in er:
-    if(event.calibration()):
+    if(event.calibration):
         calibrations+=1
 assert calibrations == 34016
 calibrations = er.filter_calibrations()

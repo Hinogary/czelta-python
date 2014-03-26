@@ -101,49 +101,51 @@ cdef class event:
         return self.e.toString().decode(system_encoding)
     cdef void set(self, Event e):
         self.e = e
-    cpdef timestamp(self):
+    property timestamp:
         "Return timestamp of event, fastest way to get time of event."
-        return self.e.timestamp()
-    cpdef datetime(self):
+        def __get__(self):
+            return self.e.timestamp()
+    property datetime:
         "Return python datetime object."
-        return datetime.datetime.utcfromtimestamp(self.e.timestamp())
-    cpdef time_since_second(self):
+        def __get__(self):
+            return datetime.datetime.utcfromtimestamp(self.e.timestamp())
+    property time_since_second:
         "Return time elapsed since last second (0-0.999999... sec)."
-        return self.e.time_since_second();
-    cpdef TDC(self):
-        "Relative time of activation each detector. TDC*25/1e12 = sec."
-        cdef short* tdc = self.e.TDC()
-        return (tdc[0], tdc[1], tdc[2])
-    cpdef ADC(self):
-        "Relative energy absorbed in each detector. Probably not comparable along different stations. Minimum value is 0 and Maximum is 2047. If it is 2047 it shloud be more."
-        cdef short* adc = self.e.ADC()
-        return (adc[0], adc[1], adc[2])
-    cpdef temps(self):     
-        "First three temps are temperature value from detectors, fourth is from crate. Temperature are in Celsius. Minimum step is 0.5."
-        cdef float* temps = self.e.temps()
-        return (temps[0], temps[1], temps[2], temps[3])
-    cpdef temps_detector(self):
-        "Return 3 temps of each detector in time of event-"
-        cdef float* temps = self.e.temps()
-        return (temps[0], temps[1], temps[2])
-    cpdef float temp_crate(self):
-        "Return Temperature in crate in time of event."
-        return self.e.tCrate()
-    cpdef temps_raw(self):
-        "First three temps are temperature value from detectors, fourth is from crate. Temperature are have to be divided by 2 to get them in Celsius. Data type is int."
-        cdef short* temps_raw = self.e.tempsRaw()
-        return (temps_raw[0], temps_raw[1], temps_raw[2], temps_raw[3])
-    cpdef calibration(self):
-        "Calibration events are events actived by LED diod in each detectors."
-        return self.e.isCalib()
-    cpdef TDC_corrected(self):
+        def __get__(self):
+            return self.e.time_since_second();
+    property TDC:
+        "Relative time of activation each detector. TDC*25/1e12 = sec. Format: tuple(TDC0, TDC1, TDC2)."
+        def __get__(self):
+            cdef short* tdc = self.e.TDC()
+            return (tdc[0], tdc[1], tdc[2])
+    property TDC_corrected:
         "Relative time of activation each detector. Corrected and can be used to calculate diraction. Correction options are in `config_data.JSON`. TDC*25/1e12 = sec."
-        cdef short* tdc = self.e.TDCCorrected()
-        return (tdc[0], tdc[1], tdc[2])
-    cpdef HA_direction(self):
+        def __get__(self):
+            cdef short* tdc = self.e.TDCCorrected()
+            return (tdc[0], tdc[1], tdc[2])
+    property ADC:
+        "Relative energy absorbed in each detector. Probably not comparable along different stations. Minimum value is 0 and Maximum is 2047. If it is 2047 it shloud be more."
+        def __get__(self):
+            cdef short* adc = self.e.ADC()
+            return (adc[0], adc[1], adc[2])
+    property temps_detector:
+        "Return 3 temps of each detector in time of event-"
+        def __get__(self):
+            cdef float* temps = self.e.temps()
+            return (temps[0], temps[1], temps[2])
+    property temp_crate:
+        "Return Temperature in crate in time of event."
+        def __get__(self):
+            return self.e.tCrate()
+    property calibration:
+        "Calibration events are events actived by LED diod in each detectors."
+        def __get__(self):
+            return self.e.isCalib()
+    property HA_direction:
         "Return (horizon, azimuth) direction of shower. Azimuth is from south clockwise. Both values are in Degres."
-        cdef float *HA = self.e.calculateDir()
-        return (HA[0],HA[1])
+        def __get__(self):
+            cdef float *HA = self.e.calculateDir()
+            return (HA[0],HA[1])
     cpdef set_station(self, station_id):
         "Set station to correct tdc and calculate direction, it is better to change station of entire ``czelta.event_reader``."
         self.e.setStation(<int>station_id)
