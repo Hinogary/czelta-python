@@ -17,7 +17,11 @@ typedef unsigned int uint;
 using namespace std;
 
 #pragma pack(push, 1)
+class Event;
 struct WebEvent {
+    //don't change anything, this is CzeltaDataFile.1 format of showers
+    WebEvent();
+    WebEvent(const Event& e, bool run);
     int32_t timestamp; 
     double last_second;
     int16_t TDC[3];
@@ -34,8 +38,8 @@ public:
     Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration, uint8_t station);
     Event(const Event& orig);
     inline int timestamp() const{return _timestamp;};
-    inline double last_second() const{return _last_second;};
-    inline double time_since_second() const{return _last_second*1e-9;};
+    inline double last_second() const{return _last_second;}; //time since last second, in nanoseconds
+    inline double time_since_second() const{return _last_second*1e-9;};//time since last second, in seconds
     inline int64_t tenthOfNSTimestamp() const{return int64_t(timestamp())*10000000000L + int64_t(last_second()*10);};
     inline short TDC0() const{return _TDC0;};
     inline short TDC1() const{return _TDC1;};

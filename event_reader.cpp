@@ -6,7 +6,6 @@
 #include <time.h>
 
 string EventReader::files_directory = "";
-const static string binaryFileHead = "CzeltaDataFile.1";
 
 EventReader::EventReader(){
     _maxDiffbetweenEvents = 0;
@@ -115,7 +114,26 @@ bool EventReader::saveDatFile(char* filename){
     ofstream out;
     out.open(filename,ios::binary);
     if(!out.is_open())return true;
-    out.write((char*)events.data(),sizeof(Event)*events.size());
+    const string head = "CzeltaDataFile.1";
+    out.write(head.c_str(), 16);
+    WebEvent* wevents = new WebEvent[1<<20];
+    bool is_run = false;
+    int run_id = 0;
+    for(int i=0, chunk_size = 0;i<numberOfEvents();i+=(1<<20)){
+        chunk_size = numberOfEvents()-i;
+        chunk_size = chunk_size>(1<<20)?(1<<20):chunk_size;
+        
+        for(int j=0;j<chunk_size;j++){
+            if(run(run_id).beginIndex == i+j){
+                is_run = true;
+                ++run_id;
+            }else
+                is_run = false;
+            wevents[j] = WebEvent(item(i+j),is_run);
+        }
+        out.write((char*)wevents, sizeof(WebEvent)*chunk_size);
+    }
+    delete[] wevents;
     out.close();
     return false;
 }
@@ -124,8 +142,10 @@ bool EventReader::saveTxtFile(char* filename){
     ofstream out;
     out.open(filename);
     if(!out.is_open())return true;
+    int next_run = 0;
     for(uint i=0;i<events.size();i++){
-        if(events[i].isRun()){
+        if(run(next_run).beginIndex == i){
+            next_run+=1;
             out<<"x 0 0 0 0 0 0 0.0 0 0 0 0 0 0 0.0 0.0 0.0 0.0"<<endl;
         }
         out<<events[i]<<endl;

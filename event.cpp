@@ -9,6 +9,26 @@
 #include "event.h"
 #include "station.h"
 
+WebEvent::WebEvent(){
+    
+}
+
+WebEvent::WebEvent(const Event& e, bool run){
+    timestamp = e.timestamp();
+    last_second = e.last_second();
+    TDC[0] = e.TDC0();
+    TDC[1] = e.TDC1();
+    TDC[2] = e.TDC2();
+    ADC[0] = e.ADC0();
+    ADC[1] = e.ADC1();
+    ADC[2] = e.ADC2();
+    t[0] = e.t0raw();
+    t[1] = e.t1raw();
+    t[2] = e.t2raw();
+    t_crate = e.tCrateRaw();
+    byte = e.isCalib()?1:0 | run?4:0;
+}
+
 Event::Event(){
 
 }
