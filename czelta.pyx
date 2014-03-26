@@ -283,7 +283,7 @@ cdef bint _filter_func(Event& e):
     cdef bint rtn = False
     try:
         _filter_func_event.set(e)
-        rtn = _filter_func_object(_filter_func_event)
+        return _filter_func_object(_filter_func_event)
     except:
         traceback.print_exc()
         print "Error in filter func"
