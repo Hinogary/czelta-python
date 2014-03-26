@@ -280,15 +280,13 @@ cdef class event_reader:
 cdef bint _filter_func(Event& e):
     global _filter_func_event
     global _filter_func_object
-    cdef bint rtn = False
     try:
         _filter_func_event.set(e)
         return _filter_func_object(_filter_func_event)
     except:
         traceback.print_exc()
         print "Error in filter func"
-        rtn = False
-    return rtn
+        return False
 
 cdef class event_reader_runs:
     "Iteratable class for runs of ``czelta.event_reader``."
