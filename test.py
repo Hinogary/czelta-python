@@ -104,9 +104,23 @@ assert str(evs[0])=='a 2014 02 18 06 13 03 606212753.5 1704 2650 3769 237 292 13
 assert str(evs[1])=='a 2014 02 18 06 13 34 148539574.9 3782 3650 4095 41 45 0 8.0 0.5 1.0 21.5'
 assert str(evs[2])=='c 2014 02 18 06 13 51 878.0 4095 4095 3742 1044 1094 806 8.0 0.5 1.0 21.5'
 
-assert er.filter_minimum_ADC() == 854
-assert er.filter_maximum_ADC() == 2710
-assert er.filter_maximum_TDC() == 974
+assert er.filter_maximum_TDC() == 1842
+assert er.filter_maximum_ADC() == 2687
+assert er.filter_minimum_ADC() == 9
+er = czelta.event_reader('test.dat')
+
+#filter all calibrations
+def filter_calibrations(e):
+    return e.calibration
+
+#filter events with maximum tdc
+def filter_func_maximum_tdc(e):
+    tdc = e.TDC
+    return tdc[0]==4095 or tdc[1]==4095 or tdc[2]==4095
+
+assert er.filter(filter_calibrations) == 34016
+assert er.filter(filter_func_maximum_tdc) == 1842
+
 assert txt.filter_calibrations() == 6391
 assert txt.filter_maximum_TDC() == 281
 assert txt.filter_maximum_ADC() == 439

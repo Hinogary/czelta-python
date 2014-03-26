@@ -3,6 +3,7 @@
 import datetime
 import json
 import sys
+import traceback
 
 __version__ = '0.1'
 system_encoding = sys.getfilesystemencoding()
@@ -106,7 +107,7 @@ cdef class event:
         def __get__(self):
             return self.e.timestamp()
     property datetime:
-        "Return python datetime object."
+        "Return python `datetime <http://docs.python.org/2/library/datetime.html>`_ object."
         def __get__(self):
             return datetime.datetime.utcfromtimestamp(self.e.timestamp())
     property time_since_second:
@@ -251,6 +252,18 @@ cdef class event_reader:
         e.set(self.er.item(i))
         return e
     #filters
+    cpdef int filter(self, filter_func):
+        global _filter_func_event
+        global _filter_func_object
+        try:
+            e = event()
+            e.set(self.er.item(0))
+            filter_func(e)
+        except:
+            raise ValueError("Function can't be used on events")
+        _filter_func_object = filter_func
+        _filter_func_event = event()
+        return self.er.filter(&_filter_func)
     cpdef int filter_calibrations(self):
         "Filter all events marked as calibration."
         return self.er.filterCalibs()
@@ -263,8 +276,19 @@ cdef class event_reader:
     cpdef int filter_minimum_ADC(self):
         "Filter all events which have at least one ADC(energy) channel equal zero (Not measured)."
         return self.er.filterMinADC()
-
-
+#filter_func wrapper
+cdef bint _filter_func(Event& e):
+    global _filter_func_event
+    global _filter_func_object
+    cdef bint rtn = False
+    try:
+        _filter_func_event.set(e)
+        rtn = _filter_func_object(_filter_func_event)
+    except:
+        traceback.print_exc()
+        print "Error in filter func"
+        rtn = False
+    return rtn
 
 cdef class event_reader_runs:
     "Iteratable class for runs of ``czelta.event_reader``."

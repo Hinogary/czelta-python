@@ -35,31 +35,32 @@ cdef extern from "station.h" namespace "Station" nogil:
     vector[p_Station] getStations()
 
 
-cdef extern from "event_reader.h" nogil:
+cdef extern from "event_reader.h":
     cppclass EventReader:
-        EventReader() except +
-        inline int numberOfEvents()
-        bint loadDatFile(char* filename)
-        bint loadTxtFile(char* filename)
-        bint saveDatFile(char* filename)
-        bint saveTxtFile(char* filename)
-        inline Event& item(int index)
-        inline Event& item(int run, int index)
+        EventReader() nogil except +
+        inline int numberOfEvents() nogil
+        bint loadDatFile(char* filename) nogil
+        bint loadTxtFile(char* filename) nogil
+        bint saveDatFile(char* filename) nogil
+        bint saveTxtFile(char* filename) nogil
+        inline Event& item(int index) nogil
+        inline Event& item(int run, int index) nogil
         
-        void setStation(int station)
+        void setStation(int station) nogil
         
-        int firstOlderThan(int timestamp)
-        int lastEarlierThan(int timestamp) 
+        int firstOlderThan(int timestamp) nogil
+        int lastEarlierThan(int timestamp) nogil
         
         #filters
-        inline int filterCalibs()
-        inline int filterMaxTDC()
-        inline int filterMaxADC()
-        inline int filterMinADC()
+        inline int filter(bint (*func)(Event&))
+        inline int filterCalibs() nogil
+        inline int filterMaxTDC() nogil
+        inline int filterMaxADC() nogil
+        inline int filterMinADC() nogil
         
         inline int numberOfRuns()
         inline int numberOfEvents(int run)
-        
+    
 cdef extern from "event_reader.h" namespace "EventReader" nogil:
     void setFilesDirectory(string dir)
     inline string getFilesDirectory()
@@ -147,11 +148,16 @@ cdef class event_reader:
     cpdef set_station(self, object st)
     
     #filters
+    cpdef int filter(self, filter_func)
     cpdef int filter_calibrations(self)
     cpdef int filter_maximum_TDC(self)
     cpdef int filter_maximum_ADC(self)
     cpdef int filter_minimum_ADC(self)
 
+#func wrapper for custom func
+cdef event _filter_func_event
+cdef object _filter_func_object
+cdef bint _filter_func(Event& e)
 
 cdef class event_reader_runs:
     cdef event_reader er
