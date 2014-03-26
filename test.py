@@ -125,4 +125,34 @@ assert txt.filter_calibrations() == 6391
 assert txt.filter_maximum_TDC() == 281
 assert txt.filter_maximum_ADC() == 439
 assert txt.filter_minimum_ADC() == 1
+
+def advanced_filter(e):
+    for adc in e.ADC:
+        if adc==0 or adc==2047 or adc<500:
+            return True
+    for tdc in e.TDC:
+        if tdc==4095:
+            return True
+
+#test saving
+s_er = czelta.event_reader('test.dat')
+s_er.set_station('pardubice_spse')
+s_er.filter(advanced_filter)
+assert len(s_er) == 2176
+s_er.save('some_test.txt')
+txt = czelta.event_reader('some_test.txt')
+s_er.save('some_test.dat')
+dat = czelta.event_reader('some_test.dat')
+assert len(dat) == len(txt)
+assert len(dat) == len(s_er)
+for i in range(len(s_er)):
+    assert str(dat[i]) == str(txt[i])
+    assert str(dat[i]) == str(s_er[i])
+for i in range(len(s_er.runs())):
+    assert len(s_er.run(i))==len(txt.run(i))
+    assert len(s_er.run(i))==len(dat.run(i))
+    assert s_er.run(i)[0].timestamp == txt.run(i)[0].timestamp
+    assert s_er.run(i)[0].timestamp == dat.run(i)[0].timestamp
+    assert s_er.run(i)[-1].timestamp == txt.run(i)[-1].timestamp
+    assert s_er.run(i)[-1].timestamp == dat.run(i)[-1].timestamp
 print("success")
