@@ -35,7 +35,7 @@ Event::Event(){
 
 Event::Event(WebEvent& e, uint8_t station){
     _timestamp = e.timestamp;
-    _last_second = e.last_second;
+    _last_second = static_cast<uint64_t>(e.last_second*10+0.5);
     _TDC0 = e.TDC[0];
     _TDC1 = e.TDC[1];
     _TDC2 = e.TDC[2];
@@ -46,13 +46,13 @@ Event::Event(WebEvent& e, uint8_t station){
     _t1 = e.t[1];
     _t2 = e.t[2];
     _t_crate = e.t_crate;
-    _byte = e.byte&1;
+    _calibration = e.byte&1;
     _station = station;
 }
 
-Event::Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t t_crate, bool calibration, uint8_t station){
+Event::Event(time_t timestamp,double last_second, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t t_crate, bool calibration, uint8_t station){
     this->_timestamp = timestamp;
-    this->_last_second = last_secod;
+    this->_last_second = static_cast<uint64_t>(last_second*10+0.5);
     this->_TDC0 = TDC0;
     this->_TDC1 = TDC1;
     this->_TDC2 = TDC2;
@@ -63,7 +63,7 @@ Event::Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int
     this->_t1 = t1;
     this->_t2 = t2;
     this->_t_crate = t_crate;
-    this->_byte = (calibration?1:0);
+    this->_calibration = calibration;
     this->_station = station;
 }
 
@@ -81,7 +81,7 @@ float* Event::calculateDir() const{
     rtn[0] = 0;rtn[1] = 0;
     if(isCalib())return rtn;
     short* TDC = TDCCorrected();
-    double *detPos = Station::getStation(_station).detectorPosition(); 
+    double *detPos = Station::getStation(getStation()).detectorPosition(); 
     const double t1 = (TDC[1] - TDC[0])*25 * 1e-12;
     const double t2 = (TDC[2] - TDC[0])*25 * 1e-12;
     const double x1 = detPos[0];
@@ -136,7 +136,7 @@ string Event::toString() const{
 
 short* Event::TDCCorrected() const{
     static short static_TDCCorrected[3];
-    short* correction = Station::getStation(_station).TDCCorrect(timestamp());
+    short* correction = Station::getStation(getStation()).TDCCorrect(timestamp());
     static_TDCCorrected[0] = TDC0()+correction[0];
     static_TDCCorrected[1] = TDC1()+correction[1];
     static_TDCCorrected[2] = TDC2()+correction[2];
@@ -144,13 +144,13 @@ short* Event::TDCCorrected() const{
 }
 
 short Event::TDC0Corrected() const{
-    return TDC0()+Station::getStation(_station).TDCCorrect(timestamp())[0];
+    return TDC0()+Station::getStation(getStation()).TDCCorrect(timestamp())[0];
 }
 
 short Event::TDC1Corrected() const{
-    return TDC1()+Station::getStation(_station).TDCCorrect(timestamp())[1];
+    return TDC1()+Station::getStation(getStation()).TDCCorrect(timestamp())[1];
 }
 
 short Event::TDC2Corrected() const{
-    return TDC2()+Station::getStation(_station).TDCCorrect(timestamp())[2];
+    return TDC2()+Station::getStation(getStation()).TDCCorrect(timestamp())[2];
 }
