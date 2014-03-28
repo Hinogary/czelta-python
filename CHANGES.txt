@@ -1,0 +1,9 @@
+version 0.1
+===========
+* created class event
+* created class event_reader
+* created class station
+* event_reader can load and save .txt and .dat files from web
+* load data about stations from file
+* event have method to calculate event direction (horizont, azimuth) based on station
+* event_reader can filter events
