@@ -58,8 +58,12 @@ cdef extern from "event_reader.h":
         inline int filterMaxADC() nogil
         inline int filterMinADC() nogil
         
-        inline int numberOfRuns()
         inline int numberOfEvents(int run)
+        inline int numberOfRuns()
+        inline int runStartIndex(int i)
+        inline int runStart(int i)
+        inline int runEndIndex(int i)
+        inline int runEnd(int i)
     
 cdef extern from "event_reader.h" namespace "EventReader" nogil:
     void setFilesDirectory(string dir)
@@ -170,3 +174,5 @@ cdef class event_reader_run:
     cdef int _run_id
     cdef int i
     cpdef int run_id(self)
+    cpdef int begin_index(self)
+    cpdef int end_index(self)

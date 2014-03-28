@@ -95,7 +95,7 @@ cdef class station:
 
 
 cdef class event:
-    "Basic czelta class for holding information about events. This time is imposible to define own event"
+    "Basic czelta class for holding information about events. This time is imposible to create own event"
     def __init__(self):
         pass
     def __str__(self):
@@ -103,11 +103,11 @@ cdef class event:
     cdef void set(self, Event e):
         self.e = e
     property timestamp:
-        "Return timestamp of event, fastest way to get time of event."
+        "timestamp of event, fastest way to get time of event."
         def __get__(self):
             return self.e.timestamp()
     property datetime:
-        "Return python `datetime <http://docs.python.org/2/library/datetime.html>`_ object."
+        "Return python `datetime <http://docs.python.org/2/library/datetime.html>`_ object. All times with Czelta is in UTC."
         def __get__(self):
             return datetime.datetime.utcfromtimestamp(self.e.timestamp())
     property time_since_second:
@@ -388,3 +388,8 @@ cdef class event_reader_run:
             return e
     cpdef int run_id(self):
         return self._run_id
+    
+    cpdef int begin_index(self):
+        return self.er.er.runStartIndex(self._run_id)
+    cpdef int end_index(self):
+        return self.er.er.runEndIndex(self._run_id)
