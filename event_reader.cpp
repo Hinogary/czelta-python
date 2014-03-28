@@ -116,9 +116,10 @@ bool EventReader::saveDatFile(char* filename){
     if(!out.is_open())return true;
     const string head = "CzeltaDataFile.1";
     out.write(head.c_str(), 16);
-    WebEvent* wevents = new WebEvent[1<<20];
+    WebEvent* wevents = new WebEvent[(1<<20)>numberOfEvents()?numberOfEvents():(1<<20)];
     bool is_run = false;
     int run_id = 0;
+    int runs = 0;
     for(int i=0, chunk_size = 0;i<numberOfEvents();i+=(1<<20)){
         chunk_size = numberOfEvents()-i;
         chunk_size = chunk_size>(1<<20)?(1<<20):chunk_size;
@@ -127,6 +128,7 @@ bool EventReader::saveDatFile(char* filename){
             if(run(run_id).beginIndex == i+j){
                 is_run = true;
                 ++run_id;
+                runs++;
             }else
                 is_run = false;
             wevents[j] = WebEvent(item(i+j),is_run);
