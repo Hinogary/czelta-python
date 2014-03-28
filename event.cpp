@@ -26,7 +26,7 @@ WebEvent::WebEvent(const Event& e, bool run){
     t[1] = e.t1raw();
     t[2] = e.t2raw();
     t_crate = e.tCrateRaw();
-    byte = e.isCalib()?1:0 | run?4:0;
+    byte = (e.isCalib()?1:0) | (run?4:0);
 }
 
 Event::Event(){
