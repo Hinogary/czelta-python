@@ -52,7 +52,7 @@ assert e.temps_detector == (5.5, 5.0, 5.0)
 assert e.temp_crate == 25.0
 assert e.calibration == False
 assert e.timestamp == 1391126394
-assert str(er[157]) == "c 2014 01 04 18 12 02 764.0 4095 1755 3773 908 862 661 10.5 10.0 10.5 24.0"
+assert str(er[157]) == "c 2014 01 04 18 12 02 764.0 4095 1755 3773 908 862 661 10.5 10.0 10.5 24.0",str(er[157])
 calibrations = 0
 for event in er:
     if(event.calibration):
