@@ -11,7 +11,7 @@ import datetime
 from time import time
 print("\n"*2)
 
-
+start = time()
 b = time()
 er = czelta.event_reader()
 er.load("test.dat")
@@ -156,3 +156,5 @@ for i in range(len(s_er.runs())):
     assert s_er.run(i)[-1].timestamp == txt.run(i)[-1].timestamp
     assert s_er.run(i)[-1].timestamp == dat.run(i)[-1].timestamp
 print("success")
+end = time()
+print("time: %f s"%(end-start))
