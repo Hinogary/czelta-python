@@ -6,6 +6,7 @@ import sys
 import traceback
 
 __version__ = '0.1'
+__all__ = ['station','event','event_reader']
 system_encoding = sys.getfilesystemencoding()
 
 
