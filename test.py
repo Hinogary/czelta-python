@@ -11,7 +11,7 @@ import datetime
 from time import time
 print("\n"*2)
 
-
+start = time()
 b = time()
 er = czelta.event_reader()
 er.load("test.dat")
@@ -35,25 +35,27 @@ for run in er.runs():
 assert l==[13693, 19615, 27063, 19198, 4065, 9299]
 
 
-assert er[0].timestamp() == er.runs()[0][0].timestamp()
-assert er.runs()[0][-1].timestamp() == 1389163699
+assert er[0].timestamp == er.runs()[0][0].timestamp
+assert er.runs()[0][-1].timestamp == 1389163699
 e = er[0]
-assert e.TDC() == (976, 2509, 3759)
-assert e.ADC() == (1026, 707, 884)
-assert e.temps() == (9.5, 9.0, 9.5, 24.0)
-assert e.timestamp() == 1388856009
-assert e.calibration() == False
-assert e.datetime() == datetime.datetime(2014, 1, 4, 17, 20, 9)
+assert e.TDC == (976, 2509, 3759)
+assert e.ADC == (1026, 707, 884)
+assert e.temps_detector == (9.5, 9.0, 9.5)
+assert e.temp_crate == 24.0
+assert e.timestamp == 1388856009
+assert e.calibration == False
+assert e.datetime == datetime.datetime(2014, 1, 4, 17, 20, 9)
 e = er[len(er)-1]
-assert e.TDC() == (1306, 3762, 3461)
-assert e.ADC() == (130, 100, 113)
-assert e.temps() == (5.5, 5.0, 5.0, 25.0)
-assert e.calibration() == False
-assert e.timestamp() == 1391126394
-assert str(er[157]) == "c 2014 01 04 18 12 02 764.0 4095 1755 3773 908 862 661 10.5 10.0 10.5 24.0"
+assert e.TDC == (1306, 3762, 3461)
+assert e.ADC == (130, 100, 113)
+assert e.temps_detector == (5.5, 5.0, 5.0)
+assert e.temp_crate == 25.0
+assert e.calibration == False
+assert e.timestamp == 1391126394
+assert str(er[157]) == "c 2014 01 04 18 12 02 764.0 4095 1755 3773 908 862 661 10.5 10.0 10.5 24.0",str(er[157])
 calibrations = 0
 for event in er:
-    if(event.calibration()):
+    if(event.calibration):
         calibrations+=1
 assert calibrations == 34016
 calibrations = er.filter_calibrations()
@@ -97,5 +99,62 @@ except AssertionError:
     #win32 ...
     assert str(txt[16000])=="a 2014 02 24 19 58 17 222931733.1 1231 2395 3762 1022 404 770 10.0 9.5 8.5 26.5",str(txt[16000])
 assert len(txt)==16981
+evs = txt[datetime.datetime(2014,2,18,6,13):datetime.datetime(2014,2,18,6,14)]
+assert str(evs[0])=='a 2014 02 18 06 13 03 606212753.5 1704 2650 3769 237 292 139 8.5 0.5 1.0 21.5'
+assert str(evs[1])=='a 2014 02 18 06 13 34 148539574.9 3782 3650 4095 41 45 0 8.0 0.5 1.0 21.5'
+assert str(evs[2])=='c 2014 02 18 06 13 51 878.0 4095 4095 3742 1044 1094 806 8.0 0.5 1.0 21.5'
+
+assert er.filter_maximum_TDC() == 1842
+assert er.filter_maximum_ADC() == 2687
+assert er.filter_minimum_ADC() == 9
+er = czelta.event_reader('test.dat')
+
+#filter all calibrations
+def filter_calibrations(e):
+    return e.calibration
+
+#filter events with maximum tdc
+def filter_func_maximum_tdc(e):
+    tdc = e.TDC
+    return tdc[0]==4095 or tdc[1]==4095 or tdc[2]==4095
+
+assert er.filter(filter_calibrations) == 34016
+assert er.filter(filter_func_maximum_tdc) == 1842
+
 assert txt.filter_calibrations() == 6391
+assert txt.filter_maximum_TDC() == 281
+assert txt.filter_maximum_ADC() == 439
+assert txt.filter_minimum_ADC() == 1
+
+def advanced_filter(e):
+    for adc in e.ADC:
+        if adc==0 or adc==2047 or adc<500:
+            return True
+    for tdc in e.TDC:
+        if tdc==4095:
+            return True
+
+#test saving
+s_er = czelta.event_reader('test.dat')
+s_er.set_station('pardubice_spse')
+s_er.filter(advanced_filter)
+assert len(s_er) == 2176
+s_er.save('some_test.txt')
+txt = czelta.event_reader('some_test.txt')
+s_er.save('some_test.dat')
+dat = czelta.event_reader('some_test.dat')
+assert len(dat) == len(txt)
+assert len(dat) == len(s_er)
+for i in range(len(s_er)):
+    assert str(dat[i]) == str(txt[i])
+    assert str(dat[i]) == str(s_er[i])
+for i in range(len(s_er.runs())):
+    assert len(s_er.run(i))==len(txt.run(i))
+    assert len(s_er.run(i))==len(dat.run(i))
+    assert s_er.run(i)[0].timestamp == txt.run(i)[0].timestamp
+    assert s_er.run(i)[0].timestamp == dat.run(i)[0].timestamp
+    assert s_er.run(i)[-1].timestamp == txt.run(i)[-1].timestamp
+    assert s_er.run(i)[-1].timestamp == dat.run(i)[-1].timestamp
 print("success")
+end = time()
+print("time: %f s"%(end-start))

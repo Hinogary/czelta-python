@@ -17,7 +17,11 @@ typedef unsigned int uint;
 using namespace std;
 
 #pragma pack(push, 1)
+class Event;
 struct WebEvent {
+    //don't change anything, this is CzeltaDataFile.1 format of showers
+    WebEvent();
+    WebEvent(const Event& e, bool run);
     int32_t timestamp; 
     double last_second;
     int16_t TDC[3];
@@ -30,12 +34,12 @@ class Event {
     friend class EventReader;
 public:
     Event();
-    Event(WebEvent e);
-    Event(time_t timestamp,double last_secod, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration);
+    Event(WebEvent& e, uint8_t station);
+    Event(time_t timestamp,double last_second, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration, uint8_t station);
     Event(const Event& orig);
     inline int timestamp() const{return _timestamp;};
-    inline double last_second() const{return _last_second;};
-    inline double time_since_second() const{return _last_second*1e-9;};
+    inline double last_second() const{return _last_second*1e-1;}; //time since last second, in nanoseconds
+    inline double time_since_second() const{return _last_second*1e-10;};//time since last second, in seconds
     inline int64_t tenthOfNSTimestamp() const{return int64_t(timestamp())*10000000000L + int64_t(last_second()*10);};
     inline short TDC0() const{return _TDC0;};
     inline short TDC1() const{return _TDC1;};
@@ -73,21 +77,27 @@ public:
         static_temps[0]=t0(); static_temps[1]=t1();
         static_temps[2]=t2(); static_temps[3]=tCrate();
         return static_temps;};
-    inline bool isRun() const{return _byte&4;};
-    inline bool isCalib() const{return _byte&1;};
+    inline bool isCalib() const{return _calibration;};
     inline tm getTime() const{time_t tm = _timestamp;return *gmtime(&tm);};
     float* calculateDir() const;
     string toString() const;
-    inline void setStation(uint8_t st){station=st;};
+    inline uint8_t getStation() const{return _station;};
+    inline void setStation(uint8_t st){_station=st;};
 private:
     uint32_t _timestamp; 
-    double _last_second;
-    uint16_t _TDC0, _TDC1, _TDC2;
-    uint16_t _ADC0, _ADC1, _ADC2;
-    int8_t _t0, _t1, _t2;
+    uint64_t _last_second:39;//6 unused bits
+    bool _calibration:1;
+    uint16_t _TDC0:12;
+    uint16_t _TDC1:12;
+    uint16_t _TDC2:12;
+    uint16_t _ADC0:12;//1 unused bit
+    uint16_t _ADC1:12;//1 unused bit
+    uint16_t _ADC2:12;//1 unused bit
+    int8_t _t0;
+    int8_t _t1;
+    int8_t _t2;
     int8_t _t_crate;
-    uint8_t _byte;
-    uint8_t station;
+    uint8_t _station;
 };
 inline ostream& operator << (ostream& os, const Event& e){os<<e.toString();return os;}
 #pragma pack(pop)

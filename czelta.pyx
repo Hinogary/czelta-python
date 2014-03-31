@@ -2,14 +2,23 @@
 
 import datetime
 import json
+import sys
+import traceback
+
 __version__ = '0.1'
+__all__ = ['station','event','event_reader']
+__author__ = 'Martin Quarda <hinogary@gmail.com>'
+system_encoding = sys.getfilesystemencoding()
+
+
+
 cdef class station:
     "Class for working with station data."
     def __init__(self, station):
         if type(station)==int:
             self.st = &getStation(<int>station)
         else:
-            self.st = &getStation(<string>station.encode('utf8'))
+            self.st = &getStation(<string>station.encode(system_encoding))
         if self.st.id()==0:
             raise RuntimeError("Station not exist, have you loaded config file?")
     cpdef int id(self):
@@ -17,7 +26,7 @@ cdef class station:
         return self.st.id()
     cpdef name(self):
         "Return code name of station. Example: ``\'praha_utef\'``, ``\'pardubice_gd\'`` or similar."
-        return (<char*>self.st.name()).decode('utf-8')
+        return (<char*>self.st.name()).decode(system_encoding)
     cpdef detector_position(self):
         "Return position of detectors in format ``(x1, y1, x2, y2)`` where ``x1`` and ``y1`` are relative position of detector 1 to detector 0. ``x2`` and ``y2`` are relative position of detector 2 to detector 0. All values are in metres."
         cdef double* dp = self.st.detectorPosition()
@@ -47,7 +56,7 @@ cdef class station:
         for station in cfg['stations']:
             try:
                 st = Station(int(station['ID']))
-                st_name = station['name'].encode('utf8')
+                st_name = station['name'].encode(system_encoding)
                 st.setName(st_name)
                 if 'GPSposition' in station and len(station['GPSposition'])>=2:
                     pos = station['GPSposition']
@@ -57,7 +66,7 @@ cdef class station:
                     st.setDetectorPosition(pos[0], pos[1], pos[2], pos[3])
                 if 'file_names' in station:
                     for name in station['file_names']:
-                        file_name = name.encode('utf8')
+                        file_name = name.encode(system_encoding)
                         st.pushFileName(file_name)
                 if 'TDCCorrection' in station and len(station['TDCCorrection'])>0:
                     st.clearTDCCorrect(len(station['TDCCorrection']))
@@ -68,12 +77,12 @@ cdef class station:
                         if type(correction['from'])==int:
                             st.pushTDCCorrect(<int>correction['from'], <short>tdc[0], <short>tdc[1], <short>tdc[2])
                         else:
-                            from_cor = correction['from'].encode('utf8')
+                            from_cor = correction['from'].encode(system_encoding)
                             st.pushTDCCorrect(<string>from_cor, <short>tdc[0], <short>tdc[1], <short>tdc[2])
                 if addStation(st):
                     print "Station can't be added, already exist, id: "+str(st.id())+", name: "+st.name()
             except Warning:
-                st_name = (<char*>st.name()).decode('utf8')
+                st_name = (<char*>st.name()).decode(system_encoding)
                 print "Station can't be added, bad format of JSON, id: "+str(st.id())+", name: "+st_name
                 
     @staticmethod
@@ -84,45 +93,70 @@ cdef class station:
         for st in stations:
             rtn.append(station(st.id()))
         return rtn
-        
+
+
 
 cdef class event:
+    "Basic czelta class for holding information about events. This time is imposible to create own event"
     def __init__(self):
         pass
     def __str__(self):
-        return self.e.toString().decode('utf-8')
+        return self.e.toString().decode(system_encoding)
     cdef void set(self, Event e):
         self.e = e
-    cpdef timestamp(self):
-        return self.e.timestamp()
-    cpdef datetime(self):
-        return datetime.datetime.utcfromtimestamp(self.e.timestamp())
-    cpdef time_since_second(self):
-        ""
-        return self.e.time_since_second();
-    cpdef TDC(self):
-        ""
-        cdef short* tdc = self.e.TDC()
-        return (tdc[0], tdc[1], tdc[2])
-    cpdef ADC(self):
+    property timestamp:
+        "timestamp of event, fastest way to get time of event."
+        def __get__(self):
+            return self.e.timestamp()
+    property datetime:
+        "Return python `datetime <http://docs.python.org/2/library/datetime.html>`_ object. All times with Czelta is in UTC."
+        def __get__(self):
+            return datetime.datetime.utcfromtimestamp(self.e.timestamp())
+    property time_since_second:
+        "Return time elapsed since last second (0-0.999999... sec)."
+        def __get__(self):
+            return self.e.time_since_second();
+    property TDC:
+        "Relative time of activation each detector. TDC*25/1e12 = sec. Format: tuple(TDC0, TDC1, TDC2)."
+        def __get__(self):
+            cdef short* tdc = self.e.TDC()
+            return (tdc[0], tdc[1], tdc[2])
+    property TDC_corrected:
+        "Relative time of activation each detector. Corrected and can be used to calculate diraction. Correction options are in `config_data.JSON`. TDC*25/1e12 = sec."
+        def __get__(self):
+            cdef short* tdc = self.e.TDCCorrected()
+            return (tdc[0], tdc[1], tdc[2])
+    property ADC:
         "Relative energy absorbed in each detector. Probably not comparable along different stations. Minimum value is 0 and Maximum is 2047. If it is 2047 it shloud be more."
-        cdef short* adc = self.e.ADC()
-        return (adc[0], adc[1], adc[2])
-    cpdef temps(self):     
-        "First three temps are temperature value from detectors, fourth is from crate. Temperature are in Celsius. Minimum step is 0.5."
-        cdef float* temps = self.e.temps()
-        return (temps[0], temps[1], temps[2], temps[3])
-    cpdef temps_raw(self):
-        "First three temps are temperature value from detectors, fourth is from crate. Temperature are have to be divided by 2 to get them in Celsius. Data type is int."
-        cdef short* temps_raw = self.e.tempsRaw()
-        return (temps_raw[0], temps_raw[1], temps_raw[2], temps_raw[3])
-    cpdef calibration(self):
+        def __get__(self):
+            cdef short* adc = self.e.ADC()
+            return (adc[0], adc[1], adc[2])
+    property temps_detector:
+        "Return 3 temps of each detector in time of event-"
+        def __get__(self):
+            cdef float* temps = self.e.temps()
+            return (temps[0], temps[1], temps[2])
+    property temp_crate:
+        "Return Temperature in crate in time of event."
+        def __get__(self):
+            return self.e.tCrate()
+    property calibration:
         "Calibration events are events actived by LED diod in each detectors."
-        return self.e.isCalib()
-    
-    cpdef HAdirection(self):
-        cdef float *HA = self.e.calculateDir()
-        return (HA[0],HA[1])
+        def __get__(self):
+            return self.e.isCalib()
+    property HA_direction:
+        "Return (horizon, azimuth) direction of shower. Azimuth is from south clockwise. Both values are in Degres."
+        def __get__(self):
+            cdef float *HA = self.e.calculateDir()
+            if HA[0]==0 and HA[1]==0:
+                return None
+            else:
+                return (HA[0],HA[1])
+    cpdef set_station(self, station_id):
+        "Set station to correct tdc and calculate direction, it is better to change station of entire ``czelta.event_reader``."
+        self.e.setStation(<int>station_id)
+
+
 
 cdef class event_reader:
     def __init__(self, str path = ""):
@@ -131,18 +165,34 @@ cdef class event_reader:
     def __len__(self):
         return self.er.numberOfEvents()
     def __getitem__(self, i):
-        cdef int ii, start, stop, step
+        "some doc"
+        cdef int ii, start, stop
         if type(i)==slice:
-            start = 0 if i.start==None else i.start if i.start>=0 else self.er.numberOfEvents()+i.start
-            stop = self.er.numberOfEvents() if i.stop==None else i.stop if i.stop>=0 else self.er.numberOfEvents()+i.stop
-            step = i.step if i.step else 1
-            if step <= 0:
-                raise NotImplementedError
+            if i.start==None:
+                start = 0
+            elif type(i.start)==datetime.datetime:
+                d = i.start
+                start = date(d.year, d.month, d.day, d.hour, d.minute, d.second) 
+                start = self.er.firstOlderThan(start)
+            else:
+                start = i.start
+                start = start if start>=0 else self.er.numberOfEvents()+start
+            
+            if i.stop==None:
+                stop = self.er.numberOfEvents()
+            elif type(i.stop)==datetime.datetime:
+                d = i.stop
+                stop = date(d.year, d.month, d.day, d.hour, d.minute, d.second) 
+                stop = self.er.firstOlderThan(stop)
+            else:
+                stop = i.stop
+                stop = stop if stop>=0 else self.er.numberOfEvents()+stop
+                
+            if i.step != None:
+                raise NotImplementedError("step can't be defined")
+                
             es = []
-            #currently not optimized to c loop (17.1.2014)
-            #for ii in range(start, stop, step):
-            #deprecated but optimized to c loop
-            for ii from start <= ii < stop by step:
+            for ii in range(start, stop):
                 e = event()
                 e.set(self.er.item(ii))
                 es.append(e)
@@ -166,18 +216,43 @@ cdef class event_reader:
     cpdef run(self, int run_id):
         return event_reader_run(self, run_id)
     cpdef runs(self):
+        "Return iterable object containing all runs."
         return event_reader_runs(self)
-    cpdef load(self, str path):
-        bytes_path = path.encode('utf-8')
-        if path[-4:].lower()==".txt":
+    cpdef load(self, path_to_file):
+        "Load events from file. This delete all current events and tries to load events from file"
+        cdef bytes bytes_path = path_to_file.encode(system_encoding)
+        if bytes_path[-4:].lower()==b".txt":
             if self.er.loadTxtFile(bytes_path):
-                raise IOError("can't open or read file: "+path)
-        elif path[-4:].lower()==".dat":
+                raise IOError("can't open or read file: "+path_to_file)
+        elif bytes_path[-4:].lower()==b".dat":
             if self.er.loadDatFile(bytes_path):
-                raise IOError("can't open or read file: "+path)
+                raise IOError("can't open or read file: "+path_to_file)
         else:
             raise NotImplementedError("path must be a file with .txt or .dat")
+    cpdef save(self, path_to_file):
+        bytes_path = path_to_file.encode(system_encoding)
+        if bytes_path[-4:].lower()==b".txt":
+            if self.er.saveTxtFile(bytes_path):
+                raise IOError("can't write file: "+path_to_file)
+        elif bytes_path[-4:].lower()==b".dat":
+            if self.er.saveDatFile(bytes_path):
+                raise IOError("can't write file: "+path_to_file)
+        else:
+            raise NotImplementedError("path must be a file with .txt or .dat")
+    cpdef set_station(self, object st):
+        "Set station for event_reader. Station is also set for all current events."
+        cdef int _id
+        if type(st)==int:
+            _id = st
+        elif type(st)==str:
+            _id = station(st).id()
+        elif type(st)==station:
+            _id = st.id()
+        else:
+            raise ValueError("Unknown type of station")
+        self.er.setStation(_id)
     cpdef int number_of_events(self, int run = -1):
+        "Return number of events in ``event_reader``. Same result have ``len(event_reader)``."
         if(run==-1):
             return self.er.numberOfEvents()
         else:
@@ -192,6 +267,24 @@ cdef class event_reader:
         e.set(self.er.item(i))
         return e
     #filters
+    cpdef int filter(self, filter_func):
+        "Custom-filter function. As parameter give a function, which is ready to be called with parameter event object, which return True if you want remove event and False if you want let event in event_reader."
+        global _filter_func_event
+        global _filter_func_object
+        
+        #test
+        try:
+            e = event()
+            e.set(self.er.item(0))
+            filter_func(e)
+        except TypeError as te:
+            raise TypeError("function must have one parameter (czelta.event)")
+        except AttributeError as ae:
+            raise ae
+        #real filtering
+        _filter_func_object = filter_func
+        _filter_func_event = event()
+        return self.er.filter(&_filter_func)
     cpdef int filter_calibrations(self):
         "Filter all events marked as calibration."
         return self.er.filterCalibs()
@@ -204,7 +297,20 @@ cdef class event_reader:
     cpdef int filter_minimum_ADC(self):
         "Filter all events which have at least one ADC(energy) channel equal zero (Not measured)."
         return self.er.filterMinADC()
+#filter_func wrapper
+cdef bint _filter_func(Event& e):
+    global _filter_func_event
+    global _filter_func_object
+    try:
+        _filter_func_event.set(e)
+        return _filter_func_object(_filter_func_event)
+    except:
+        traceback.print_exc()
+        print "Error in filter func"
+        return False
+
 cdef class event_reader_runs:
+    "Iteratable class for runs of ``czelta.event_reader``."
     def __init__(self, event_reader reader):
         self.er = reader
     def __str__(self):
@@ -240,6 +346,9 @@ cdef class event_reader_runs:
             if ii<0:
                 ii += self.er.er.numberOfRuns()
             return event_reader_run(self.er, ii)
+
+
+
 cdef class event_reader_run:
     def __init__(self, event_reader reader, int run_id):
         self.er = reader
@@ -281,3 +390,8 @@ cdef class event_reader_run:
             return e
     cpdef int run_id(self):
         return self._run_id
+    
+    cpdef int begin_index(self):
+        return self.er.er.runStartIndex(self._run_id)
+    cpdef int end_index(self):
+        return self.er.er.runEndIndex(self._run_id)

@@ -1,6 +1,10 @@
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
+cdef extern from "Python.h":
+    enum:
+        PY_MAJOR_VERSION
+
 cdef extern from "station.h" nogil:
     cppclass Station:
         Station() except +
@@ -31,27 +35,36 @@ cdef extern from "station.h" namespace "Station" nogil:
     vector[p_Station] getStations()
 
 
-cdef extern from "event_reader.h" nogil:
+cdef extern from "event_reader.h":
     cppclass EventReader:
-        EventReader() except +
-        setStation(int id)
-        inline int numberOfEvents()
-        bint loadDatFile(char* filename)
-        bint loadTxtFile(char* filename)
-        bint saveDatFile(char* filename)
-        bint saveTxtFile(char* filename)
-        inline Event& item(int index)
-        inline Event& item(int run, int index)
+        EventReader() nogil except +
+        inline int numberOfEvents() nogil
+        bint loadDatFile(char* filename) nogil
+        bint loadTxtFile(char* filename) nogil
+        bint saveDatFile(char* filename) nogil
+        bint saveTxtFile(char* filename) nogil
+        inline Event& item(int index) nogil
+        inline Event& item(int run, int index) nogil
+        
+        void setStation(int station) nogil
+        
+        int firstOlderThan(int timestamp) nogil
+        int lastEarlierThan(int timestamp) nogil
         
         #filters
-        int filterCalibs()
-        inline int filterMaxTDC()
-        inline int filterMaxADC()
-        inline int filterMinADC()
+        inline int filter(bint (*func)(Event&))
+        inline int filterCalibs() nogil
+        inline int filterMaxTDC() nogil
+        inline int filterMaxADC() nogil
+        inline int filterMinADC() nogil
         
-        inline int numberOfRuns()
         inline int numberOfEvents(int run)
-        
+        inline int numberOfRuns()
+        inline int runStartIndex(int i)
+        inline int runStart(int i)
+        inline int runEndIndex(int i)
+        inline int runEnd(int i)
+    
 cdef extern from "event_reader.h" namespace "EventReader" nogil:
     void setFilesDirectory(string dir)
     inline string getFilesDirectory()
@@ -91,7 +104,14 @@ cdef extern from "event.h" nogil:
         short TDC1Corrected()
         short TDC2Corrected()
         float* calculateDir()
+        inline void setStation(int station)
 
+cdef extern from "common_func.h" nogil:
+    double deltaDirection(double hor1, double az1, double hor2, double az2)
+    int date(string date)
+    int date(int year, int month, int day)
+    int date(int year, int month, int day, int hour, int minute)
+    int date(int year, int month, int day, int hour, int minute, int second)
 
 
 cdef class station:
@@ -106,33 +126,43 @@ cdef class station:
 cdef class event:
     cdef Event e
     cdef void set(self, Event e)
-    cpdef timestamp(self)
-    cpdef datetime(self)
-    cpdef time_since_second(self)
-    cpdef TDC(self)
-    cpdef ADC(self)
-    cpdef temps(self)
-    cpdef temps_raw(self)
-    cpdef calibration(self)
-    cpdef HAdirection(self)
+    #property timestamp
+    #property datetime
+    #property time_since_second
+    #property TDC
+    #property TDC_corrected
+    #property ADC
+    #property temps_detector
+    #property temp_crate
+    #property calibration
+    #property HA_direction
+    cpdef set_station(self, station_id)
 
 cdef class event_reader:
     cdef EventReader er
     cdef int i
     cpdef run(self, int run_id)
     cpdef runs(self)
-    cpdef load(self, str path)
+    cpdef load(self, path_to_file)
+    cpdef save(self, path_to_file)
     cpdef int number_of_events(self, int run = ?)
     cpdef int number_of_runs(self)
     cdef Event c_item(self, int i)
     cpdef event item(self, int i)
     
+    cpdef set_station(self, object st)
+    
     #filters
+    cpdef int filter(self, filter_func)
     cpdef int filter_calibrations(self)
     cpdef int filter_maximum_TDC(self)
     cpdef int filter_maximum_ADC(self)
     cpdef int filter_minimum_ADC(self)
 
+#func wrapper for custom func
+cdef event _filter_func_event
+cdef object _filter_func_object
+cdef bint _filter_func(Event& e)
 
 cdef class event_reader_runs:
     cdef event_reader er
@@ -144,3 +174,5 @@ cdef class event_reader_run:
     cdef int _run_id
     cdef int i
     cpdef int run_id(self)
+    cpdef int begin_index(self)
+    cpdef int end_index(self)

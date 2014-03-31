@@ -49,9 +49,9 @@ public:
     static void setFilesDirectory(string dir);
     inline static string getFilesDirectory(){return files_directory;};
     //max distance beetween events in seconds with adding custom run, 0 = withoutadding
+    //not functional
     void checkRuns(int maxDiffbetweenEvents = 0);
     Overlap overlap(EventReader &other);
-    const static string binaryFileHead;
     static array<int,2> fileFromTo(char* filename);
     bool loadDatFile(char* filename);
     bool loadTxtFile(char* filename);
@@ -67,6 +67,7 @@ private:
     int _maxDiffbetweenEvents;
     char* loadedFrom;
     static string files_directory;
+    uint8_t _station;
     vector<Event> events;
     vector<Run> runs;
 };
