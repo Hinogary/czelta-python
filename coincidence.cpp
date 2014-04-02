@@ -28,20 +28,23 @@ void Coincidence::calc(double limit){
     int i[] = {0,0};
     int64_t a,b;
     std::function<void(int,int)> find_coincidence = [this,_limit,&find_coincidence](int i, int j){
-        int64_t a = readers[0]->_item(i).tenthOfNSTimestamp()
-              , b = readers[1]->_item(j).tenthOfNSTimestamp();
+        int64_t a = readers[0]->item(i).tenthOfNSTimestamp()
+              , b = readers[1]->item(j).tenthOfNSTimestamp();
         if(abs(a-b)<_limit){
             numberOfCoincidences++;
             delta.push_back(abs(a-b)/1e10);
-            events[0].push_back(readers[0]->_item(i));
-            events[1].push_back(readers[1]->_item(j));
+            events[0].push_back(readers[0]->item(i));
+            events[1].push_back(readers[1]->item(j));
+            find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
+        }
+        if(readers[0]->item(i).isCalib() || readers[1]->item(i).isCalib()){
             find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
         }
     };
     while(i[0]<readers[0]->numberOfEvents() && i[1]<readers[1]->numberOfEvents()){
-        if(!readers[0]->_item(i[0]).isCalib() && !readers[1]->_item(i[1]).isCalib()){
-            a = readers[0]->_item(i[0]).tenthOfNSTimestamp();
-            b = readers[1]->_item(i[1]).tenthOfNSTimestamp();
+        if(!readers[0]->item(i[0]).isCalib() && !readers[1]->item(i[1]).isCalib()){
+            a = readers[0]->item(i[0]).tenthOfNSTimestamp();
+            b = readers[1]->item(i[1]).tenthOfNSTimestamp();
             find_coincidence(i[0],i[1]);
         }
         if(a>b)
