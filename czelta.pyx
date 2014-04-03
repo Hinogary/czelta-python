@@ -6,6 +6,8 @@ import sys
 import traceback
 
 __version__ = '0.1'
+__all__ = ['station','event','event_reader']
+__author__ = 'Martin Quarda <hinogary@gmail.com>'
 system_encoding = sys.getfilesystemencoding()
 
 
