@@ -122,7 +122,7 @@ cdef class event:
             cdef short* adc = self.e.ADC()
             return (adc[0], adc[1], adc[2])
     property TDC:
-        "Relative time of activation each detector. TDC*25/1e12 = sec. Format: tuple(TDC0, TDC1, TDC2)."
+        "Relative time of activation each detector. TDC*25/1e12 = sec. Format: ``(TDC0, TDC1, TDC2)``."
         def __get__(self):
             cdef short* tdc = self.e.TDC()
             return (tdc[0], tdc[1], tdc[2])
@@ -145,7 +145,7 @@ cdef class event:
         def __get__(self):
             return self.e.isCalib()
     property HA_direction:
-        "Return (horizon, azimuth) direction of shower. Azimuth is from south clockwise. Both values are in Degres. Must have loaded info about stations and set station for ``event``/``event_reader``"
+        "Return ``(horizon, azimuth)`` direction of shower. Azimuth is from south clockwise. Both values are in Degres. Must have loaded info about stations and set station for ``event``/``event_reader``"
         def __get__(self):
             cdef float *HA = self.e.calculateDir()
             if HA[0]==0 and HA[1]==0:

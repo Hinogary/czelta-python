@@ -23,7 +23,7 @@
     
     .. data:: TDC
     
-       Relative time of activation each detector. TDC*25/1e12 = sec. Format: tuple(TDC0, TDC1, TDC2).
+       Relative time of activation each detector. TDC*25/1e12 = sec. Format: ``(TDC0, TDC1, TDC2)``.
     
     .. data:: TDC_corrected
     
@@ -39,6 +39,6 @@
        
     .. data:: HA_direction
     
-       Return (horizon, azimuth) direction of shower. Azimuth is from south clockwise. Both values are in Degres. Must have loaded info about stations and set station for ``event``/``event_reader``.
+       Return ``(horizon, azimuth)`` direction of shower. Azimuth is from south clockwise. Both values are in Degres. Must have loaded info about stations and set station for ``event``/``event_reader``
        
     .. automethod:: set_station(station_id)
