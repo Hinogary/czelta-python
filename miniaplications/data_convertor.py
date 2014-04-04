@@ -34,7 +34,7 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
         
         if self.filter_minimum_ADC.isChecked():
             event_reader.filter_minimum_ADC()
-        event_reader.save(str(fname), filter_x_events.isChecked())
+        event_reader.save(str(fname), self.filter_x_events.isChecked())
         
     def x_events_set_enabled(self, enabled):
         self.filter_x_events.setEnabled(enabled)
