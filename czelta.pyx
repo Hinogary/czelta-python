@@ -116,6 +116,11 @@ cdef class event:
         "Return time elapsed since last second (0-0.999999... sec)."
         def __get__(self):
             return self.e.time_since_second();
+    property ADC:
+        "Relative energy absorbed in each detector. Probably not comparable along different stations. Minimum value is 0 and Maximum is 2047. If it is 2047 it shloud be more."
+        def __get__(self):
+            cdef short* adc = self.e.ADC()
+            return (adc[0], adc[1], adc[2])
     property TDC:
         "Relative time of activation each detector. TDC*25/1e12 = sec. Format: tuple(TDC0, TDC1, TDC2)."
         def __get__(self):
@@ -126,13 +131,8 @@ cdef class event:
         def __get__(self):
             cdef short* tdc = self.e.TDCCorrected()
             return (tdc[0], tdc[1], tdc[2])
-    property ADC:
-        "Relative energy absorbed in each detector. Probably not comparable along different stations. Minimum value is 0 and Maximum is 2047. If it is 2047 it shloud be more."
-        def __get__(self):
-            cdef short* adc = self.e.ADC()
-            return (adc[0], adc[1], adc[2])
     property temps_detector:
-        "Return 3 temps of each detector in time of event-"
+        "Return 3 temps of each detector in time of event."
         def __get__(self):
             cdef float* temps = self.e.temps()
             return (temps[0], temps[1], temps[2])
@@ -145,7 +145,7 @@ cdef class event:
         def __get__(self):
             return self.e.isCalib()
     property HA_direction:
-        "Return (horizon, azimuth) direction of shower. Azimuth is from south clockwise. Both values are in Degres."
+        "Return (horizon, azimuth) direction of shower. Azimuth is from south clockwise. Both values are in Degres. Must have loaded info about stations and set station for ``event``/``event_reader``"
         def __get__(self):
             cdef float *HA = self.e.calculateDir()
             if HA[0]==0 and HA[1]==0:
@@ -159,13 +159,37 @@ cdef class event:
 
 
 cdef class event_reader:
+    """
+    Object containing events loaded from file. Have defined len method returning number of events in event_reader.
+    
+    It is iterable::
+        number_of_events = len(some_event_reader)
+        
+        for event in some_event_reader:
+            # do something with event
+            # for example print event in format same as is in txt.
+            print(str(event))
+    
+    Getting invidual events::
+    
+        some_event = some_event_reader[7]
+    
+    Getting slice of events::
+        
+        #standart index
+        some_events = some_event_reader[7:12]
+        
+        #getting slice by datetime object
+        from datetime import datetime
+        some_events = some_event_reader[datetime(2013,9,1), datetime(2013,9,30)]
+        
+    """
     def __init__(self, str path = ""):
         if(len(path)!=0):
             self.load(path)
     def __len__(self):
         return self.er.numberOfEvents()
     def __getitem__(self, i):
-        "some doc"
         cdef int ii, start, stop
         if type(i)==slice:
             if i.start==None:
@@ -214,6 +238,7 @@ cdef class event_reader:
         else:
             raise StopIteration
     cpdef run(self, int run_id):
+        "Return iterable object containing all events in run"
         return event_reader_run(self, run_id)
     cpdef runs(self):
         "Return iterable object containing all runs."
@@ -230,6 +255,7 @@ cdef class event_reader:
         else:
             raise NotImplementedError("path must be a file with .txt or .dat")
     cpdef save(self, path_to_file, bint x_events = True):
+        "Save events to file. Can save txt or dat(binary files same as from website)."
         bytes_path = path_to_file.encode(system_encoding)
         if bytes_path[-4:].lower()==b".txt":
             if self.er.saveTxtFile(bytes_path, x_events):
@@ -286,16 +312,16 @@ cdef class event_reader:
         _filter_func_event = event()
         return self.er.filter(&_filter_func)
     cpdef int filter_calibrations(self):
-        "Filter all events marked as calibration."
+        "Predefined fast filter. Filter all events marked as calibration."
         return self.er.filterCalibs()
     cpdef int filter_maximum_TDC(self):
-        "Filter all events which have at least one TDC chanel equal maximum value (4095). Events with maximum value have bad measured TDC and sky direction can't be determined right."
+        "Predefined fast filter. Filter all events which have at least one TDC chanel equal maximum value (4095). Events with maximum value have bad measured TDC and sky direction can't be determined right."
         return self.er.filterMaxTDC()
     cpdef int filter_maximum_ADC(self):
-        "Filter all events which have at least one ADC(energy) channel equal maximum value(2047)." 
+        "Predefined fast filter. Filter all events which have at least one ADC(energy) channel equal maximum value(2047)." 
         return self.er.filterMaxADC()
     cpdef int filter_minimum_ADC(self):
-        "Filter all events which have at least one ADC(energy) channel equal zero (Not measured)."
+        "Predefined fast filter. Filter all events which have at least one ADC(energy) channel equal zero (Not measured)."
         return self.er.filterMinADC()
 #filter_func wrapper
 cdef bint _filter_func(Event& e):

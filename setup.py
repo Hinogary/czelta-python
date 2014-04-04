@@ -28,6 +28,7 @@ setup(
   author = 'Martin Quarda',
   author_email = 'hinogary@gmail.com',
   url = 'http://czelta.quarda.cz/',
+  license='LICENSE.txt',
   long_description = open('README.md').read(),
   ext_modules = ext_modules
 )

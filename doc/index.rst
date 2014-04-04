@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
    :numbered:
    
-   tutorials.rst
+   introduction.rst
    reference.rst
 
 
