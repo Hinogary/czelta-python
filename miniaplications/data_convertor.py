@@ -15,6 +15,8 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
     def convert_data(self):
         format = "dat" if self.radio_dat_file.isChecked() else "txt"
         fname = QtGui.QFileDialog.getSaveFileName(self.mainwindow, 'Save file', self.last_directory, "Shower data (*.%s)"%format)
+        if fname=='':
+            return
         if not fname[-4:] in (".txt",".dat"):
             fname += "."+format
 
