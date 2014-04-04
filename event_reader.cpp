@@ -138,13 +138,13 @@ bool EventReader::saveDatFile(char* filename){
     return false;
 }
 
-bool EventReader::saveTxtFile(char* filename){
+bool EventReader::saveTxtFile(char* filename, bool x_events){
     ofstream out;
     out.open(filename);
     if(!out.is_open())return true;
     int next_run = 0;
     for(uint i=0;i<events.size();i++){
-        if(run(next_run).beginIndex == i){
+        if(run(next_run).beginIndex == i && x_events){
             next_run+=1;
             out<<"x 0 0 0 0 0 0 0.0 0 0 0 0 0 0 0.0 0.0 0.0 0.0"<<endl;
         }

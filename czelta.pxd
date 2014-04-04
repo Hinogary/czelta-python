@@ -42,7 +42,7 @@ cdef extern from "event_reader.h":
         bint loadDatFile(char* filename) nogil
         bint loadTxtFile(char* filename) nogil
         bint saveDatFile(char* filename) nogil
-        bint saveTxtFile(char* filename) nogil
+        bint saveTxtFile(char* filename, bint x_events) nogil
         inline Event& item(int index) nogil
         inline Event& item(int run, int index) nogil
         
@@ -144,7 +144,7 @@ cdef class event_reader:
     cpdef run(self, int run_id)
     cpdef runs(self)
     cpdef load(self, path_to_file)
-    cpdef save(self, path_to_file)
+    cpdef save(self, path_to_file, bint x_events = ?)
     cpdef int number_of_events(self, int run = ?)
     cpdef int number_of_runs(self)
     cdef Event c_item(self, int i)

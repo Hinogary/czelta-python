@@ -56,7 +56,7 @@ public:
     bool loadDatFile(char* filename);
     bool loadTxtFile(char* filename);
     bool saveDatFile(char* filename);
-    bool saveTxtFile(char* filename);
+    bool saveTxtFile(char* filename, bool x_events = true);
     void setStation(uint8_t station);
 private:
     void clear();
