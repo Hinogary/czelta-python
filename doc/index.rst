@@ -13,6 +13,7 @@ Contents:
    :numbered:
    
    introduction.rst
+   tutorials.rst
    reference.rst
 
 
