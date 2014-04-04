@@ -229,10 +229,10 @@ cdef class event_reader:
                 raise IOError("can't open or read file: "+path_to_file)
         else:
             raise NotImplementedError("path must be a file with .txt or .dat")
-    cpdef save(self, path_to_file):
+    cpdef save(self, path_to_file, bint x_events = True):
         bytes_path = path_to_file.encode(system_encoding)
         if bytes_path[-4:].lower()==b".txt":
-            if self.er.saveTxtFile(bytes_path):
+            if self.er.saveTxtFile(bytes_path, x_events):
                 raise IOError("can't write file: "+path_to_file)
         elif bytes_path[-4:].lower()==b".dat":
             if self.er.saveDatFile(bytes_path):
