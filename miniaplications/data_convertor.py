@@ -1,6 +1,9 @@
 import data_convertor_ui
+from data_convertor_ui import _translate
 from PyQt4 import QtGui, QtCore
-import sys, os, czelta
+import sys, os, czelta,locale
+
+sys_lang = locale.getdefaultlocale()[0][:2]
 
 class MainWindow(data_convertor_ui.Ui_MainWindow):
 
@@ -38,12 +41,18 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
             if event_reader.save(str(fname), not self.filter_x_events.isChecked()):
                 raise IOError
         except IOError:
-            QtGui.QMessageBox.warning(self.mainwindow, "Error", "Can't save file!")
+            QtGui.QMessageBox.warning(self.mainwindow,
+                _translate("MainWindow", "error_title", None),
+                _translate("MainWindow", "error_cant_save", None))
             return
         except NotImplementedError:
-            QtGui.QMessageBox.warning(self.mainwindow, "Error", "Can't save file - bad suffix!")
+            QtGui.QMessageBox.warning(self.mainwindow,
+                _translate("MainWindow", "error_title", None), 
+                _translate("MainWindow", "error_cant_save_bad_suffix", None))
             return
-        QtGui.QMessageBox.information(self.mainwindow, "Success", "File is successfully saved.")
+        QtGui.QMessageBox.information(self.mainwindow,
+            _translate("MainWindow", "success", None),
+            _translate("MainWindow", "file_saved", None))
         
     def x_events_set_enabled(self, enabled):
         self.filter_x_events.setEnabled(enabled)
@@ -58,5 +67,11 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
+    trans = QtCore.QTranslator()
+    if trans.load("data_convertor_%s.qm"%sys_lang):
+        pass
+    else:
+        trans.load("data_convertor_en.qm")
+    app.installTranslator(trans)
     mw = MainWindow()
     sys.exit(app.exec_())

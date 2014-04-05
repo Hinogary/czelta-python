@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'data_convertor.ui'
 #
-# Created: Fri Apr  4 19:55:19 2014
+# Created: Sat Apr  5 12:31:38 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -93,15 +93,15 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "Czelta data Converter", None))
-        self.label.setText(_translate("MainWindow", "Selected data:", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "czelta_converter", None))
+        self.label.setText(_translate("MainWindow", "selected_data", None))
         self.button_select_data.setText(_translate("MainWindow", "...", None))
-        self.radio_dat_file.setText(_translate("MainWindow", "output Web-like .dat", None))
-        self.radio_txt_file.setText(_translate("MainWindow", "output Web-like .txt", None))
-        self.filter_x_events.setText(_translate("MainWindow", "Filter \"x\" events", None))
-        self.filter_calibrations.setText(_translate("MainWindow", "Filter calibrations", None))
-        self.filter_maximum_TDC.setText(_translate("MainWindow", "Filter events with any TDC = 4095", None))
-        self.filter_maximum_ADC.setText(_translate("MainWindow", "Filter events with any ADC = 2047", None))
-        self.filter_minimum_ADC.setText(_translate("MainWindow", "Filter events with any ADC = 0", None))
-        self.button_convert.setText(_translate("MainWindow", "Convert", None))
+        self.radio_dat_file.setText(_translate("MainWindow", "output_dat", None))
+        self.radio_txt_file.setText(_translate("MainWindow", "output_txt", None))
+        self.filter_x_events.setText(_translate("MainWindow", "filter_x", None))
+        self.filter_calibrations.setText(_translate("MainWindow", "filter_calibrations", None))
+        self.filter_maximum_TDC.setText(_translate("MainWindow", "filter_maximum_TDC", None))
+        self.filter_maximum_ADC.setText(_translate("MainWindow", "filter_maximum_ADC", None))
+        self.filter_minimum_ADC.setText(_translate("MainWindow", "filter_minimum_ADC", None))
+        self.button_convert.setText(_translate("MainWindow", "convert", None))
 

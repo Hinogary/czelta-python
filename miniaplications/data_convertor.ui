@@ -17,7 +17,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Czelta data Converter</string>
+   <string>czelta_converter</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -28,7 +28,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>Selected data:</string>
+           <string>selected_data</string>
           </property>
          </widget>
         </item>
@@ -47,7 +47,7 @@
       <item>
        <widget class="QRadioButton" name="radio_dat_file">
         <property name="text">
-         <string>output Web-like .dat</string>
+         <string>output_dat</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -57,7 +57,7 @@
       <item>
        <widget class="QRadioButton" name="radio_txt_file">
         <property name="text">
-         <string>output Web-like .txt</string>
+         <string>output_txt</string>
         </property>
        </widget>
       </item>
@@ -67,7 +67,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Filter &quot;x&quot; events</string>
+         <string>filter_x</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -94,28 +94,28 @@
       <item>
        <widget class="QCheckBox" name="filter_calibrations">
         <property name="text">
-         <string>Filter calibrations</string>
+         <string>filter_calibrations</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="filter_maximum_TDC">
         <property name="text">
-         <string>Filter events with any TDC = 4095</string>
+         <string>filter_maximum_TDC</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="filter_maximum_ADC">
         <property name="text">
-         <string>Filter events with any ADC = 2047</string>
+         <string>filter_maximum_ADC</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="filter_minimum_ADC">
         <property name="text">
-         <string>Filter events with any ADC = 0</string>
+         <string>filter_minimum_ADC</string>
         </property>
        </widget>
       </item>
@@ -139,7 +139,7 @@
       <item>
        <widget class="QPushButton" name="button_convert">
         <property name="text">
-         <string>Convert</string>
+         <string>convert</string>
         </property>
        </widget>
       </item>
