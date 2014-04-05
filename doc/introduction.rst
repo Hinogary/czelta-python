@@ -7,14 +7,11 @@ Downloads
 
 Binary
 ------
-* `Win32 + Python 2.7 <http://czelta.quarda.cz/downloads/0.1/czelta-win32-python2.7.exe>`_
-* `Win32 + Python 3.4 <http://czelta.quarda.cz/downloads/0.1/czelta-win32-python3.4.exe>`_
-* `Ubuntu 13.10(x86_64) + Python 2.7 <http://czelta.quarda.cz/downloads/0.1/czelta-linux_x86_64-python2.7.deb>`_
-* `Ubuntu 13.10(x86_64) + Python 3.3 <http://czelta.quarda.cz/downloads/0.1/czelta-linux_x86_64-python3.3.deb>`_
+* `Win32 + Python 2.7 <http://czelta.quarda.cz/downloads/0.1-beta/czelta-0.1.win32-py2.7.exe>`_
 
 Source
 ------
-* `version 0.1 <http://czelta.quarda.cz/downloads/0.1/czelta-source-0.1.tar.gz>`_
+* `version 0.1 <http://czelta.quarda.cz/downloads/0.1-beta/czelta-0.1-beta.zip>`_
 * `newest development version <https://github.com/Hinogary/czelta>`_
 
 Installation
@@ -25,10 +22,6 @@ Windows - from Binary
 #. install `Python <https://www.python.org/>`_
 #. download installation for your python version
 #. install from .exe file
-
-Ubuntu - from Binary
---------------------
-#. install package
 
 Windows - from Source
 ---------------------
