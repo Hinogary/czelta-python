@@ -5,6 +5,10 @@ import sys, os, czelta,locale
 
 sys_lang = locale.getdefaultlocale()[0][:2]
 
+for i in range(len(sys.argv)):
+    if sys.argv[i]=="-lang":
+        sys_lang = sys.argv[i+1]
+
 class MainWindow(data_convertor_ui.Ui_MainWindow):
 
     def select_data(self):
