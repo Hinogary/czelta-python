@@ -36,7 +36,7 @@
     <message>
         <location filename="data_convertor.ui" line="97"/>
         <source>filter_calibrations</source>
-        <translation>Filtrovat calibrations events (events marked &quot;c&quot;)</translation>
+        <translation>Filter calibrations events (events marked &quot;c&quot;)</translation>
     </message>
     <message>
         <location filename="data_convertor.ui" line="104"/>
