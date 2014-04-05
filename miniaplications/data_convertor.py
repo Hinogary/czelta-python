@@ -34,7 +34,16 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
         
         if self.filter_minimum_ADC.isChecked():
             event_reader.filter_minimum_ADC()
-        event_reader.save(str(fname), not self.filter_x_events.isChecked())
+        try:
+            if event_reader.save(str(fname), not self.filter_x_events.isChecked()):
+                raise IOError
+        except IOError:
+            QtGui.QMessageBox.warning(self.mainwindow, "Error", "Can't save file!")
+            return
+        except NotImplementedError:
+            QtGui.QMessageBox.warning(self.mainwindow, "Error", "Can't save file - bad suffix!")
+            return
+        QtGui.QMessageBox.information(self.mainwindow, "Success", "File is successfully saved.")
         
     def x_events_set_enabled(self, enabled):
         self.filter_x_events.setEnabled(enabled)

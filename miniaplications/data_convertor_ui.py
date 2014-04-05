@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'data_convertor.ui'
 #
-# Created: Fri Apr  4 19:52:48 2014
+# Created: Fri Apr  4 19:55:19 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
         MainWindow.setEnabled(True)
-        MainWindow.resize(691, 216)
+        MainWindow.resize(755, 139)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
@@ -47,23 +47,23 @@ class Ui_MainWindow(object):
         self.button_select_data.setObjectName(_fromUtf8("button_select_data"))
         self.horizontalLayout_2.addWidget(self.button_select_data)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+        self.radio_dat_file = QtGui.QRadioButton(self.centralwidget)
+        self.radio_dat_file.setChecked(True)
+        self.radio_dat_file.setObjectName(_fromUtf8("radio_dat_file"))
+        self.verticalLayout_2.addWidget(self.radio_dat_file)
+        self.radio_txt_file = QtGui.QRadioButton(self.centralwidget)
+        self.radio_txt_file.setObjectName(_fromUtf8("radio_txt_file"))
+        self.verticalLayout_2.addWidget(self.radio_txt_file)
+        self.filter_x_events = QtGui.QCheckBox(self.centralwidget)
+        self.filter_x_events.setEnabled(False)
+        self.filter_x_events.setCheckable(True)
+        self.filter_x_events.setObjectName(_fromUtf8("filter_x_events"))
+        self.verticalLayout_2.addWidget(self.filter_x_events)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.radio_dat_file = QtGui.QRadioButton(self.centralwidget)
-        self.radio_dat_file.setChecked(True)
-        self.radio_dat_file.setObjectName(_fromUtf8("radio_dat_file"))
-        self.verticalLayout.addWidget(self.radio_dat_file)
-        self.radio_txt_file = QtGui.QRadioButton(self.centralwidget)
-        self.radio_txt_file.setObjectName(_fromUtf8("radio_txt_file"))
-        self.verticalLayout.addWidget(self.radio_txt_file)
-        self.filter_x_events = QtGui.QCheckBox(self.centralwidget)
-        self.filter_x_events.setEnabled(False)
-        self.filter_x_events.setCheckable(True)
-        self.filter_x_events.setObjectName(_fromUtf8("filter_x_events"))
-        self.verticalLayout.addWidget(self.filter_x_events)
         self.filter_calibrations = QtGui.QCheckBox(self.centralwidget)
         self.filter_calibrations.setObjectName(_fromUtf8("filter_calibrations"))
         self.verticalLayout.addWidget(self.filter_calibrations)
