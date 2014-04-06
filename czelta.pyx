@@ -6,11 +6,16 @@ import sys
 import traceback
 
 __version__ = '0.1'
-__all__ = ['station','event','event_reader']
+__all__ = ['station','event','event_reader','date_to_timestamp']
 __author__ = 'Martin Quarda <hinogary@gmail.com>'
 system_encoding = sys.getfilesystemencoding()
 
-
+cpdef int date_to_timestamp(d):
+    "Convert string or datetime object to timestamp. Example date: '27.4.2013 17:44:53'. Datetime is interpreted as UTC."
+    if type(d)==datetime.datetime:
+        return date(d.year, d.month, d.day, d.hour, d.minute, d.second)
+    else:
+        return date(<string>d.encode(system_encoding))
 
 cdef class station:
     "Class for working with station data."
@@ -195,8 +200,7 @@ cdef class event_reader:
             if i.start==None:
                 start = 0
             elif type(i.start)==datetime.datetime:
-                d = i.start
-                start = date(d.year, d.month, d.day, d.hour, d.minute, d.second) 
+                start = date_to_timestamp(i.start)
                 start = self.er.firstOlderThan(start)
             else:
                 start = i.start
@@ -205,8 +209,7 @@ cdef class event_reader:
             if i.stop==None:
                 stop = self.er.numberOfEvents()
             elif type(i.stop)==datetime.datetime:
-                d = i.stop
-                stop = date(d.year, d.month, d.day, d.hour, d.minute, d.second) 
+                stop = date_to_timestamp(i.stop)
                 stop = self.er.firstOlderThan(stop)
             else:
                 stop = i.stop
@@ -391,18 +394,14 @@ cdef class event_reader_run:
     def __len__(self):
         return self.er.er.numberOfEvents(self._run_id)
     def __getitem__(self, i):
-        cdef int ii, start, stop, step
+        cdef int ii, start, stop
         if type(i)==slice:
+            if i.step != 0:
+                raise NotImplementedError
             start = 0 if not i.start else i.start if i.start>=0 else self.er.er.numberOfEvents(self._run_id)+i.start
             stop = self.er.er.numberOfEvents(self._run_id) if not i.stop else i.stop if i.stop>=0 else self.er.er.numberOfEvents(self._run_id)+i.stop
-            step = i.step if i.step else 1
-            if step <= 0:
-                raise NotImplementedError
             es = []
-            #currently not optimized to c loop (17.1.2014)
-            #for ii in range(start, stop, step):
-            #deprecated but optimized to c loop
-            for ii from start <= ii < stop by step:
+            for ii in range(start,stop):
                 e = event()
                 e.set(self.er.er.item(self._run_id, ii))
                 es.append(e)

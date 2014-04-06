@@ -113,6 +113,7 @@ cdef extern from "common_func.h" nogil:
     int date(int year, int month, int day, int hour, int minute)
     int date(int year, int month, int day, int hour, int minute, int second)
 
+cpdef int date_to_timestamp(date)
 
 cdef class station:
     cdef Station* st
