@@ -100,5 +100,17 @@
         <source>chance</source>
         <translation>Pravděpodobnost:</translation>
     </message>
+    <message>
+        <source>error_title</source>
+        <translation>Chyba!</translation>
+    </message>
+    <message>
+        <source>error_cant_open_data_1</source>
+        <translation>Chyba - nelze otevřít data 1. stanice!</translation>
+    </message>
+    <message>
+        <source>error_cant_open_data_2</source>
+        <translation>Chyba - nelue otevřít data 2. stanice!</translation>
+    </message>
 </context>
 </TS>

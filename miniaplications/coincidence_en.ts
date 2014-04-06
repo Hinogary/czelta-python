@@ -6,7 +6,7 @@
     <message>
         <location filename="coincidence.ui" line="14"/>
         <source>coincidence_title</source>
-        <translation>Doube coincidences</translation>
+        <translation>Double coincidences</translation>
     </message>
     <message>
         <location filename="coincidence.ui" line="21"/>
@@ -99,6 +99,18 @@
         <location filename="coincidence.ui" line="249"/>
         <source>chance</source>
         <translation>Expectation:</translation>
+    </message>
+    <message>
+        <source>error_title</source>
+        <translation>Error!</translation>
+    </message>
+    <message>
+        <source>error_cant_open_data_1</source>
+        <translation>Error, can't open data of 1. station!</translation>
+    </message>
+    <message>
+        <source>error_cant_open_data_2</source>
+        <translation>Error, can't open data of 2. station!</translation>
     </message>
 </context>
 </TS>
