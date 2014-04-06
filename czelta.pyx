@@ -180,7 +180,32 @@ cdef class coincidene:
                 st_id = (<event_reader>event_readers[st]).er.getStation();
                 self.c.stations[st] = st_id
         self.c.calc(max_difference)
-
+    def __len__(self):
+        return self.c.numberOfCoincidences
+    property delta:
+        def __get__(self):
+            return list(self.c.delta)
+    property stations:
+        def __get__(self):
+            return self.c.stations[0], self.c.stations[1]
+    property events:
+        def __get__(self):
+            cdef Event e
+            cdef event ev
+            rtn = [],[]
+            for e in self.c.events[0]:
+                ev = event()
+                ev.set(e)
+                rtn[0].append(ev)
+            for e in self.c.events[1]:
+                ev = event()
+                ev.set(e)
+                rtn[1].append(ev)
+            return rtn
+    property max_difference:
+        def __get__(self):
+            return c.limit
+    property 
 
 cdef class event_reader:
     """
