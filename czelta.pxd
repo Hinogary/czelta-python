@@ -106,6 +106,20 @@ cdef extern from "event.h" nogil:
         float* calculateDir()
         inline void setStation(int station)
 
+cdef extern from "coincidence.h" nogil:
+    cppclass Coincidence:
+        Coincidence() except +
+        EventReader *readers[2]
+        vector[double] delta
+        vector[Event] *events
+        double limit
+        int numberOfCoincidences
+        #Overlap overlap
+        double medium_value
+        double chance
+        
+        void calc(double limit)
+
 cdef extern from "common_func.h" nogil:
     double deltaDirection(double hor1, double az1, double hor2, double az2)
     int date(string date)
@@ -137,6 +151,11 @@ cdef class event:
     #property calibration
     #property HA_direction
     cpdef set_station(self, station_id)
+
+cdef class coincidene:
+    cdef Coincidence c
+    #def __init__(self, event_readers, max_difference, save_events)
+    #property stations
 
 cdef class event_reader:
     cdef EventReader er

@@ -158,6 +158,15 @@ cdef class event:
 
 
 
+cdef class coincidene:
+    def __init__(self,event_readers,int max_difference,bint save_events = True):
+        if len(event_readers_tuple)!=2
+           or not isinstance(event_readers_tuple[0],event_reader)
+           or not isinstance(event_readers_tuple[1],event_reader):
+           
+
+
+
 cdef class event_reader:
     """
     Object containing events loaded from file. Have defined len method returning number of events in event_reader.
