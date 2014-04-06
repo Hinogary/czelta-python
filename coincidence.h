@@ -12,7 +12,7 @@ public:
     Coincidence();
     void calc(double limit, bool save_events = true);
     EventReader *readers[2];
-    Station *stations[2];
+    uint8_t stations[2];
     vector<double> delta;
     vector<Event> events[2];
     double limit;
