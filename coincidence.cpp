@@ -27,6 +27,8 @@ void Coincidence::calc(double limit, bool save_events){
     overlap = readers[0]->overlap(*readers[1]);
     int i[] = {0,0};
     std::function<void(int,int)> find_coincidence = [this,_limit,&find_coincidence, save_events](int i, int j){
+        if(i >= readers[0]->numberOfEvents() || j >= readers[1]->numberOfEvents())
+            return;
         int64_t a = readers[0]->item(i).tenthOfNSTimestamp()
               , b = readers[1]->item(j).tenthOfNSTimestamp();
         if(abs(a-b)<_limit){
