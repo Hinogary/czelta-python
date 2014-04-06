@@ -50,7 +50,7 @@ public:
     inline static string getFilesDirectory(){return files_directory;};
     //void checkRuns(int maxDiffbetweenEvents = 0);
     Overlap overlap(EventReader &other);
-    static array<int,2> fileFromTo(char* filename);
+    static uint32_t* fileFromTo(char* filename);
     bool loadDatFile(char* filename);
     bool loadTxtFile(char* filename);
     bool saveDatFile(char* filename);

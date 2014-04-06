@@ -259,10 +259,12 @@ Overlap EventReader::overlap(EventReader &other){
     return rtn;
 }
 
-array<int,2> EventReader::fileFromTo(char* filename){
+uint32_t* EventReader::fileFromTo(char* filename){
+    static uint32_t fromto[2];
+    fromto[0] = 0;
+    fromto[1] = 0;
     ifstream in(filename);
     char line[90];
-    array<int,2> rtn = {0,0};
     in.read(line,16);
     if(line[0]=='x' || line[0]=='c' || line[0]=='a'){
         in.seekg(0);
@@ -270,25 +272,30 @@ array<int,2> EventReader::fileFromTo(char* filename){
         if(line[0]=='x')
             in.getline(line,90);
         int year,month,day,hour,minute,second;
-        sscanf(line+2,"%d %d %d %d %d %d",&year,&month,&day,&hour,&minute,&second);
-        rtn[0] = date(year,month,day,hour,minute,second);
+        if(sscanf(line+2,"%d %d %d %d %d %d",&year,&month,&day,&hour,&minute,&second)!=6)
+            return fromto;
+        fromto[0] = date(year,month,day,hour,minute,second);
         in.seekg(-100,ios_base::end);
         in.getline(line,90);
         in.getline(line,90);
-        sscanf(line+2,"%d %d %d %d %d %d",&year,&month,&day,&hour,&minute,&second);
-        rtn[1] = date(year,month,day,hour,minute,second);
+        if(sscanf(line+2,"%d %d %d %d %d %d",&year,&month,&day,&hour,&minute,&second)!=6){
+            fromto[0] = 0;
+            return fromto;
+        };
+        fromto[1] = date(year,month,day,hour,minute,second);
     }else{
         line[16]='\0';
         const string head = "CzeltaDataFile.1";
         if(head!=line){
-            return rtn;
+            return fromto;
         }
         in.read(line,4);
-        rtn[0] = *(int*)line;
+        fromto[0] = *(uint32_t*)line;
         in.seekg(-32,ios_base::end);
         in.read(line,4);
+        fromto[1] = *(uint32_t*)line;
     }
-    return rtn;
+    return fromto;
 }
 
 void EventReader::setStation(uint8_t station){
