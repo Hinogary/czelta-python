@@ -230,6 +230,9 @@ cdef class coincidence:
     property expected_value:
         def __get__(self):
             return self.c.medium_value
+    property chance:
+        def __get__(self):
+            return self.c.chance
 
 cdef class event_reader:
     """
