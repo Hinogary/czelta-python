@@ -112,6 +112,7 @@ cdef extern from "coincidence.h" nogil:
         Coincidence() except +
         EventReader *readers[2]
         int stations[2]
+        bint events_saved
         vector[double] delta
         vector[Event] *events
         double limit
@@ -121,6 +122,7 @@ cdef extern from "coincidence.h" nogil:
         double chance
         
         void calc(double limit)
+        void calc(double limit, bint save_events)
 
 cdef extern from "common_func.h" nogil:
     double deltaDirection(double hor1, double az1, double hor2, double az2)
@@ -157,7 +159,7 @@ cdef class event:
 cdef class coincidence:
     cdef Coincidence c
     cdef int i
-    #def __init__(self, event_readers, max_difference, stations, save_events)
+    #def __init__(self, event_readers, max_difference, save_events, stations)
     #property stations
 
 cdef class event_reader:

@@ -160,7 +160,7 @@ cdef class event:
 
 
 cdef class coincidence:
-    def __init__(self,event_readers,float max_difference, stations = None, bint save_events = True):
+    def __init__(self,event_readers,float max_difference, bint save_events = True, stations = None):
         cdef int st_id, st
         if len(event_readers)!=2 or \
             not isinstance(event_readers[0],event_reader) or \
@@ -180,7 +180,7 @@ cdef class coincidence:
             for st in range(len(event_readers)):
                 st_id = (<event_reader>event_readers[st]).er.getStation();
                 self.c.stations[st] = st_id
-        self.c.calc(max_difference)
+        self.c.calc(max_difference, save_events)
     def __len__(self):
         return self.c.numberOfCoincidences
     def __getitem__(self, index):
@@ -188,10 +188,13 @@ cdef class coincidence:
         if type(index) != int:
             raise TypeError
         i = index
-        rtn = (self.c.delta[i], event(), event())
-        (<event>rtn[1]).set(self.c.events[0][i])
-        (<event>rtn[2]).set(self.c.events[1][i])
-        return rtn
+        if self.c.events_saved:
+            rtn = (self.c.delta[i], event(), event())
+            (<event>rtn[1]).set(self.c.events[0][i])
+            (<event>rtn[2]).set(self.c.events[1][i])
+            return rtn
+        else:
+            return (self.c.delta[i],)
     def __iter__(self):
         self.i = -1
         return self
@@ -211,6 +214,8 @@ cdef class coincidence:
         def __get__(self):
             cdef Event e
             cdef event ev
+            if not self.c.events_saved:
+                return AttributeError("You have calculated coincidences without events")
             rtn = [],[]
             for e in self.c.events[0]:
                 ev = event()
