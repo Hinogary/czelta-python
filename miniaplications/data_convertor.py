@@ -69,7 +69,7 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
         QtCore.QObject.connect(self.button_convert, QtCore.SIGNAL('clicked()'), self.convert_data)
         QtCore.QObject.connect(self.radio_txt_file, QtCore.SIGNAL('toggled(bool)'), self.x_events_set_enabled)
 
-if __name__ == "__main__":
+def main():
     app = QtGui.QApplication(sys.argv)
     trans = QtCore.QTranslator()
     if trans.load("data_convertor_%s.qm"%sys_lang):
@@ -79,3 +79,6 @@ if __name__ == "__main__":
     app.installTranslator(trans)
     mw = MainWindow()
     sys.exit(app.exec_())
+    
+if __name__ == "__main__":
+    main()
