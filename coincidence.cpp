@@ -30,22 +30,21 @@ void Coincidence::calc(double limit, bool save_events){
         int64_t a = readers[0]->item(i).tenthOfNSTimestamp()
               , b = readers[1]->item(j).tenthOfNSTimestamp();
         if(abs(a-b)<_limit){
-            numberOfCoincidences++;
-            delta.push_back(abs(a-b)/1e10);
-            if(save_events){
-                events[0].push_back(readers[0]->item(i));
-                events[1].push_back(readers[1]->item(j));
+            if(readers[0]->item(i).isCalib() || readers[1]->item(i).isCalib()){
+                find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
+            }else{
+                numberOfCoincidences++;
+                delta.push_back(abs(a-b)/1e10);
+                if(save_events){
+                    events[0].push_back(readers[0]->item(i));
+                    events[1].push_back(readers[1]->item(j));
+                }
+                find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
             }
-            find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
-        }
-        if(readers[0]->item(i).isCalib() || readers[1]->item(i).isCalib()){
-            find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
         }
     };
     while(i[0]<readers[0]->numberOfEvents() && i[1]<readers[1]->numberOfEvents()){
-        if(!readers[0]->item(i[0]).isCalib() && !readers[1]->item(i[1]).isCalib()){
-            find_coincidence(i[0],i[1]);
-        }
+        find_coincidence(i[0],i[1]);
         if(readers[0]->item(i[0]).tenthOfNSTimestamp() > readers[1]->item(i[1]).tenthOfNSTimestamp())
             i[1]++;
         else
