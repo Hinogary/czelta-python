@@ -72,10 +72,7 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
 def main():
     app = QtGui.QApplication(sys.argv)
     trans = QtCore.QTranslator()
-    if trans.load("data_convertor_%s.qm"%sys_lang):
-        pass
-    else:
-        trans.load("data_convertor_en.qm")
+    trans.load("data_convertor_%s.qm"%sys_lang) or trans.load("data_convertor_en.qm")
     app.installTranslator(trans)
     mw = MainWindow()
     sys.exit(app.exec_())
