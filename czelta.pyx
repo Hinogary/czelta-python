@@ -326,6 +326,8 @@ cdef class event_reader:
         return event_reader_runs(self)
     cpdef load(self, path_to_file):
         "Load events from file. This delete all current events and tries to load events from file"
+        if path_to_file == '':  
+            raise IOError
         if path_to_file[0]=='~':
             path_to_file = expanduser('~')+path_to_file[1:]
         cdef bytes bytes_path = path_to_file.encode(system_encoding)
