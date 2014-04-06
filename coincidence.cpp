@@ -33,17 +33,15 @@ void Coincidence::calc(double limit, bool save_events){
         int64_t a = readers[0]->item(i).tenthOfNSTimestamp()
               , b = readers[1]->item(j).tenthOfNSTimestamp();
         if(abs(a-b)<_limit){
-            if(readers[0]->item(i).isCalib() || readers[1]->item(j).isCalib()){
-                find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
-            }else{
+            if(!readers[0]->item(i).isCalib() && !readers[1]->item(j).isCalib()){
                 numberOfCoincidences++;
                 delta.push_back(abs(a-b)/1e10);
                 if(events_saved){
                     events[0].push_back(readers[0]->item(i));
                     events[1].push_back(readers[1]->item(j));
                 }
-                find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
             }
+            find_coincidence(i+(a>=b?1:0),j+(a<b?1:0));
         }
     };
     while(i[0]<readers[0]->numberOfEvents() && i[1]<readers[1]->numberOfEvents()){
