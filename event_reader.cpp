@@ -164,35 +164,6 @@ void EventReader::addRun(int endIndex){
     runs.push_back(Run{events[startIndex].timestamp(),startIndex,events[endIndex-1].timestamp(),endIndex});
 }
 
-void EventReader::checkRuns(int maxDiffbetweenEvents){
-    /*
-    if(events.size()==0)return;
-    if(maxDiffbetweenEvents==0)
-        maxDiffbetweenEvents = _maxDiffbetweenEvents;
-    else
-        _maxDiffbetweenEvents = maxDiffbetweenEvents;
-    runs.clear();
-    events[0]._byte|=4;
-    int beforeTimestamp = events[0].timestamp();
-    if(maxDiffbetweenEvents<=0)
-        for(uint i=1;i<events.size();i++){
-            if(events[i].isRun())
-                addRun(i-1);
-        }
-    else
-        for(uint i=1;i<events.size();i++){
-            if(events[i].isRun() || (events[i].timestamp()-beforeTimestamp>maxDiffbetweenEvents)){
-                addRun(i-1);
-                events[i]._byte |= 4;
-            }
-            beforeTimestamp = events[i].timestamp();
-        }
-    addRun(events.size()-1);
-    runs.shrink_to_fit();
-    */
-}
-
-
 int EventReader::filter(function<bool(Event&)> filter_func){
     uint current = 0;
     auto old_runs = runs;
