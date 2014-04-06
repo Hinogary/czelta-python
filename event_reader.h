@@ -58,6 +58,7 @@ public:
     bool saveDatFile(char* filename);
     bool saveTxtFile(char* filename, bool x_events = true);
     void setStation(uint8_t station);
+    inline int getStation(){return _station;};
 private:
     void clear();
     double _progress;
