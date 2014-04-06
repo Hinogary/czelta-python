@@ -61,8 +61,6 @@ private:
     double _progress;
     void addRun(int endIndex = 0);
     bool _clearedCalibs;
-    bool _calculeddirs;
-    int _maxDiffbetweenEvents;
     char* loadedFrom;
     static string files_directory;
     uint8_t _station;

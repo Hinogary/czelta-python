@@ -8,12 +8,10 @@
 string EventReader::files_directory = "";
 
 EventReader::EventReader(){
-    _maxDiffbetweenEvents = 0;
     _station = 0;
 }
 
 EventReader::~EventReader() {
-    _maxDiffbetweenEvents = 0;
     clear();
 }
 
@@ -187,7 +185,6 @@ int EventReader::filter(function<bool(Event&)> filter_func){
 
 void EventReader::clear(){
     _clearedCalibs = false;
-    _calculeddirs = false;
     events.clear();
     runs.clear();
 }
