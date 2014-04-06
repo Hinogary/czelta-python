@@ -194,12 +194,13 @@ cdef class coincidence:
         return rtn
     def __iter__(self):
         self.i = -1
+        return self
     def __next__(self):
         self.i += 1
-        if self.i <= self.c.numberOfCoincidences:
+        if self.i < self.c.numberOfCoincidences:
             return self[self.i]
         else:
-            return StopIteration
+            raise StopIteration
     property delta:
         def __get__(self):
             return list(self.c.delta)
