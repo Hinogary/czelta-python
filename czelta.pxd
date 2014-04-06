@@ -154,8 +154,9 @@ cdef class event:
     #property HA_direction
     cpdef set_station(self, station_id)
 
-cdef class coincidene:
+cdef class coincidence:
     cdef Coincidence c
+    cdef int i
     #def __init__(self, event_readers, max_difference, stations, save_events)
     #property stations
 
