@@ -30,7 +30,7 @@ void Coincidence::calc(double limit, bool save_events){
         int64_t a = readers[0]->item(i).tenthOfNSTimestamp()
               , b = readers[1]->item(j).tenthOfNSTimestamp();
         if(abs(a-b)<_limit){
-            if(readers[0]->item(i).isCalib() || readers[1]->item(i).isCalib()){
+            if(readers[0]->item(i).isCalib() || readers[1]->item(j).isCalib()){
                 find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
             }else{
                 numberOfCoincidences++;
