@@ -13,6 +13,7 @@ public:
     void calc(double limit, bool save_events = true);
     EventReader *readers[2];
     uint8_t stations[2];
+    bool events_saved;
     vector<double> delta;
     vector<Event> events[2];
     double limit;

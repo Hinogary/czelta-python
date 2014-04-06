@@ -18,6 +18,7 @@ double fac(int n)
 }
 
 void Coincidence::calc(double limit, bool save_events){
+    events_saved = save_events;
     numberOfCoincidences = 0;
     events[0].clear();
     events[1].clear();
@@ -26,7 +27,7 @@ void Coincidence::calc(double limit, bool save_events){
     int _limit = static_cast<int>(limit*10000000000);
     overlap = readers[0]->overlap(*readers[1]);
     int i[] = {0,0};
-    std::function<void(int,int)> find_coincidence = [this,_limit,&find_coincidence, save_events](int i, int j){
+    std::function<void(int,int)> find_coincidence = [this,_limit,&find_coincidence](int i, int j){
         if(i >= readers[0]->numberOfEvents() || j >= readers[1]->numberOfEvents())
             return;
         int64_t a = readers[0]->item(i).tenthOfNSTimestamp()
@@ -37,7 +38,7 @@ void Coincidence::calc(double limit, bool save_events){
             }else{
                 numberOfCoincidences++;
                 delta.push_back(abs(a-b)/1e10);
-                if(save_events){
+                if(events_saved){
                     events[0].push_back(readers[0]->item(i));
                     events[1].push_back(readers[1]->item(j));
                 }
