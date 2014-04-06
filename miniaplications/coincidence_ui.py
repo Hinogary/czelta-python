@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'coincidence.ui'
 #
-# Created: Sun Apr  6 20:52:41 2014
+# Created: Sun Apr  6 22:04:25 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(488, 586)
+        MainWindow.resize(451, 614)
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName(_fromUtf8("centralWidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.centralWidget)
@@ -74,8 +74,9 @@ class Ui_MainWindow(object):
         self.delta_spin.setObjectName(_fromUtf8("delta_spin"))
         self.gridLayout.addWidget(self.delta_spin, 0, 1, 1, 1)
         self.save_events = QtGui.QCheckBox(self.groupBox_3)
+        self.save_events.setChecked(True)
         self.save_events.setObjectName(_fromUtf8("save_events"))
-        self.gridLayout.addWidget(self.save_events, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.save_events, 1, 0, 1, 2)
         self.verticalLayout.addWidget(self.groupBox_3)
         self.calc_coincidences = QtGui.QPushButton(self.centralWidget)
         self.calc_coincidences.setObjectName(_fromUtf8("calc_coincidences"))
@@ -192,6 +193,7 @@ class Ui_MainWindow(object):
         self.delta_spin.setSuffix(_translate("MainWindow", " μs", None))
         self.save_events.setText(_translate("MainWindow", "save_events", None))
         self.calc_coincidences.setText(_translate("MainWindow", "find_coincidence", None))
+        self.groupBox_4.setTitle(_translate("MainWindow", "result", None))
         self.label_4.setText(_translate("MainWindow", "number_of_coincidnces", None))
         self.label_5.setText(_translate("MainWindow", "total_measure_time", None))
         self.label_6.setText(_translate("MainWindow", "sum_1_station", None))

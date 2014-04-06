@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
-    <height>586</height>
+    <width>451</width>
+    <height>614</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -99,10 +99,13 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="1" column="0" colspan="2">
         <widget class="QCheckBox" name="save_events">
          <property name="text">
           <string>save_events</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -126,6 +129,9 @@
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="title">
+       <string>result</string>
       </property>
       <layout class="QFormLayout" name="formLayout">
        <property name="fieldGrowthPolicy">
