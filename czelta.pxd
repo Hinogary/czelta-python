@@ -47,6 +47,7 @@ cdef extern from "event_reader.h":
         inline Event& item(int run, int index) nogil
         
         void setStation(int station) nogil
+        inline int getStation() nogil
         
         int firstOlderThan(int timestamp) nogil
         int lastEarlierThan(int timestamp) nogil
@@ -110,6 +111,7 @@ cdef extern from "coincidence.h" nogil:
     cppclass Coincidence:
         Coincidence() except +
         EventReader *readers[2]
+        int stations[2]
         vector[double] delta
         vector[Event] *events
         double limit
@@ -154,7 +156,7 @@ cdef class event:
 
 cdef class coincidene:
     cdef Coincidence c
-    #def __init__(self, event_readers, max_difference, save_events)
+    #def __init__(self, event_readers, max_difference, stations, save_events)
     #property stations
 
 cdef class event_reader:

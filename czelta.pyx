@@ -159,12 +159,27 @@ cdef class event:
 
 
 cdef class coincidene:
-    def __init__(self,event_readers,int max_difference,bint save_events = True):
-        if len(event_readers_tuple)!=2
-           or not isinstance(event_readers_tuple[0],event_reader)
-           or not isinstance(event_readers_tuple[1],event_reader):
-           
-
+    def __init__(self,event_readers,float max_difference, stations = None, bint save_events = True):
+        cdef int st_id, st
+        if len(event_readers)!=2 or \
+            not isinstance(event_readers[0],event_reader) or \
+            not isinstance(event_readers[1],event_reader):
+           raise TypeError
+        self.c.readers[0] = &(<event_reader>event_readers[0]).er
+        self.c.readers[1] = &(<event_reader>event_readers[1]).er
+        if len(stations)==len(event_readers):
+            for st in range(len(stations)):
+                st_id = 0
+                if type(stations[st]) == station:
+                    st_id = stations[st].id()
+                else:
+                    st_id = station(stations[st]).id()
+                self.c.stations[st] = st_id
+        else:
+            for st in range(len(event_readers)):
+                st_id = (<event_reader>event_readers[st]).er.getStation();
+                self.c.stations[st] = st_id
+        self.c.calc(max_difference)
 
 
 cdef class event_reader:
