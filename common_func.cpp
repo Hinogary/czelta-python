@@ -71,8 +71,8 @@ float* localToGlobalDirection(float* local_direction, float* gps_position, time_
     static float rtn[2];
     rtn[0] = 0;
     rtn[1] = 0;
-#define horizon local_direction[0]
-#define azimut local_direction[1]
+#define horizon local_direction[1]
+#define azimut local_direction[0]
 #define longtitude gps_position[1]
 #define altitude gps_position[0]
 #define declination rtn[0]
