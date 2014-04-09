@@ -54,6 +54,29 @@ time_t date(int year, int month, int day, int hour, int minute, int second) {
 double getJulianFromUnix( time_t unixSecs ){
    return ( unixSecs / 86400.0 ) + 2440587.5;
 }
+double lSideRealFromUnix(time_t unixSecs, float degres_longtitude){
+//returned time is in radians
+
+//sidereal time 0:00:00 1.1.1970 on longtitude 0
+#define ZERO_SIDEREAL_TIME (24054.40168883)
+#define SIDEREAL_DAY_TO_DAY (1.002737909350795)
+    double side_real_unix = unixSecs*SIDEREAL_DAY_TO_DAY+ZERO_SIDEREAL_TIME;
+    time_t side_real_days = floor(side_real_unix/86400.0);
+    return side_real_unix-side_real_days*86400;
+}
+
+float* localToGlobalDirection(float* local_direction, float* gps_position){
+    static float rtn[2];
+    rtn[0] = 0;
+    rtn[1] = 1;
+// sin(declination) = sin(horizon) * sin(longitude) - cos(horizon) * cos(azimut) * cos(longtitude)
+// cos(some time) = (sin(horizon) * cos(longtitude) + cos(azimut) * sin(longtitude))/cos(declination)
+// sin(some time) = cos(horizon) * sin(azimut) / cos(declination)
+// right ascention = SideReal local time - some time
+    rtn[0] = acos(sin(local_direction[0])*sin(gps_position[1]) -
+                cos(local_direction[0])*cos(local_direction[1])*cos(gps_position[1]));
+    return rtn;
+}
 
 #ifdef _WIN32
 //own light mktime, and gmtime because standart library of windows is ...

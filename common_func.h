@@ -16,5 +16,7 @@ time_t date(int year, int month, int day);
 time_t date(int year, int month, int day, int hour, int minute);
 time_t date(int year, int month, int day, int hour, int minute, int second);
 double getJulianFromUnix(time_t unixSecs);
+double lSideRealFromUnix(time_t unixSecs, float degres_longtitude);
+float* localToGlobalDirection(float* local_direction, float* gps_position);
 #endif	/* COMMONFUNC_H */
 
