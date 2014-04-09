@@ -20,7 +20,7 @@ public:
     Station(int ID);
     short* lastTDCCorrect();
     short* TDCCorrect(time_t time);
-    double* detectorPosition();
+    float* detectorPosition();
     //latitude, longtitude, height
     double* GPSPosition();
     ~Station();
@@ -30,7 +30,7 @@ public:
 
     void setName(char* name);
     void setGPSPosition(double latitude, double longitude, double height);
-    void setDetectorPosition(double x1, double y1, double x2, double y2);
+    void setDetectorPosition(float x1, float y1, float x2, float y2);
     void clearTDCCorrect(int capacity=1);
     void pushTDCCorrect(time_t from, short tdc0, short tdc1, short tdc2);
     void pushTDCCorrect(string from, short tdc0, short tdc1, short tdc2);
@@ -57,7 +57,7 @@ private:
     string _name;
     vector<string> _file_names;
     double _gpsposition[3];
-    double _detectorpos[4];
+    float _detectorpos[4];
     vector<TDCCorrection> _TDCCorections;
 };
 #endif	/* STATION_H */

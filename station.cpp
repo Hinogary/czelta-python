@@ -83,14 +83,14 @@ void Station::setGPSPosition(double latitude, double longitude, double height){
     _gpsposition[2] = height;
 }
 
-void Station::setDetectorPosition(double x1, double y1, double x2, double y2){
+void Station::setDetectorPosition(float x1, float y1, float x2, float y2){
     _detectorpos[0] = x1;
     _detectorpos[1] = y1;
     _detectorpos[2] = x2;
     _detectorpos[3] = y2;
 }
 
-double* Station::detectorPosition(){
+float* Station::detectorPosition(){
     return _detectorpos;
 }
 
