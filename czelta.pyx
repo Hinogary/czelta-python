@@ -149,7 +149,7 @@ cdef class event:
         "Calibration events are events actived by LED diod in each detectors."
         def __get__(self):
             return self.e.isCalib()
-    property HA_direction:
+    property AH_direction:
         "Return ``(horizon, azimuth)`` direction of shower. Azimuth is from south clockwise. Both values are in Degres. Must have loaded info about stations and set station for ``event``/``event_reader``"
         def __get__(self):
             cdef float *HA = self.e.calculateDir()

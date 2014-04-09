@@ -136,7 +136,7 @@ cdef class event:
     #property temps_detector
     #property temp_crate
     #property calibration
-    #property HA_direction
+    #property AH_direction
     cpdef set_station(self, station_id)
 
 cdef class event_reader:
