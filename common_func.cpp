@@ -89,7 +89,7 @@ float* localToGlobalDirection(float* local_direction, float* gps_position){
 #define FIRSTDAYOF(timp)        (((timp)->tm_wday - (timp)->tm_yday + 420) % 7)
 #define TIME_MAX        ULONG_MAX
 #define ABB_LEN         3
-const int _ytab[2][12] = {{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}};
+const int _ytab[2][12] = {{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}};
 struct tm *
 gmtime(register const time_t *timer)
 {
