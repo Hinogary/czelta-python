@@ -21,6 +21,7 @@ public:
     short* lastTDCCorrect();
     short* TDCCorrect(time_t time);
     double* detectorPosition();
+    //latitude, longtitude, height
     double* GPSPosition();
     ~Station();
     inline const char* name(){return _name.c_str();};

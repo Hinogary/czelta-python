@@ -168,6 +168,7 @@ cdef class event_reader:
     Object containing events loaded from file. Have defined len method returning number of events in event_reader.
     
     It is iterable::
+    
         number_of_events = len(some_event_reader)
         
         for event in some_event_reader:
