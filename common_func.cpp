@@ -51,6 +51,10 @@ time_t date(int year, int month, int day, int hour, int minute, int second) {
     return mktime(&tm);
 }
 
+double getJulianFromUnix( time_t unixSecs ){
+   return ( unixSecs / 86400.0 ) + 2440587.5;
+}
+
 #ifdef _WIN32
 //own light mktime, and gmtime because standart library of windows is ...
 #define YEAR0           1900                    /* the first year */
