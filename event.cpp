@@ -109,7 +109,7 @@ double* Event::directionVector() const{
  * @param station
  * @return {azimuth, horizon}
  */
-float* Event::calculateDir() const{
+float* Event::calculateDirRadians() const{
 
     static float rtn[2];
 #define horizon rtn[1]
@@ -118,27 +118,26 @@ float* Event::calculateDir() const{
     if(isCalib())return rtn;
     
     double* vector = directionVector();
-
-    double size = sqrt(vector[0]*vector[0] + vector[1]*vector[1]);
-    //horizon
-    horizon = (float) atan(vector[2] / size);
-
+    if(vector==NULL)return rtn;
+    
+    horizon = (float) asin(vec_z / SPEED_OF_LIGHT);
+    
     //azimut based on kvadrant
     if (vector[0] <= 0) {
         if (vector[1] <= 0){
             //III. Kvadrant
-            azimut = asin(-vector[0] / size);
+            azimut = atan(vec_x / vec_y);
         } else {
             //II. Kvadrant
-            azimut = M_PI - asin(-vector[0] / size);
+            azimut = M_PI - atan(-vec_x / vec_y);
         }
     } else {
         if (vector[1] <= 0){
             //IV. Kvadrant
-            azimut = 2 * M_PI - asin(vector[0] / size);
+            azimut = 2 * M_PI - atan(-vec_x / vec_y);
         } else {
             //I. Kvadrant
-            azimut = M_PI + asin(vector[0] / size);
+            azimut = M_PI + atan(vec_x / vec_y);
         }
     }
     
@@ -148,9 +147,6 @@ float* Event::calculateDir() const{
         return rtn;
     };
     
-    //convert to degress
-    rtn[0]*=180/M_PI;
-    rtn[1]*=180/M_PI;
     return rtn;
 }
 

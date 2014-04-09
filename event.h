@@ -79,7 +79,9 @@ public:
         return static_temps;};
     inline bool isCalib() const{return _calibration;};
     inline tm getTime() const{time_t tm = _timestamp;return *gmtime(&tm);};
-    float* calculateDir() const;
+    float* calculateDirRadians() const;
+    //return azimut, horizon
+    inline float* calculateDir() const{float* const d = calculateDirRadians();d[0]*=180/M_PI;d[1]*=180/M_PI;return d;};
     string toString() const;
     inline uint8_t getStation() const{return _station;};
     inline void setStation(uint8_t st){_station=st;};
