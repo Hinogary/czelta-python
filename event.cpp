@@ -73,26 +73,33 @@ Event::Event(const Event& orig){
 
 double* Event::directionVector() const{
 
-    #define c2 (SPEED_OF_LIGHT*SPEED_OF_LIGHT)
+    
     static double vector[3];
     short* TDC = TDCCorrected();
     double *detPos = Station::getStation(getStation()).detectorPosition(); 
-    
+#define c2 (SPEED_OF_LIGHT*SPEED_OF_LIGHT)
+#define x1 detPos[0]
+#define y1 detPos[1]
+#define x2 detPos[2]
+#define y2 detPos[3]
+#define vec_x vector[0]
+#define vec_y vector[1]
+#define vec_z vector[2]
     const short t1 = TDC[1] - TDC[0];
     const short t2 = TDC[2] - TDC[0];
     
-    vector[0] = c2*25*1e-12*(t2*detPos[1] - t1*detPos[3])/
-                    (detPos[0]*detPos[3] - detPos[2]*detPos[1]);
-    vector[1] = c2*25*1e-12*(t2*detPos[0] - t1*detPos[2])/
-                    (detPos[1]*detPos[2] - detPos[3]*detPos[0]);
-
-    vector[2] = c2 - vector[0]*vector[0] - vector[1]*vector[1];
+    vec_x = c2*25*1e-12*(t2*y1 - t1*y2)/
+                    (x1*y2 - x2*y1);
+    vec_y = c2*25*1e-12*(t2*x1 - t1*x2)/
+                    (y1*x2 - y2*x1);
+    //vec_z squared
+    vec_z = c2 - vector[0]*vector[0] - vector[1]*vector[1];
 
     //can't determine direction -> TDC is out of view scope
-    if (vector[2] < 0){
+    if (vec_z < 0){
         return NULL;
     }
-    vector[2] = sqrt(vector[2]);
+    vec_z = sqrt(vec_z);
     
     return vector;
 }
@@ -100,42 +107,44 @@ double* Event::directionVector() const{
 /**
  *
  * @param station
- * @return {horizont, azimuth}
+ * @return {azimuth, horizon}
  */
 float* Event::calculateDir() const{
 
     static float rtn[2];
-    rtn[0] = 0;rtn[1] = 0;
+#define horizon rtn[1]
+#define azimut rtn[0]
+    azimut = 0;horizon = 0;
     if(isCalib())return rtn;
     
     double* vector = directionVector();
 
     double size = sqrt(vector[0]*vector[0] + vector[1]*vector[1]);
     //horizon
-    rtn[0] = (float) atan(vector[2] / size);
+    horizon = (float) atan(vector[2] / size);
 
-    //azimut base od kvadrant
+    //azimut based on kvadrant
     if (vector[0] <= 0) {
-        if (vector[1] <= 0) {
+        if (vector[1] <= 0){
             //III. Kvadrant
-            rtn[1] = asin(-vector[0] / size);
+            azimut = asin(-vector[0] / size);
         } else {
             //II. Kvadrant
-            rtn[1] = M_PI - asin(-vector[0] / size);
+            azimut = M_PI - asin(-vector[0] / size);
         }
     } else {
-        if (vector[1] <= 0) {
+        if (vector[1] <= 0){
             //IV. Kvadrant
-            rtn[1] = 2 * M_PI - asin(vector[0] / size);
+            azimut = 2 * M_PI - asin(vector[0] / size);
         } else {
             //I. Kvadrant
-            rtn[1] = M_PI + asin(vector[0] / size);
+            azimut = M_PI + asin(vector[0] / size);
         }
     }
     
     //if is horizont or azimut NaN return {0,0}
-    if (rtn[0]!=rtn[0] || rtn[1]!=rtn[1]){
-        rtn[0] = 0;rtn[1] = 0;
+    if (azimut!=azimut || horizon!=horizon){
+        horizon = 0;azimut = 0;
         return rtn;
     };
     
