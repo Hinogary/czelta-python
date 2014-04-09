@@ -15,6 +15,6 @@ time_t date(string date);
 time_t date(int year, int month, int day);
 time_t date(int year, int month, int day, int hour, int minute);
 time_t date(int year, int month, int day, int hour, int minute, int second);
-double getJulianFromUnix(time_t unixSecs)
+double getJulianFromUnix(time_t unixSecs);
 #endif	/* COMMONFUNC_H */
 
