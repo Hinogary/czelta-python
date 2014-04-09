@@ -67,7 +67,7 @@ double lSideRealFromUnix(time_t unixSecs, float degres_longtitude){
     return (side_real_unix-side_real_days*86400)/43200*M_PI+degres_longtitude;
 }
 
-float* localToGlobalDirection(float* local_direction, float* gps_position, time_t time){
+float* localToGlobalDirection(float* local_direction, double* gps_position, time_t time){
     static float rtn[2];
     rtn[0] = 0;
     rtn[1] = 0;
