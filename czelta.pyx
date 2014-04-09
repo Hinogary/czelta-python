@@ -34,7 +34,7 @@ cdef class station:
         return (<char*>self.st.name()).decode(system_encoding)
     cpdef detector_position(self):
         "Return position of detectors in format ``(x1, y1, x2, y2)`` where ``x1`` and ``y1`` are relative position of detector 1 to detector 0. ``x2`` and ``y2`` are relative position of detector 2 to detector 0. All values are in metres."
-        cdef double* dp = self.st.detectorPosition()
+        cdef float* dp = self.st.detectorPosition()
         return (dp[0], dp[1], dp[2], dp[3])
     cpdef distance_to(self, station other_station):
         "Calculate distance to other station using haversine method. The return number is in kilometres."
