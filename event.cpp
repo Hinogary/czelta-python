@@ -76,7 +76,7 @@ double* Event::directionVector() const{
     
     static double vector[3];
     short* TDC = TDCCorrected();
-    double *detPos = Station::getStation(getStation()).detectorPosition(); 
+    float *detPos = getRStation().detectorPosition(); 
 #define c2 (SPEED_OF_LIGHT*SPEED_OF_LIGHT)
 #define x1 detPos[0]
 #define y1 detPos[1]
