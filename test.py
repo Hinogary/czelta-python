@@ -90,6 +90,9 @@ assert stations[0].name() == "pardubice_gd"
 assert stations[1].id() == 3
 assert stations[1].name() == "opava_mg" 
 
+er.set_station('pardubice_spse')
+assert er[0].AH_direction == (120.57520294189453, 63.383602142333984)
+assert er[1].AH_direction == (180.72100830078125, 82.62873840332031)
 txt = czelta.event_reader('test.txt')
 assert str(txt[1000])=='a 2014 02 18 12 22 02 450020121.2 1712 2927 3776 139 136 145 15.0 13.5 12.5 23.5'
 assert str(txt[7999])=='a 2014 02 21 00 17 50 662546970.9 1532 2241 3772 856 479 722 4.5 5.0 5.0 22.5'
