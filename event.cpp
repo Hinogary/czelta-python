@@ -71,52 +71,75 @@ Event::Event(const Event& orig){
     memcpy(this,&orig,sizeof(Event));
 }
 
+double* Event::directionVector() const{
+
+    #define c2 (SPEED_OF_LIGHT*SPEED_OF_LIGHT)
+    static double vector[3];
+    short* TDC = TDCCorrected();
+    double *detPos = Station::getStation(getStation()).detectorPosition(); 
+    
+    const short t1 = TDC[1] - TDC[0];
+    const short t2 = TDC[2] - TDC[0];
+    
+    vector[0] = c2*25*1e-12*(t2*detPos[1] - t1*detPos[3])/
+                    (detPos[0]*detPos[3] - detPos[2]*detPos[1]);
+    vector[1] = c2*25*1e-12*(t2*detPos[0] - t1*detPos[2])/
+                    (detPos[1]*detPos[2] - detPos[3]*detPos[0]);
+
+    vector[2] = c2 - vector[0]*vector[0] - vector[1]*vector[1];
+
+    //can't determine direction -> TDC is out of view scope
+    if (vector[2] < 0){
+        return NULL;
+    }
+    vector[2] = sqrt(vector[2]);
+    
+    return vector;
+}
+
 /**
  *
  * @param station
  * @return {horizont, azimuth}
  */
 float* Event::calculateDir() const{
+
     static float rtn[2];
     rtn[0] = 0;rtn[1] = 0;
     if(isCalib())return rtn;
-    short* TDC = TDCCorrected();
-    double *detPos = Station::getStation(getStation()).detectorPosition(); 
-    const double t1 = (TDC[1] - TDC[0])*25 * 1e-12;
-    const double t2 = (TDC[2] - TDC[0])*25 * 1e-12;
-    const double x1 = detPos[0];
-    const double y1 = detPos[1];
-    const double x2 = detPos[2];
-    const double y2 = detPos[3];
-    const double c2 = SPEED_OF_LIGHT*SPEED_OF_LIGHT;
-    double x = c2 * (t2 * y1 - t1 * y2) / (x1 * y2 - x2 * y1);
-    double y = c2 * (t2 * x1 - t1 * x2) / (y1 * x2 - y2 * x1);
-    double size = sqrt(x * x + y * y);
-    const double a = c2 - x * x - y * y;
-    if (a < 0)return rtn;
-    double z = sqrt(a);
-    rtn[0] = (float) atan(z / size);
-    if (x <= 0) {
-        if (y <= 0) {
+    
+    double* vector = directionVector();
+
+    double size = sqrt(vector[0]*vector[0] + vector[1]*vector[1]);
+    //horizon
+    rtn[0] = (float) atan(vector[2] / size);
+
+    //azimut base od kvadrant
+    if (vector[0] <= 0) {
+        if (vector[1] <= 0) {
             //III. Kvadrant
-            rtn[1] = asin(-x / size);
+            rtn[1] = asin(-vector[0] / size);
         } else {
             //II. Kvadrant
-            rtn[1] = M_PI - asin(-x / size);
+            rtn[1] = M_PI - asin(-vector[0] / size);
         }
     } else {
-        if (y <= 0) {
+        if (vector[1] <= 0) {
             //IV. Kvadrant
-            rtn[1] = 2 * M_PI - asin(x / size);
+            rtn[1] = 2 * M_PI - asin(vector[0] / size);
         } else {
             //I. Kvadrant
-            rtn[1] = M_PI + asin(x / size);
+            rtn[1] = M_PI + asin(vector[0] / size);
         }
     }
+    
+    //if is horizont or azimut NaN return {0,0}
     if (rtn[0]!=rtn[0] || rtn[1]!=rtn[1]){
         rtn[0] = 0;rtn[1] = 0;
         return rtn;
     };
+    
+    //convert to degress
     rtn[0]*=180/M_PI;
     rtn[1]*=180/M_PI;
     return rtn;

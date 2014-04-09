@@ -84,6 +84,7 @@ public:
     inline uint8_t getStation() const{return _station;};
     inline void setStation(uint8_t st){_station=st;};
 private:
+    double* directionVector() const;
     uint32_t _timestamp; 
     uint64_t _last_second:39;//6 unused bits
     bool _calibration:1;
