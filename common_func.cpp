@@ -47,34 +47,44 @@ time_t date(int year, int month, int day, int hour, int minute, int second) {
     tm.tm_hour = hour+1;
     tm.tm_min = minute;
     tm.tm_sec = second;
-    tm.tm_isdst = -1;
+    tm.tm_isdst = 0;
     return mktime(&tm);
 }
 
 double getJulianFromUnix( time_t unixSecs ){
    return ( unixSecs / 86400.0 ) + 2440587.5;
 }
+
 double lSideRealFromUnix(time_t unixSecs, float degres_longtitude){
 //returned time is in radians
 
 //sidereal time 0:00:00 1.1.1970 on longtitude 0
 #define ZERO_SIDEREAL_TIME (24054.40168883)
+//each day is 1.0027... sidereal day
 #define SIDEREAL_DAY_TO_DAY (1.002737909350795)
     double side_real_unix = unixSecs*SIDEREAL_DAY_TO_DAY+ZERO_SIDEREAL_TIME;
     time_t side_real_days = floor(side_real_unix/86400.0);
-    return side_real_unix-side_real_days*86400;
+    return (side_real_unix-side_real_days*86400)/43200*M_PI+degres_longtitude;
 }
 
-float* localToGlobalDirection(float* local_direction, float* gps_position){
+float* localToGlobalDirection(float* local_direction, float* gps_position, time_t time){
     static float rtn[2];
     rtn[0] = 0;
-    rtn[1] = 1;
-// sin(declination) = sin(horizon) * sin(longitude) - cos(horizon) * cos(azimut) * cos(longtitude)
-// cos(some time) = (sin(horizon) * cos(longtitude) + cos(azimut) * sin(longtitude))/cos(declination)
-// sin(some time) = cos(horizon) * sin(azimut) / cos(declination)
-// right ascention = SideReal local time - some time
-    rtn[0] = acos(sin(local_direction[0])*sin(gps_position[1]) -
-                cos(local_direction[0])*cos(local_direction[1])*cos(gps_position[1]));
+    rtn[1] = 0;
+#define horizon local_direction[0]
+#define azimut local_direction[1]
+#define longtitude gps_position[1]
+#define altitude gps_position[0]
+#define declination rtn[0]
+#define rightascention rtn[1]
+    declination = asin(sin(horizon)*sin(altitude) -
+                cos(horizon)*cos(azimut)*cos(altitude));
+
+    //delta of sidereal time
+    rightascention = acos((sin(horizon)*cos(altitude)+cos(azimut)*cos(horizon)*sin(altitude))
+                          /cos(declination));
+    if(azimut>M_PI)rightascention=-rightascention;
+    rightascention = lSideRealFromUnix(time, longtitude) - rightascention;
     return rtn;
 }
 
@@ -87,8 +97,6 @@ float* localToGlobalDirection(float* local_direction, float* gps_position){
 #define YEARSIZE(year)  (LEAPYEAR(year) ? 366 : 365)
 #define FIRSTSUNDAY(timp)       (((timp)->tm_yday - (timp)->tm_wday + 420) % 7)
 #define FIRSTDAYOF(timp)        (((timp)->tm_wday - (timp)->tm_yday + 420) % 7)
-#define TIME_MAX        ULONG_MAX
-#define ABB_LEN         3
 const int _ytab[2][12] = {{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}};
 struct tm *
 gmtime(register const time_t *timer)
