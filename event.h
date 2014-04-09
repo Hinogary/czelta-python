@@ -84,7 +84,9 @@ public:
     inline float* calculateDir() const{
         float* const d = calculateDirRadians();d[0]*=180/M_PI;d[1]*=180/M_PI;return d;};
     inline float* calculateEarthDirRadians() const{
-        return localToGlobalDirection(calculateDirRadians(), getRStation().GPSPosition(), timestamp());};
+        float* l = calculateDirRadians();
+        if(l[0]==0 && l[1]==0)return l;
+        return localToGlobalDirection(l, getRStation().GPSPosition(), timestamp());};
     inline float* calculateEarthDir() const{
         float* const r = calculateEarthDirRadians();r[0]*=180/M_PI;r[1]*=180/M_PI;return r;}   
     string toString() const;

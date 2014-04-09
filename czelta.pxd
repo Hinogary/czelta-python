@@ -104,6 +104,7 @@ cdef extern from "event.h" nogil:
         short TDC1Corrected()
         short TDC2Corrected()
         float* calculateDir()
+        inline float* calculateEarthDir()
         inline void setStation(int station)
 
 cdef extern from "common_func.h" nogil:
@@ -137,6 +138,7 @@ cdef class event:
     #property temp_crate
     #property calibration
     #property AH_direction
+    #property DRA_direction
     cpdef set_station(self, station_id)
 
 cdef class event_reader:

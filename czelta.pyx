@@ -157,6 +157,14 @@ cdef class event:
                 return None
             else:
                 return (HA[0],HA[1])
+    property DRA_direction:
+        "Return ``(declination, right ascension)`` direction of shower in Degrees. Must have loaded info about stations and set station for ``event``/``event_reader``"
+        def __get__(self):
+            cdef float *RAD = self.e.calculateEarthDir()
+            if RAD[0]==0 and RAD[1]==0:
+                return None
+            else:
+                return (RAD[0], RAD[1])
     cpdef set_station(self, station_id):
         "Set station to correct tdc and calculate direction, it is better to change station of entire ``czelta.event_reader``."
         self.e.setStation(<int>station_id)

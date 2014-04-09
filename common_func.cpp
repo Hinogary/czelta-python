@@ -73,10 +73,10 @@ float* localToGlobalDirection(float* local_direction, double* gps_position, time
     rtn[1] = 0;
 #define horizon local_direction[1]
 #define azimut local_direction[0]
-#define longtitude gps_position[1]
-#define altitude gps_position[0]
-#define declination rtn[0]
-#define rightascention rtn[1]
+#define declination rtn[1]
+#define rightascention rtn[0]
+    const double longtitude = gps_position[1]*M_PI/180;
+    const double altitude = gps_position[0]*M_PI/180;
     declination = asin(sin(horizon)*sin(altitude) -
                 cos(horizon)*cos(azimut)*cos(altitude));
 
@@ -85,6 +85,7 @@ float* localToGlobalDirection(float* local_direction, double* gps_position, time
                           /cos(declination));
     if(azimut>M_PI)rightascention=-rightascention;
     rightascention = lSideRealFromUnix(time, longtitude) - rightascention;
+    if(rightascention<0)rightascention+=2*M_PI;
     return rtn;
 }
 
