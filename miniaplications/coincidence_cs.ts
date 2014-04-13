@@ -112,5 +112,9 @@
         <source>error_cant_open_data_2</source>
         <translation>Chyba - nelue otevřít data 2. stanice!</translation>
     </message>
+    <message>
+        <source>days</source>
+        <translation>dní</translation>
+    </message>
 </context>
 </TS>

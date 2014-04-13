@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# vim: set fileencoding=UTF-8 :
 import coincidence_ui
 from coincidence_ui import _translate
 from PyQt4 import QtGui, QtCore
@@ -55,7 +57,9 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
         self.number_of_coincidences.setText("%d"%len(c))
         self.medium_value.setText("%.2f"%c.expected_value)
         self.percents.setText("%.2f %%"%c.chance)
-        
+        self.lenght_of_measuring.setText("%.2f %s"%(float(c.overlap_measure_time)/86400, _translate("days"0)))
+        self.all_events_0.setText("%d"%c.overlap_normal_events[0])
+        self.all_events_1.setText("%d"%c.overlap_normal_events[1])
         
     def __init__(self):
         self.ers = czelta.event_reader(), czelta.event_reader()

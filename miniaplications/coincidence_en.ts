@@ -112,5 +112,9 @@
         <source>error_cant_open_data_2</source>
         <translation>Error, can't open data of 2. station!</translation>
     </message>
+    <message>
+        <source>days</source>
+        <translation>dní</translation>
+    </message>
 </context>
 </TS>
