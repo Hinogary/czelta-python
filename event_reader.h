@@ -59,6 +59,7 @@ public:
     bool saveTxtFile(char* filename, bool x_events = true);
     void setStation(uint8_t station);
     inline int getStation(){return _station;};
+    inline Station& getRStation(){return Station::getStation(_station);};
 private:
     void clear();
     double _progress;
