@@ -238,6 +238,15 @@ cdef class coincidence:
     property chance:
         def __get__(self):
             return self.c.chance
+    property overlap_measure_time:
+        def __get__(self):
+            return self.c.overlap.measureTime;
+    property overlap_normal_events:
+        def __get__(self):
+            return (self.c.overlap.normal_events[0], self.c.overlap.normal_events[1])
+    property overlap_calibration_events:
+        def __get__(self):
+            return (self.c.overlap.calibration_events[0], self.c.overlap.calibration_events[1])
 
 cdef class event_reader:
     """
@@ -371,6 +380,8 @@ cdef class event_reader:
     cpdef int number_of_runs(self):
         "Return number of runs. Same result have ``len(event_reader.runs())``."
         return self.er.numberOfRuns()
+    cpdef int measure_length(self):
+        return self.er.measurelength()
     cdef Event c_item(self, int i):
         return self.er.item(i)
     cpdef event item(self, int i):

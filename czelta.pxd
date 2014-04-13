@@ -36,9 +36,14 @@ cdef extern from "station.h" namespace "Station" nogil:
 
 
 cdef extern from "event_reader.h":
+    struct Overlap:
+        int measureTime
+        int normal_events[2]
+        int calibration_events[2]
     cppclass EventReader:
         EventReader() nogil except +
         inline int numberOfEvents() nogil
+        int measurelength()
         bint loadDatFile(char* filename) nogil
         bint loadTxtFile(char* filename) nogil
         bint saveDatFile(char* filename) nogil
@@ -117,7 +122,7 @@ cdef extern from "coincidence.h" nogil:
         vector[Event] *events
         double limit
         int numberOfCoincidences
-        #Overlap overlap
+        Overlap overlap
         double medium_value
         double chance
         
@@ -161,6 +166,13 @@ cdef class coincidence:
     cdef int i
     #def __init__(self, event_readers, max_difference, save_events, stations)
     #property stations
+    #property delta
+    #property events
+    #property max_difference
+    #property number_of_coincidences
+    #property expected_value
+    #property chance
+    #property overlap_measeure_time (total measure time)
 
 cdef class event_reader:
     cdef EventReader er
@@ -171,6 +183,7 @@ cdef class event_reader:
     cpdef save(self, path_to_file, bint x_events = ?)
     cpdef int number_of_events(self, int run = ?)
     cpdef int number_of_runs(self)
+    cpdef int measure_length(self)
     cdef Event c_item(self, int i)
     cpdef event item(self, int i)
     
