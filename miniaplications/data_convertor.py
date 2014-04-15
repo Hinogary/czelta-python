@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# vim: set fileencoding=UTF-8 :
 import data_convertor_ui
 from data_convertor_ui import _translate
 from PyQt4 import QtGui, QtCore
@@ -65,6 +67,7 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
         self.mainwindow = QtGui.QMainWindow()
         self.setupUi(self.mainwindow)
         self.mainwindow.show()
+        self.statusBar.showMessage(u"© 2014 Martin Quarda")
         QtCore.QObject.connect(self.button_select_data, QtCore.SIGNAL('clicked()'), self.select_data)
         QtCore.QObject.connect(self.button_convert, QtCore.SIGNAL('clicked()'), self.convert_data)
         QtCore.QObject.connect(self.radio_txt_file, QtCore.SIGNAL('toggled(bool)'), self.x_events_set_enabled)
