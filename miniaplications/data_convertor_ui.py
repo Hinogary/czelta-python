@@ -88,6 +88,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addItem(spacerItem2)
         self.horizontalLayout.addLayout(self.verticalLayout_3)
         MainWindow.setCentralWidget(self.centralwidget)
+        self.statusBar = QtGui.QStatusBar(MainWindow)
+        self.statusBar.setObjectName(_fromUtf8("statusBar"))
+        MainWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)

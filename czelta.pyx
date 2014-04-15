@@ -4,9 +4,10 @@ import datetime
 import json
 import sys
 import traceback
+from os.path import expanduser
 
 __version__ = '0.1'
-__all__ = ['station','event','event_reader','date_to_timestamp']
+__all__ = ['station','event','event_reader','date_to_timestamp','coincidence']
 __author__ = 'Martin Quarda <hinogary@gmail.com>'
 system_encoding = sys.getfilesystemencoding()
 
@@ -171,6 +172,95 @@ cdef class event:
 
 
 
+cdef class coincidence:
+    def __init__(self,event_readers,float max_difference, bint save_events = True, stations = None):
+        cdef int st_id, st
+        if len(event_readers)!=2 or \
+            not isinstance(event_readers[0],event_reader) or \
+            not isinstance(event_readers[1],event_reader):
+           raise TypeError
+        self.c.readers[0] = &(<event_reader>event_readers[0]).er
+        self.c.readers[1] = &(<event_reader>event_readers[1]).er
+        if stations!= None and len(stations)==len(event_readers):
+            for st in range(len(stations)):
+                st_id = 0
+                if type(stations[st]) == station:
+                    st_id = stations[st].id()
+                else:
+                    st_id = station(stations[st]).id()
+                self.c.stations[st] = st_id
+        else:
+            for st in range(len(event_readers)):
+                st_id = (<event_reader>event_readers[st]).er.getStation();
+                self.c.stations[st] = st_id
+        self.c.calc(max_difference, save_events)
+    def __len__(self):
+        return self.c.numberOfCoincidences
+    def __getitem__(self, index):
+        cdef int i
+        if type(index) != int:
+            raise TypeError
+        i = index
+        if self.c.events_saved:
+            rtn = (self.c.delta[i], event(), event())
+            (<event>rtn[1]).set(self.c.events[0][i])
+            (<event>rtn[2]).set(self.c.events[1][i])
+            return rtn
+        else:
+            return (self.c.delta[i],)
+    def __iter__(self):
+        self.i = -1
+        return self
+    def __next__(self):
+        self.i += 1
+        if self.i < self.c.numberOfCoincidences:
+            return self[self.i]
+        else:
+            raise StopIteration
+    property delta:
+        def __get__(self):
+            return list(self.c.delta)
+    property stations:
+        def __get__(self):
+            return station(self.c.stations[0]), station(self.c.stations[1])
+    property events:
+        def __get__(self):
+            cdef Event e
+            cdef event ev
+            if not self.c.events_saved:
+                return AttributeError("You have calculated coincidences without events")
+            rtn = [],[]
+            for e in self.c.events[0]:
+                ev = event()
+                ev.set(e)
+                rtn[0].append(ev)
+            for e in self.c.events[1]:
+                ev = event()
+                ev.set(e)
+                rtn[1].append(ev)
+            return rtn
+    property max_difference:
+        def __get__(self):
+            return self.c.limit
+    property number_of_coincidences:
+        def __get__(self):
+            return self.c.numberOfCoincidences
+    property expected_value:
+        def __get__(self):
+            return self.c.medium_value
+    property chance:
+        def __get__(self):
+            return self.c.chance
+    property overlap_measure_time:
+        def __get__(self):
+            return self.c.overlap.measureTime;
+    property overlap_normal_events:
+        def __get__(self):
+            return (self.c.overlap.normal_events[0], self.c.overlap.normal_events[1])
+    property overlap_calibration_events:
+        def __get__(self):
+            return (self.c.overlap.calibration_events[0], self.c.overlap.calibration_events[1])
+
 cdef class event_reader:
     """
     Object containing events loaded from file. Have defined len method returning number of events in event_reader.
@@ -257,6 +347,10 @@ cdef class event_reader:
         return event_reader_runs(self)
     cpdef load(self, path_to_file):
         "Load events from file. This delete all current events and tries to load events from file"
+        if path_to_file == '':  
+            raise IOError
+        if path_to_file[0]=='~':
+            path_to_file = expanduser('~')+path_to_file[1:]
         cdef bytes bytes_path = path_to_file.encode(system_encoding)
         if bytes_path[-4:].lower()==b".txt":
             if self.er.loadTxtFile(bytes_path):
@@ -298,6 +392,8 @@ cdef class event_reader:
     cpdef int number_of_runs(self):
         "Return number of runs. Same result have ``len(event_reader.runs())``."
         return self.er.numberOfRuns()
+    cpdef int measure_length(self):
+        return self.er.measurelength()
     cdef Event c_item(self, int i):
         return self.er.item(i)
     cpdef event item(self, int i):
