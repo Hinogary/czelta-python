@@ -5,8 +5,11 @@
 #include <string.h>
 #include <iostream>
 #include <time.h>
-
 #include "common_func.h"
+
+#ifndef M_PI
+#define M_PI (3.14159265358979323846)
+#endif
 
 double deltaDirection(double hor1, double az1, double hor2, double az2) {
     double rtn = acos(sin(hor1) * sin(hor2) + cos(hor1) * cos(hor2) * cos(az1 - az2));
