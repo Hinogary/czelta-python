@@ -2,11 +2,14 @@
 # vim: set fileencoding=UTF-8 :
 from distutils.core import setup
 from distutils.extension import Extension
+import distutils.sysconfig
+import platform
 
 try:
     from Cython.Build import cythonize
     USE_CYTHON = True
 except ImportError:
+    print("USE_CYTHON = False")
     USE_CYTHON = False
 
 ext_modules = [Extension('czelta', ['czelta.pyx' if USE_CYTHON else 'czelta.cpp',
@@ -21,6 +24,11 @@ ext_modules = [Extension('czelta', ['czelta.pyx' if USE_CYTHON else 'czelta.cpp'
 if USE_CYTHON:
     ext_modules = cythonize(ext_modules)
 
+if platform.system()=='Windows':
+    data_files = [(distutils.sysconfig.get_python_lib(), ['libgcc_s_dw2-1.dll','libstdc++-6.dll', 'config_data.JSON'])]
+else:
+    data_files = [(distutils.sysconfig.get_python_lib(), ['config_data.JSON'])]
+
 setup(
   name = 'czelta',
   version = '0.1',
@@ -30,5 +38,6 @@ setup(
   url = 'http://czelta.quarda.cz/',
   license='LICENSE.txt',
   long_description = open('README.md').read(),
-  ext_modules = ext_modules
+  ext_modules = ext_modules,
+  data_files = data_files
 )
