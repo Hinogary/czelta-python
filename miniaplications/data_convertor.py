@@ -5,6 +5,8 @@ from data_convertor_ui import _translate
 from PyQt4 import QtGui, QtCore
 import sys, os, czelta,locale
 
+path = os.path.dirname(__file__)
+path = path+os.sep if path!="" else ""
 sys_lang = locale.getdefaultlocale()[0][:2]
 
 for i in range(len(sys.argv)):
@@ -75,10 +77,7 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     trans = QtCore.QTranslator()
-    if trans.load("data_convertor_%s.qm"%sys_lang):
-        pass
-    else:
-        trans.load("data_convertor_en.qm")
+    trans.load("%sdata_convertor_%s.qm"%(path, sys_lang)) or trans.load("%sdata_convertor_en.qm"%path)
     app.installTranslator(trans)
     mw = MainWindow()
     sys.exit(app.exec_())

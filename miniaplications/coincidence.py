@@ -5,6 +5,8 @@ from coincidence_ui import _translate
 from PyQt4 import QtGui, QtCore
 import sys, os, czelta,locale
 
+path = os.path.dirname(__file__)
+path = path+os.sep if path!="" else ""
 sys_lang = locale.getdefaultlocale()[0][:2]
 
 for i in range(len(sys.argv)):
@@ -60,6 +62,11 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
         self.lenght_of_measuring.setText("%.2f %s"%(float(c.overlap_measure_time)/86400, _translate("MainWindow","days",None)))
         self.all_events_0.setText("%d"%c.overlap_normal_events[0])
         self.all_events_1.setText("%d"%c.overlap_normal_events[1])
+        if save_events:
+            text = ""
+            for coin in c:
+                text += "%.2f\n%s\n%s\n"%(coin[0],str(coin[1]),str(coin[2]));
+            self.coincidence_text_edit.setPlainText(text)
         
     def __init__(self):
         self.ers = czelta.event_reader(), czelta.event_reader()
@@ -78,7 +85,7 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
 def main():
     app = QtGui.QApplication(sys.argv)
     trans = QtCore.QTranslator()
-    trans.load("coincidence_%s.qm"%sys_lang) or trans.load("coincidence_en.qm")
+    trans.load("%scoincidence_%s.qm"%(path, sys_lang)) or trans.load("%scoincidence_en.qm"%path)
     app.installTranslator(trans)
     mw = MainWindow()
     sys.exit(app.exec_())
