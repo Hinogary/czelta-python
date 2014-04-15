@@ -111,5 +111,13 @@
         <source>days</source>
         <translation>dní</translation>
     </message>
+    <message>
+        <source>question_limit</source>
+        <translation>Opravdu ukládat eventy?</translation>
+    </message>
+    <message>
+        <source>are_you_sure_giant_limit</source>
+        <translation>Si si jistý, že chceš ukládat eventy, i přes to, že máš maximální rozdíl mezi sprškama větší jak 0.1 s?</translation>
+    </message>
 </context>
 </TS>

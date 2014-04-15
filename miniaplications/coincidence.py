@@ -55,16 +55,23 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
                 _translate("MainWindow", "error_title", None), 
                 _translate("MainWindow", "error_cant_open_data_2", None))
             return
+        if save_events and self.delta_spin.value()*1e-6 > 0.1:
+            answer = QtGui.QMessageBox.question(self.mainwindow, 
+                _translate("MainWindow", "question_limit", None), 
+                _translate("MainWindow", "are_you_sure_giant_limit", None), 
+                QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+            if answer!=QtGui.QMessageBox.Yes:
+                self.save_events.setChecked(False)
+                save_events = False
         c = czelta.coincidence(self.ers, self.delta_spin.value()*1e-6, save_events)
         self.number_of_coincidences.setText("%d"%len(c))
         self.medium_value.setText("%.2f"%c.expected_value)
-        self.percents.setText("%.2f %%"%c.chance)
+        self.percents.setText("%.2f %%"%(c.chance*100))
         self.lenght_of_measuring.setText("%.2f %s"%(float(c.overlap_measure_time)/86400, _translate("MainWindow","days",None)))
         self.all_events_0.setText("%d"%c.overlap_normal_events[0])
         self.all_events_1.setText("%d"%c.overlap_normal_events[1])
         if save_events:
             self.coincidence_text_edit.setPlainText("")
-            text = u""
             for coin in c:
                 self.coincidence_text_edit.insertPlainText(u"%.2f μs\n%s\n%s\n"%(coin[0]*1e6,str(coin[1]),str(coin[2])))
             self.coincidence_text_edit.show()

@@ -111,5 +111,13 @@
         <source>days</source>
         <translation>dní</translation>
     </message>
+    <message>
+        <source>question_limit</source>
+        <translation>Really save events?</translation>
+    </message>
+    <message>
+        <source>are_you_sure_giant_limit</source>
+        <translation>Are you sure, you want to save events, even you have maximum difference bigger than 0.1 s?</translation>
+    </message>
 </context>
 </TS>
