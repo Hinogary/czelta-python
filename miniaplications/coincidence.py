@@ -57,7 +57,7 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
         self.number_of_coincidences.setText("%d"%len(c))
         self.medium_value.setText("%.2f"%c.expected_value)
         self.percents.setText("%.2f %%"%c.chance)
-        self.lenght_of_measuring.setText("%.2f %s"%(float(c.overlap_measure_time)/86400, _translate("days"0)))
+        self.lenght_of_measuring.setText("%.2f %s"%(float(c.overlap_measure_time)/86400, _translate("MainWindow","days",None)))
         self.all_events_0.setText("%d"%c.overlap_normal_events[0])
         self.all_events_1.setText("%d"%c.overlap_normal_events[1])
         
@@ -68,6 +68,7 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
         self.mainwindow = QtGui.QMainWindow()
         self.setupUi(self.mainwindow)
         self.mainwindow.show()
+        self.statusBar.showMessage(u"© 2013-2014 Martin Quarda")
         QtCore.QObject.connect(self.data_1_select, QtCore.SIGNAL('clicked()'), self.select_1_data)
         QtCore.QObject.connect(self.data_2_select, QtCore.SIGNAL('clicked()'), self.select_2_data)
         QtCore.QObject.connect(self.calc_coincidences, QtCore.SIGNAL('clicked()'), self.find_coincidences)
