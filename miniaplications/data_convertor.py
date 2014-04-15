@@ -61,9 +61,7 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
         QtGui.QMessageBox.information(self.mainwindow,
             _translate("MainWindow", "success", None),
             _translate("MainWindow", "file_saved", None))
-        
-    def x_events_set_enabled(self, enabled):
-        self.filter_x_events.setEnabled(enabled)
+
     def __init__(self):
         self.last_directory = None
         self.mainwindow = QtGui.QMainWindow()
@@ -72,7 +70,7 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
         self.statusBar.showMessage(u"© 2014 Martin Quarda")
         QtCore.QObject.connect(self.button_select_data, QtCore.SIGNAL('clicked()'), self.select_data)
         QtCore.QObject.connect(self.button_convert, QtCore.SIGNAL('clicked()'), self.convert_data)
-        QtCore.QObject.connect(self.radio_txt_file, QtCore.SIGNAL('toggled(bool)'), self.x_events_set_enabled)
+        QtCore.QObject.connect(self.radio_txt_file, QtCore.SIGNAL('toggled(bool)'), self.filter_x_events.setEnabled)
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
