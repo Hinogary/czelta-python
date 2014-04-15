@@ -81,11 +81,6 @@
         <translation>Celkový počet spršek na 2. stanici:</translation>
     </message>
     <message>
-        <location filename="coincidence.ui" line="225"/>
-        <source>copy_coincidences</source>
-        <translation>zkopírovat koincidence</translation>
-    </message>
-    <message>
         <location filename="coincidence.ui" line="232"/>
         <source>medium_value</source>
         <translation>Střední předpokládaný počet koincidencí:</translation>

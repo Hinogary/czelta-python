@@ -81,11 +81,6 @@
         <translation>Total events on 2. station:</translation>
     </message>
     <message>
-        <location filename="coincidence.ui" line="225"/>
-        <source>copy_coincidences</source>
-        <translation>Copy coincidences</translation>
-    </message>
-    <message>
         <location filename="coincidence.ui" line="232"/>
         <source>medium_value</source>
         <translation>Medium expected number of coincidences:</translation>

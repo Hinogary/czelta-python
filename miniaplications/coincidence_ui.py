@@ -142,9 +142,6 @@ class Ui_MainWindow(object):
         self.coincidence_text_edit.setReadOnly(True)
         self.coincidence_text_edit.setObjectName(_fromUtf8("coincidence_text_edit"))
         self.formLayout.setWidget(9, QtGui.QFormLayout.SpanningRole, self.coincidence_text_edit)
-        self.copy_coincidences = QtGui.QPushButton(self.groupBox_4)
-        self.copy_coincidences.setObjectName(_fromUtf8("copy_coincidences"))
-        self.formLayout.setWidget(10, QtGui.QFormLayout.LabelRole, self.copy_coincidences)
         self.label_7 = QtGui.QLabel(self.groupBox_4)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -203,7 +200,6 @@ class Ui_MainWindow(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
-        self.copy_coincidences.setText(_translate("MainWindow", "copy_coincidences", None))
         self.label_7.setText(_translate("MainWindow", "medium_value", None))
         self.label_10.setToolTip(_translate("MainWindow", "chance_tooltip", None))
         self.label_10.setText(_translate("MainWindow", "chance", None))

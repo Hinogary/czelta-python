@@ -63,11 +63,14 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
         self.all_events_0.setText("%d"%c.overlap_normal_events[0])
         self.all_events_1.setText("%d"%c.overlap_normal_events[1])
         if save_events:
-            text = ""
+            self.coincidence_text_edit.setPlainText("")
+            text = u""
             for coin in c:
-                text += "%.2f\n%s\n%s\n"%(coin[0],str(coin[1]),str(coin[2]));
-            self.coincidence_text_edit.setPlainText(text)
-        
+                self.coincidence_text_edit.insertPlainText(u"%.2f μs\n%s\n%s\n"%(coin[0]*1e6,str(coin[1]),str(coin[2])))
+            self.coincidence_text_edit.show()
+        else:
+            self.coincidence_text_edit.hide()
+    
     def __init__(self):
         self.ers = czelta.event_reader(), czelta.event_reader()
         self.ers_changed = [True, True]
