@@ -36,9 +36,14 @@ cdef extern from "station.h" namespace "Station" nogil:
 
 
 cdef extern from "event_reader.h":
+    struct Overlap:
+        int measureTime
+        int normal_events[2]
+        int calibration_events[2]
     cppclass EventReader:
         EventReader() nogil except +
         inline int numberOfEvents() nogil
+        int measurelength()
         bint loadDatFile(char* filename) nogil
         bint loadTxtFile(char* filename) nogil
         bint saveDatFile(char* filename) nogil
@@ -47,6 +52,7 @@ cdef extern from "event_reader.h":
         inline Event& item(int run, int index) nogil
         
         void setStation(int station) nogil
+        inline int getStation() nogil
         
         int firstOlderThan(int timestamp) nogil
         int lastEarlierThan(int timestamp) nogil
@@ -107,6 +113,23 @@ cdef extern from "event.h" nogil:
         inline float* calculateEarthDir()
         inline void setStation(int station)
 
+cdef extern from "coincidence.h" nogil:
+    cppclass Coincidence:
+        Coincidence() except +
+        EventReader *readers[2]
+        int stations[2]
+        bint events_saved
+        vector[double] delta
+        vector[Event] *events
+        double limit
+        int numberOfCoincidences
+        Overlap overlap
+        double medium_value
+        double chance
+        
+        void calc(double limit)
+        void calc(double limit, bint save_events)
+
 cdef extern from "common_func.h" nogil:
     double deltaDirection(double hor1, double az1, double hor2, double az2)
     int date(string date)
@@ -141,6 +164,19 @@ cdef class event:
     #property DRA_direction
     cpdef set_station(self, station_id)
 
+cdef class coincidence:
+    cdef Coincidence c
+    cdef int i
+    #def __init__(self, event_readers, max_difference, save_events, stations)
+    #property stations
+    #property delta
+    #property events
+    #property max_difference
+    #property number_of_coincidences
+    #property expected_value
+    #property chance
+    #property overlap_measeure_time (total measure time)
+
 cdef class event_reader:
     cdef EventReader er
     cdef int i
@@ -150,6 +186,7 @@ cdef class event_reader:
     cpdef save(self, path_to_file, bint x_events = ?)
     cpdef int number_of_events(self, int run = ?)
     cpdef int number_of_runs(self)
+    cpdef int measure_length(self)
     cdef Event c_item(self, int i)
     cpdef event item(self, int i)
     

@@ -40,7 +40,7 @@ public:
     inline int timestamp() const{return _timestamp;};
     inline double last_second() const{return _last_second*1e-1;}; //time since last second, in nanoseconds
     inline double time_since_second() const{return _last_second*1e-10;};//time since last second, in seconds
-    inline int64_t tenthOfNSTimestamp() const{return int64_t(timestamp())*10000000000L + int64_t(_last_second);};
+    inline int64_t tenthOfNSTimestamp() const{return int64_t(timestamp())*10000000000L + _last_second;};
     inline short TDC0() const{return _TDC0;};
     inline short TDC1() const{return _TDC1;};
     inline short TDC2() const{return _TDC2;};

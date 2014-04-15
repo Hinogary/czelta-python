@@ -1,8 +1,12 @@
+#!/usr/bin/env python
+# vim: set fileencoding=UTF-8 :
 import data_convertor_ui
 from data_convertor_ui import _translate
 from PyQt4 import QtGui, QtCore
 import sys, os, czelta,locale
 
+path = os.path.dirname(__file__)
+path = path+os.sep if path!="" else ""
 sys_lang = locale.getdefaultlocale()[0][:2]
 
 for i in range(len(sys.argv)):
@@ -57,22 +61,21 @@ class MainWindow(data_convertor_ui.Ui_MainWindow):
         QtGui.QMessageBox.information(self.mainwindow,
             _translate("MainWindow", "success", None),
             _translate("MainWindow", "file_saved", None))
-        
-    def x_events_set_enabled(self, enabled):
-        self.filter_x_events.setEnabled(enabled)
+
     def __init__(self):
         self.last_directory = None
         self.mainwindow = QtGui.QMainWindow()
         self.setupUi(self.mainwindow)
         self.mainwindow.show()
+        self.statusBar.showMessage(u"© 2014 Martin Quarda")
         QtCore.QObject.connect(self.button_select_data, QtCore.SIGNAL('clicked()'), self.select_data)
         QtCore.QObject.connect(self.button_convert, QtCore.SIGNAL('clicked()'), self.convert_data)
-        QtCore.QObject.connect(self.radio_txt_file, QtCore.SIGNAL('toggled(bool)'), self.x_events_set_enabled)
+        QtCore.QObject.connect(self.radio_txt_file, QtCore.SIGNAL('toggled(bool)'), self.filter_x_events.setEnabled)
 
 def main():
     app = QtGui.QApplication(sys.argv)
     trans = QtCore.QTranslator()
-    trans.load("data_convertor_%s.qm"%sys_lang) or trans.load("data_convertor_en.qm")
+    trans.load("%sdata_convertor_%s.qm"%(path, sys_lang)) or trans.load("%sdata_convertor_en.qm"%path)
     app.installTranslator(trans)
     mw = MainWindow()
     sys.exit(app.exec_())

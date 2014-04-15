@@ -17,37 +17,36 @@ double fac(int n)
     return rtn;
 }
 
-void Coincidence::calc(double limit){
+void Coincidence::calc(double limit, bool save_events){
+    events_saved = save_events;
     numberOfCoincidences = 0;
     events[0].clear();
     events[1].clear();
     delta.clear();
     this->limit = limit;
-    int _limit = static_cast<int>(limit*10000000000);
+    int64_t _limit = static_cast<int64_t>(limit*10000000000);
     overlap = readers[0]->overlap(*readers[1]);
     int i[] = {0,0};
-    int64_t a,b;
     std::function<void(int,int)> find_coincidence = [this,_limit,&find_coincidence](int i, int j){
+        if(i >= readers[0]->numberOfEvents() || j >= readers[1]->numberOfEvents())
+            return;
         int64_t a = readers[0]->item(i).tenthOfNSTimestamp()
               , b = readers[1]->item(j).tenthOfNSTimestamp();
         if(abs(a-b)<_limit){
-            numberOfCoincidences++;
-            delta.push_back(abs(a-b)/1e10);
-            events[0].push_back(readers[0]->item(i));
-            events[1].push_back(readers[1]->item(j));
-            find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
-        }
-        if(readers[0]->item(i).isCalib() || readers[1]->item(i).isCalib()){
-            find_coincidence(i+(a>b?1:0),j+(a<b?1:0));
+            if(!readers[0]->item(i).isCalib() && !readers[1]->item(j).isCalib()){
+                numberOfCoincidences++;
+                delta.push_back(abs(a-b)/1e10);
+                if(events_saved){
+                    events[0].push_back(readers[0]->item(i));
+                    events[1].push_back(readers[1]->item(j));
+                }
+            }
+            find_coincidence(i+(a>=b?1:0),j+(a<b?1:0));
         }
     };
     while(i[0]<readers[0]->numberOfEvents() && i[1]<readers[1]->numberOfEvents()){
-        if(!readers[0]->item(i[0]).isCalib() && !readers[1]->item(i[1]).isCalib()){
-            a = readers[0]->item(i[0]).tenthOfNSTimestamp();
-            b = readers[1]->item(i[1]).tenthOfNSTimestamp();
-            find_coincidence(i[0],i[1]);
-        }
-        if(a>b)
+        find_coincidence(i[0],i[1]);
+        if(readers[0]->item(i[0]).tenthOfNSTimestamp() > readers[1]->item(i[1]).tenthOfNSTimestamp())
             i[1]++;
         else
             i[0]++;
