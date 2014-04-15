@@ -24,7 +24,7 @@ void Coincidence::calc(double limit, bool save_events){
     events[1].clear();
     delta.clear();
     this->limit = limit;
-    int _limit = static_cast<int>(limit*10000000000);
+    int64_t _limit = static_cast<int64_t>(limit*10000000000);
     overlap = readers[0]->overlap(*readers[1]);
     int i[] = {0,0};
     std::function<void(int,int)> find_coincidence = [this,_limit,&find_coincidence](int i, int j){
