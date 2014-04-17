@@ -228,33 +228,61 @@ int EventReader::measurelength(){
     return len;
 }
 
-Overlap EventReader::overlap(EventReader &other){
-    Overlap rtn{0,{0,0},{0,0}};
-    int from, to, i[] = {0,0};
-    while(numberOfRuns()>i[0] && other.numberOfRuns()>i[1]){
-        from = max(runStart(i[0]),other.runStart(i[1]));
-        to = min(runEnd(i[0]),other.runEnd(i[1]));
-        if(to-from>0){
-            auto max = lastEarlierThan(to);
-            for(int i=firstOlderThan(from);i<=max;i++){
-                if(item(i).isCalib())
-                    rtn.calibration_events[0]++;
-                else
-                    rtn.normal_events[0]++;
+Overlap EventReader::overlap(EventReader* other, EventReader* other2){
+    Overlap rtn{0,{0,0,0},{0,0,0}};
+    if(other2==nullptr){
+        int from, to, i[] = {0,0};
+        while(numberOfRuns()>i[0] && other->numberOfRuns()>i[1]){
+            from = max(runStart(i[0]),other->runStart(i[1]));
+            to = min(runEnd(i[0]),other->runEnd(i[1]));
+            if(to-from>0){
+                rtn.measureTime+=to-from;
+                auto max = lastEarlierThan(to);
+                for(int i=firstOlderThan(from);i<=max;i++){
+                    if(item(i).isCalib())
+                        rtn.calibration_events[0]++;
+                    else
+                        rtn.normal_events[0]++;
+                }
+                max = other->lastEarlierThan(to);
+                for(int i=other->firstOlderThan(from);i<=max;i++){
+                    if(other->item(i).isCalib())
+                        rtn.calibration_events[1]++;
+                    else
+                        rtn.normal_events[1]++;
+                }
+            };
+            if(other->runEnd(i[1])>runEnd(i[0]))
+                i[0]++;
+            else
+                i[1]++;
+        }
+    }else{
+        int from, to, i[] = {0,0,0};
+        EventReader *ers[] = {this, other, other2};
+        while(ers[0]->numberOfRuns()>i[0] && ers[1]->numberOfRuns()>i[1] && ers[2]->numberOfRuns()>i[2]){
+            from = max(max(ers[0]->runStart(i[0]), ers[1]->runStart(i[1])), ers[2]->runStart(i[2]));
+            to = min(min(ers[0]->runEnd(i[0]), ers[1]->runEnd(i[1])), ers[2]->runEnd(i[2]));
+            if(to-from>0){
+                rtn.measureTime+=to-from;
+                int max;
+                for(int k=0;k<3;k++){
+                    max = ers[k]->lastEarlierThan(to);
+                    for(int j=ers[k]->firstOlderThan(from);j<=max;j++){
+                        if(ers[k]->item(j).isCalib())
+                            rtn.calibration_events[k]++;
+                        else
+                            rtn.normal_events[k]++;
+                    }
+                }
             }
-            max = other.lastEarlierThan(to);
-            for(int i=other.firstOlderThan(from);i<=max;i++){
-                if(other.item(i).isCalib())
-                    rtn.calibration_events[1]++;
-                else
-                    rtn.normal_events[1]++;
-            }
-            rtn.measureTime+=to-from;
-        };
-        if(other.runEnd(i[1])>runEnd(i[0]))
-            i[0]++;
-        else
-            i[1]++;
+            if(ers[0]->runEnd(i[0])==to)
+                i[0]++;
+            else if(ers[1]->runEnd(i[1])==to)
+                i[1]++;
+            else
+                i[2]++;
+        }
     }
     return rtn;
 }

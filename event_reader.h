@@ -12,8 +12,8 @@
 
 struct Overlap{
     int measureTime;
-    int normal_events[2];
-    int calibration_events[2];
+    int normal_events[3];
+    int calibration_events[3];
 };
 
  class EventReader {
@@ -49,7 +49,7 @@ public:
     static void setFilesDirectory(string dir);
     inline static string getFilesDirectory(){return files_directory;};
     //void checkRuns(int maxDiffbetweenEvents = 0);
-    Overlap overlap(EventReader &other);
+    Overlap overlap(EventReader* other, EventReader* other2 = nullptr);
     static uint32_t* fileFromTo(char* filename);
     bool loadDatFile(char* filename);
     bool loadTxtFile(char* filename);
