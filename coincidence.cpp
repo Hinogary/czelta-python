@@ -33,7 +33,7 @@ void Coincidence::calc(double limit, bool save_events){
     this->limit = limit;
     int64_t _limit = static_cast<int64_t>(limit*10000000000);
     if(n==2){
-        overlap = readers[0]->overlap(*readers[1]);
+        overlap = readers[0]->overlap(readers[1]);
         std::function<void(int,int)> find_2coincidence = [this,_limit,&find_2coincidence](int i, int j){
             if(i >= readers[0]->numberOfEvents() || j >= readers[1]->numberOfEvents())
                 return;
@@ -62,7 +62,6 @@ void Coincidence::calc(double limit, bool save_events){
         double lambda[2];
         for(int k=0;k<2;k++)
             lambda[k] = double(overlap.measureTime)/double(overlap.normal_events[k]);
-        //return array<double,2>{lambda[0],lambda[1]};
         medium_value = 2*overlap.measureTime*limit/lambda[0]/lambda[1];
         for(int k = 0; k<(numberOfCoincidences==0?1:numberOfCoincidences); k++){
             double i = pow(medium_value,k)*exp(-medium_value)/fac(k);
@@ -71,7 +70,7 @@ void Coincidence::calc(double limit, bool save_events){
         }
         if(chance<0)chance=0;
     }else if(n==3){
-        //TODO: overlap
+        overlap = readers[0]->overlap(readers[1], readers[2]);
         std::function<int(int*)> find_3coincidence = [this, _limit, &find_3coincidence](int* i)->int{
             if(i[0] >= readers[0]->numberOfEvents() 
             || i[1] >= readers[1]->numberOfEvents()
