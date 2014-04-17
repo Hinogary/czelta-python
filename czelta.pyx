@@ -230,22 +230,25 @@ cdef class coincidence:
             return list(self.c.delta)
     property stations:
         def __get__(self):
-            return station(self.c.stations[0]), station(self.c.stations[1])
+            if self.c.n==2:
+                return station(self.c.stations[0]), station(self.c.stations[1])
+            else:
+                return station(self.c.stations[0]), station(self.c.stations[1]), station(self.c.stations[2])
     property events:
         def __get__(self):
             cdef Event e
             cdef event ev
             if not self.c.events_saved:
-                return AttributeError("You have calculated coincidences without events")
-            rtn = [],[]
-            for e in self.c.events[0]:
-                ev = event()
-                ev.set(e)
-                rtn[0].append(ev)
-            for e in self.c.events[1]:
-                ev = event()
-                ev.set(e)
-                rtn[1].append(ev)
+                raise AttributeError("You have calculated coincidences without events")
+            if self.c.n == 2:
+                rtn = [],[]
+            else:
+                rtn = [],[],[]
+            for i in range(self.c.n):
+                for e in self.c.events[i]:
+                    ev = event()
+                    ev.set(e)
+                    rtn[i].append(ev)
             return rtn
     property max_difference:
         def __get__(self):
@@ -264,10 +267,16 @@ cdef class coincidence:
             return self.c.overlap.measureTime;
     property overlap_normal_events:
         def __get__(self):
-            return (self.c.overlap.normal_events[0], self.c.overlap.normal_events[1])
+            if self.c.n==2:
+                return (self.c.overlap.normal_events[0], self.c.overlap.normal_events[1])
+            else:
+                return (self.c.overlap.normal_events[0], self.c.overlap.normal_events[1], self.c.overlap.normal_events[2])
     property overlap_calibration_events:
         def __get__(self):
-            return (self.c.overlap.calibration_events[0], self.c.overlap.calibration_events[1])
+            if self.c.n==2:
+                return (self.c.overlap.calibration_events[0], self.c.overlap.calibration_events[1])
+            else:
+                return (self.c.overlap.calibration_events[0], self.c.overlap.calibration_events[1], self.c.overlap.calibration_events[2])
 
 cdef class event_reader:
     """
