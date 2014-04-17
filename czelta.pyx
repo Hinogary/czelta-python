@@ -175,12 +175,13 @@ cdef class event:
 cdef class coincidence:
     def __init__(self,event_readers,float max_difference, bint save_events = True, stations = None):
         cdef int st_id, st
-        if len(event_readers)!=2 or \
-            not isinstance(event_readers[0],event_reader) or \
-            not isinstance(event_readers[1],event_reader):
-           raise TypeError
-        self.c.readers[0] = &(<event_reader>event_readers[0]).er
-        self.c.readers[1] = &(<event_reader>event_readers[1]).er
+        if not len(event_readers) in [2,3]:
+            raise TypeError
+        for i in range(len(event_readers)):
+            if not isinstance(event_readers[i], event_reader):
+                raise TypeError
+            self.c.readers[i] = &(<event_reader>event_readers[i]).er
+        self.c.n = len(event_readers)
         if stations!= None and len(stations)==len(event_readers):
             for st in range(len(stations)):
                 st_id = 0
@@ -202,10 +203,17 @@ cdef class coincidence:
             raise TypeError
         i = index
         if self.c.events_saved:
-            rtn = (self.c.delta[i], event(), event())
-            (<event>rtn[1]).set(self.c.events[0][i])
-            (<event>rtn[2]).set(self.c.events[1][i])
-            return rtn
+            if self.c.n == 2:
+                rtn = (self.c.delta[i], event(), event())
+                (<event>rtn[1]).set(self.c.events[0][i])
+                (<event>rtn[2]).set(self.c.events[1][i])
+                return rtn
+            else:
+                rtn = (self.c.delta[i], event(), event(), event())
+                (<event>rtn[1]).set(self.c.events[0][i])
+                (<event>rtn[2]).set(self.c.events[1][i])
+                (<event>rtn[3]).set(self.c.events[2][i])
+                return rtn
         else:
             return (self.c.delta[i],)
     def __iter__(self):

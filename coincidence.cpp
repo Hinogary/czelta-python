@@ -99,7 +99,7 @@ void Coincidence::calc(double limit, bool save_events){
                 if(!readers[med_index]->item(i[med_index]).isCalib() 
                 && !readers[max_index]->item(i[max_index]).isCalib()){
                     numberOfCoincidences++;
-                    delta.push_back(max-min/1e10);
+                    delta.push_back((max-min)/1e10);
                     if(events_saved){
                         events[0].push_back(readers[0]->item(i[0]));
                         events[1].push_back(readers[1]->item(i[1]));
@@ -120,6 +120,6 @@ void Coincidence::calc(double limit, bool save_events){
            && i[2]<readers[2]->numberOfEvents()){
             i[find_3coincidence(i)]++;
         }
-        //chance module
+        //TODO: chance module
     }
 }
