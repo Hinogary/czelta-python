@@ -63,12 +63,6 @@ void Coincidence::calc(double limit, bool save_events){
         for(int k=0;k<2;k++)
             lambda[k] = double(overlap.measureTime)/double(overlap.normal_events[k]);
         medium_value = 2*overlap.measureTime*limit/lambda[0]/lambda[1];
-        for(int k = 0; k<(numberOfCoincidences==0?1:numberOfCoincidences); k++){
-            double i = pow(medium_value,k)*exp(-medium_value)/fac(k);
-            if(0.5*i==i || i!=i) break;
-            chance -= i;
-        }
-        if(chance<0)chance=0;
     }else if(n==3){
         overlap = readers[0]->overlap(readers[1], readers[2]);
         std::function<int(int*)> find_3coincidence = [this, _limit, &find_3coincidence](int* i)->int{
@@ -119,6 +113,15 @@ void Coincidence::calc(double limit, bool save_events){
            && i[2]<readers[2]->numberOfEvents()){
             i[find_3coincidence(i)]++;
         }
-        //TODO: chance module
+        double lambda[3];
+        for(int k=0;k<3;k++)
+            lambda[k] = double(overlap.measureTime)/double(overlap.normal_events[k]);
+        medium_value = 4*(3*limit*limit)*overlap.measureTime/3/lambda[0]/lambda[1]/lambda[2];
     }
+    for(int k = 0; k<(numberOfCoincidences==0?1:numberOfCoincidences); k++){
+        double i = pow(medium_value,k)*exp(-medium_value)/fac(k);
+        if(0.5*i==i || i!=i) break;
+        chance -= i;
+    }
+    if(chance<0)chance=0;
 }
