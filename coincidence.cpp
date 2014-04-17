@@ -116,7 +116,7 @@ void Coincidence::calc(double limit, bool save_events){
         double lambda[3];
         for(int k=0;k<3;k++)
             lambda[k] = double(overlap.measureTime)/double(overlap.normal_events[k]);
-        medium_value = 4*(3*limit*limit)*overlap.measureTime/3/lambda[0]/lambda[1]/lambda[2];
+        medium_value = 3*(limit*limit)*overlap.measureTime/lambda[0]/lambda[1]/lambda[2];
     }
     for(int k = 0; k<(numberOfCoincidences==0?1:numberOfCoincidences); k++){
         double i = pow(medium_value,k)*exp(-medium_value)/fac(k);
