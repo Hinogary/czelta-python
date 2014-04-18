@@ -47,34 +47,16 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
     def find_coincidences(self):
         save_events = self.save_events.isChecked()
         triple = self.triple_coin.isChecked()
-        print(triple)
-        try:
-            if self.ers_changed[0]:
-                self.ers[0].load(str(self.data_1.text()))
-                self.ers_changed[0] = False
-        except IOError:
-            QtGui.QMessageBox.warning(self.mainwindow,
-                _translate("MainWindow", "error_title", None), 
-                _translate("MainWindow", "error_cant_open_data_%1", None).arg(1))
-            return
-        try:
-            if self.ers_changed[1]:
-                self.ers[1].load(str(self.data_2.text()))
-                self.ers_changed[1] = False
-        except IOError:
-            QtGui.QMessageBox.warning(self.mainwindow,
-                _translate("MainWindow", "error_title", None), 
-                _translate("MainWindow", "error_cant_open_data_%1", None).arg(2))
-            return
-        if triple:
+        data = self.data_1, self.data_2, self.data_3
+        for i in range(3 if triple else 2):
             try:
-                if self.ers_changed[2]:
-                    self.ers[2].load(str(self.data_2.text()))
-                    self.ers_changed[2] = False
+                if self.ers_changed[i]:
+                    self.ers[i].load(str(data[i].text()))
+                    self.ers_changed[i] = False
             except IOError:
                 QtGui.QMessageBox.warning(self.mainwindow,
                     _translate("MainWindow", "error_title", None), 
-                    _translate("MainWindow", "error_cant_open_data_%1", None).arg(3))
+                    _translate("MainWindow", "error_cant_open_data_%1", None).arg(i+1))
                 return
         if save_events and self.delta_spin.value()*1e-6 > 0.1:
             answer = QtGui.QMessageBox.question(self.mainwindow, 
@@ -89,15 +71,15 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
         else:
             ers = self.ers[0], self.ers[1]
         c = czelta.coincidence(ers, self.delta_spin.value()*1e-6, save_events = save_events)
-        print(ers)
-        print(self.delta_spin.value()*1e-6)
-        print(c.overlap_measure_time)
         self.number_of_coincidences.setText("%d"%len(c))
         self.medium_value.setText("%.2f"%c.expected_value)
         self.percents.setText("%.2f %%"%(c.chance*100))
         self.lenght_of_measuring.setText("%.2f %s"%(c.overlap_measure_time/86400, _translate("MainWindow","days",None)))
         self.all_events_0.setText("%d"%c.overlap_normal_events[0])
         self.all_events_1.setText("%d"%c.overlap_normal_events[1])
+        if triple:
+            self.all_events_2.setText("%d"%c.overlap_normal_events[1])
+        self.all_events_2.setEnabled(triple)
         if save_events:
             self.coincidence_text_edit.setPlainText("")
             for coin in c:
