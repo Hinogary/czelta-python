@@ -79,7 +79,8 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
         self.all_events_1.setText("%d"%c.overlap_normal_events[1])
         if triple:
             self.all_events_2.setText("%d"%c.overlap_normal_events[1])
-        self.all_events_2.setEnabled(triple)
+        else:
+            self.all_events_2.setText("")
         if save_events:
             self.coincidence_text_edit.setPlainText("")
             for coin in c:

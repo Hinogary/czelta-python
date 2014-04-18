@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'coincidence.ui'
 #
-# Created: Fri Apr 18 14:28:21 2014
+# Created: Fri Apr 18 22:24:18 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -182,7 +182,7 @@ class Ui_MainWindow(object):
         self.all_events_1.setObjectName(_fromUtf8("all_events_1"))
         self.formLayout.setWidget(7, QtGui.QFormLayout.FieldRole, self.all_events_1)
         self.label_11 = QtGui.QLabel(self.groupBox_4)
-        self.label_11.setEnabled(False)
+        self.label_11.setEnabled(True)
         self.label_11.setObjectName(_fromUtf8("label_11"))
         self.formLayout.setWidget(8, QtGui.QFormLayout.LabelRole, self.label_11)
         self.all_events_2 = QtGui.QLabel(self.groupBox_4)
