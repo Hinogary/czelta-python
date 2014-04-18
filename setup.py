@@ -25,9 +25,9 @@ if USE_CYTHON:
     ext_modules = cythonize(ext_modules)
 
 if platform.system()=='Windows':
-    data_files = [(distutils.sysconfig.get_python_lib(), ['libgcc_s_dw2-1.dll','libstdc++-6.dll', 'config_data.JSON'])]
+    data_files = [(distutils.sysconfig.get_python_lib(), ['libgcc_s_dw2-1.dll','libstdc++-6.dll', 'config_data.JSON', 'LICENSE.txt'])]
 else:
-    data_files = [(distutils.sysconfig.get_python_lib(), ['config_data.JSON'])]
+    data_files = [(distutils.sysconfig.get_python_lib(), ['config_data.JSON', 'LICENSE.txt'])]
 
 setup(
   name = 'czelta',
