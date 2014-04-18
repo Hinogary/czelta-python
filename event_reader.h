@@ -59,6 +59,10 @@ public:
     inline int getStation(){return _station;};
     inline Station& getRStation(){return Station::getStation(_station);};
 private:
+#define PART_SIZE (86400/64)
+    uint p_start_timestamp;
+    uint p_end_timestamp;
+    vector<uint> parts_index;
     void clear();
     double _progress;
     void addRun(int endIndex = 0);
