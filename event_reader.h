@@ -62,6 +62,7 @@ private:
 #define PART_SIZE (86400/64)
     uint p_start_timestamp;
     uint p_end_timestamp;
+    //ocupies about 1 MB per 10 years of data and very much speedup finding events by time -> needed almost by overlaps
     vector<uint> parts_index;
     void clear();
     double _progress;
