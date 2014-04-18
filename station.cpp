@@ -58,6 +58,15 @@ bool Station::addStation(Station station){
     return false;
 }
 
+void Station::clear(){
+    _actives.reset();
+    for(int i=0;i<256;i++){
+        _stations[i]._ID = 0;
+        _stations[i]._TDCCorections.clear();
+        _stations[i]._file_names.clear();
+    }
+}
+
 short* Station::lastTDCCorrect(){
     if(_TDCCorections.size()==0)return null_correction;
     else return _TDCCorections.back().tdc;

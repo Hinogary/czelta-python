@@ -33,6 +33,7 @@ cdef extern from "station.h" namespace "Station" nogil:
     Station& getStation(int)
     Station& getStation(string)
     vector[p_Station] getStations()
+    void clear()
 
 
 cdef extern from "event_reader.h":

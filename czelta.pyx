@@ -4,6 +4,7 @@ import datetime
 import json
 import sys
 import traceback
+import os
 from os.path import expanduser
 
 __version__ = '0.1'
@@ -32,7 +33,7 @@ cdef class station:
         return self.st.id()
     cpdef name(self):
         "Return code name of station. Example: ``\'praha_utef\'``, ``\'pardubice_gd\'`` or similar."
-        return (<char*>self.st.name()).decode(system_encoding)
+        return str((<char*>self.st.name()).decode(system_encoding))
     cpdef detector_position(self):
         "Return position of detectors in format ``(x1, y1, x2, y2)`` where ``x1`` and ``y1`` are relative position of detector 1 to detector 0. ``x2`` and ``y2`` are relative position of detector 2 to detector 0. All values are in metres."
         cdef float* dp = self.st.detectorPosition()
@@ -59,6 +60,7 @@ cdef class station:
             file = open("config_data.JSON")
         cfg = json.load(file)
         file.close()
+        clear()
         for station in cfg['stations']:
             try:
                 st = Station(int(station['ID']))
@@ -368,6 +370,22 @@ cdef class event_reader:
             raise IOError
         if path_to_file[0]=='~':
             path_to_file = expanduser('~')+path_to_file[1:]
+        
+        #try to auto get station name from filename
+        st_id, st_index = 0, -1
+        cdef p_Station st
+        cdef vector[p_Station] stations = getStations()
+        for st in stations:
+            try:
+                d = path_to_file.index(st.name().decode(system_encoding))
+            except ValueError:
+                continue
+            if d>st_index:
+                st_index = d
+                st_id = st.id()
+        if st_id!=0:
+            self.er.setStation(st_id)
+            
         cdef bytes bytes_path = path_to_file.encode(system_encoding)
         if bytes_path[-4:].lower()==b".txt":
             if self.er.loadTxtFile(bytes_path):
@@ -542,3 +560,9 @@ cdef class event_reader_run:
         return self.er.er.runStartIndex(self._run_id)
     cpdef int end_index(self):
         return self.er.er.runEndIndex(self._run_id)
+
+try:
+    import distutils.sysconfig
+    station.load(open(distutils.sysconfig.get_python_lib()+os.sep+"config_data.JSON"))
+except:
+    pass
