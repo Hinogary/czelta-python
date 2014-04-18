@@ -26,7 +26,11 @@ time_t date(string date) {
     tm.tm_year = year-1900;
     tm.tm_mon = month-1;
     tm.tm_mday = day;
+#ifdef __arm__
+    tm.tm_hour = hour;
+#else
     tm.tm_hour = hour+1;
+#endif
     tm.tm_min = minute;
     tm.tm_sec = sec;
     return mktime(&tm);
@@ -47,7 +51,11 @@ time_t date(int year, int month, int day, int hour, int minute, int second) {
     tm.tm_year = year - 1900;
     tm.tm_mon = month - 1;
     tm.tm_mday = day;
+#ifdef __arm__
+    tm.tm_hour = hour;
+#else
     tm.tm_hour = hour+1;
+#endif
     tm.tm_min = minute;
     tm.tm_sec = second;
     tm.tm_isdst = 0;
