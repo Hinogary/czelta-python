@@ -29,6 +29,7 @@ void Coincidence::calc(double limit, bool save_events){
     }
     events[0].clear();
     events[1].clear();
+    events[2].clear();
     delta.clear();
     this->limit = limit;
     int64_t _limit = static_cast<int64_t>(limit*10000000000);
