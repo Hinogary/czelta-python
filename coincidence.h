@@ -6,6 +6,7 @@
 #include "event_reader.h"
 #include "event.h"
 #include "station.h"
+#include "common_func.h"
 class Coincidence
 {
 public:
@@ -18,6 +19,7 @@ public:
     bool events_saved;
     vector<double> delta;
     vector<Event> events[LIMIT_N_COINCIDENCE];
+    vector<float> dirs;
     double limit;
     int numberOfCoincidences;
     Overlap overlap;

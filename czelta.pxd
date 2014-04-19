@@ -123,6 +123,7 @@ cdef extern from "coincidence.h" nogil:
         bint events_saved
         vector[double] delta
         vector[Event] *events
+        vector[float] dirs
         double limit
         int numberOfCoincidences
         Overlap overlap

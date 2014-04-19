@@ -2,6 +2,7 @@
  * Author: Martin Quarda
  */
 #include "coincidence.h"
+#include "cstring"
 
 Coincidence::Coincidence()
 {
@@ -113,6 +114,68 @@ void Coincidence::calc(double limit, bool save_events){
            && i[1]<readers[1]->numberOfEvents()
            && i[2]<readers[2]->numberOfEvents()){
             i[find_3coincidence(i)]++;
+        }
+        
+        if(stations[0]!=0 && stations[1]!=0 && stations[2]!=0){
+            double stPos[4];
+    #define x1 stPos[0]
+    #define y1 stPos[1]
+    #define x2 stPos[2]
+    #define y2 stPos[3]        
+            double f_gps_pos[2];
+            double s_gps_pos[2];
+            memcpy(f_gps_pos, Station::getStation(stations[0]).GPSPosition(), sizeof(double)*2);
+            memcpy(s_gps_pos, Station::getStation(stations[1]).GPSPosition(), sizeof(double)*2);
+            s_gps_pos[0] = f_gps_pos[0];
+            x1 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
+            if(f_gps_pos[1] > s_gps_pos[1])x1 = -x1;
+            memcpy(s_gps_pos, Station::getStation(stations[1]).GPSPosition(), sizeof(double)*2);
+            s_gps_pos[1] = f_gps_pos[1];
+            y1 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
+            if(f_gps_pos[0] > s_gps_pos[1])y1 = -y1;
+            memcpy(s_gps_pos, Station::getStation(stations[2]).GPSPosition(), sizeof(double)*2);
+            s_gps_pos[0] = f_gps_pos[0];
+            x2 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
+            if(f_gps_pos[1] > s_gps_pos[1])x2 = -x2;
+            memcpy(s_gps_pos, Station::getStation(stations[2]).GPSPosition(), sizeof(double)*2);
+            s_gps_pos[1] = f_gps_pos[1];
+            y2 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
+            if(f_gps_pos[0] > s_gps_pos[1])y2 = -y2;
+            //dirs
+            for(int i=0;i<numberOfCoincidences;i++){
+                double dir_vector[3];
+                const double t1 = (events[1][i].timestamp()-events[0][i].timestamp()) 
+                 +(events[1][i].time_since_second()-events[0][i].time_since_second());
+                const double t2 = (events[2][i].timestamp()-events[0][i].timestamp()) 
+                 +(events[2][i].time_since_second()-events[0][i].time_since_second());   
+    #define vec_x dir_vector[0]
+    #define vec_y dir_vector[1]
+    #define vec_z dir_vector[2]                        
+    #define c2 (SPEED_OF_LIGHT*SPEED_OF_LIGHT)
+                 vec_x = c2*(t2*y1 - t1*y2)/
+                        (x1*y2 - x2*y1);
+                 vec_y = c2*(t2*x1 - t1*x2)/
+                        (y1*x2 - y2*x1);
+                            //vec_z squared
+                 vec_z = c2 - vec_x*vec_x - vec_y*vec_y;
+                 if (vec_z < 0){
+                    for(int i=0;i<4;i++)
+                        dirs.push_back(0);
+                    continue;
+                 }
+                 vec_z = sqrt(vec_z);
+                 float* AH = dirVectorToAh(dir_vector);
+                 if (AH==nullptr){
+                    for(int i=0;i<4;i++)
+                        dirs.push_back(0);
+                    continue;
+                 }
+                 dirs.push_back(AH[0]/M_PI*180);
+                 dirs.push_back(AH[1]/M_PI*180);
+                 float* DRA = localToGlobalDirection(AH ,f_gps_pos, events[0][i].timestamp());
+                 dirs.push_back(DRA[0]/M_PI*180);
+                 dirs.push_back(DRA[1]/M_PI*180);
+            }
         }
         double lambda[3];
         for(int k=0;k<3;k++)
