@@ -56,7 +56,12 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
             except IOError:
                 QtGui.QMessageBox.warning(self.mainwindow,
                     _translate("MainWindow", "error_title", None), 
-                    _translate("MainWindow", "error_cant_open_data_%1", None).arg(i+1))
+                    _translate("MainWindow", "error_cant_open_data_%d", None)%(i+1))
+                return
+            except NotImplementedError:
+                QtGui.QMessageBox.warning(self.mainwindow,
+                    _translate("MainWindow", "error_title", None), 
+                    _translate("MainWindow", "error_unsupported_data_%d", None)%(i+1))
                 return
         if save_events and self.delta_spin.value()*1e-6 > 0.1:
             answer = QtGui.QMessageBox.question(self.mainwindow, 
@@ -85,7 +90,10 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
             self.coincidence_text_edit.setPlainText("")
             for coin in c:
                 if triple:
-                    text = u"%.2f μs\n%s\n%s\n%s\n"%(coin[0]*1e6,str(coin[1]),str(coin[2]),str(coin[3]))
+                    if len(coin)==6 and coin[4]!=None:
+                        text = u"%.2f μs (%.2f, %.2f) (%.2f, %.2f)\n%s\n%s\n%s\n"%(coin[0]*1e6, coin[4][0], coin[4][1], coin[5][0], coin[4][1],str(coin[1]),str(coin[2]),str(coin[3]))
+                    else:
+                        text = u"%.2f μs\n%s\n%s\n%s\n"%(coin[0]*1e6,str(coin[1]),str(coin[2]),str(coin[3]))
                 else:
                     text = u"%.2f μs\n%s\n%s\n"%(coin[0]*1e6,str(coin[1]),str(coin[2]))
                 self.coincidence_text_edit.insertPlainText(text)
@@ -110,7 +118,7 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
         
         QtCore.QObject.connect(self.data_1, QtCore.SIGNAL('textChanged(const QString&)'), self.data_1_changed)
         QtCore.QObject.connect(self.data_2, QtCore.SIGNAL('textChanged(const QString&)'), self.data_2_changed)
-        QtCore.QObject.connect(self.data_3, QtCore.SIGNAL('textChanged(const QString&)'), self.data_2_changed)
+        QtCore.QObject.connect(self.data_3, QtCore.SIGNAL('textChanged(const QString&)'), self.data_3_changed)
 
 def main():
     app = QtGui.QApplication(sys.argv)
