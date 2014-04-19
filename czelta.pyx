@@ -20,7 +20,7 @@ cpdef int date_to_timestamp(d):
         return date(<string>d.encode(system_encoding))
 
 cdef class station:
-    "Class for working with station data."
+    "Class for working with station data. On import it tries to load config_data.JSON (in python lib path and after failture in local directory."
     def __init__(self, station):
         if type(station)==int:
             self.st = &getStation(<int>station)
@@ -177,8 +177,8 @@ cdef class event:
             if AH:
                 return (AH[0],AH[1])
                 
-    property DRA_direction:
-        "Return ``(declination, right ascension)`` direction of shower in Degrees. Must have loaded info about stations and set station for ``event``/``event_reader``"
+    property RAD_direction:
+        "Return ``(right ascension, declination)`` direction of shower in Degrees. Must have loaded info about stations and set station for ``event``/``event_reader``"
         def __get__(self):
             cdef float *DRA = self.e.calculateEarthDir()
             if DRA:
@@ -191,6 +191,13 @@ cdef class event:
 
 
 cdef class coincidence:
+    """Class for calculate coincidences of more stations. Currently supported is double and triple coincidences. With triple coincidences is also posible to calculate direction of coincidence.
+    
+Constructor have format: ``coincidence(event_readers in list or tuple, save_events = True, stations = auto)``
+if you have giant limits on double coincidences, it is sometimes better to don't save events. Stations are by default got from event readers.
+
+coincidence object is also iterable, more in examples.
+"""
     def __init__(self,event_readers,float max_difference, bint save_events = True, stations = None):
         cdef int st_id, st
         if not len(event_readers) in [2,3]:
@@ -259,10 +266,12 @@ cdef class coincidence:
             raise StopIteration
             
     property delta:
+        'Return all deltas of coincidences.'
         def __get__(self):
             return list(self.c.delta)
             
     property stations:
+        'Get stations used to calculate direction of triple-coincidence.'
         def __get__(self):
             if self.c.n==2:
                 return station(self.c.stations[0]), station(self.c.stations[1])
@@ -270,6 +279,7 @@ cdef class coincidence:
                 return station(self.c.stations[0]), station(self.c.stations[1]), station(self.c.stations[2])
                 
     property events:
+        'Get all events.'
         def __get__(self):
             cdef Event e
             cdef event ev
@@ -287,26 +297,32 @@ cdef class coincidence:
             return rtn
             
     property max_difference:
+        "Return used limit between coincidences."
         def __get__(self):
             return self.c.limit
             
     property number_of_coincidences:
+        "Get number of coincidences, same effetct have ``len(coincidence)''."
         def __get__(self):
             return self.c.numberOfCoincidences
             
     property expected_value:
+        "Number of random coincidences expected."
         def __get__(self):
             return self.c.medium_value
             
     property chance:
+        "Chance of finding ``len(coincidence)`` based on ``expected_value``."
         def __get__(self):
             return self.c.chance
             
     property overlap_measure_time:
+        "Total time of overlap measure."
         def __get__(self):
             return self.c.overlap.measureTime;
             
     property overlap_normal_events:
+        "Number of normal events on invidual stations."
         def __get__(self):
             if self.c.n==2:
                 return (self.c.overlap.normal_events[0], self.c.overlap.normal_events[1])
@@ -314,6 +330,7 @@ cdef class coincidence:
                 return (self.c.overlap.normal_events[0], self.c.overlap.normal_events[1], self.c.overlap.normal_events[2])
                 
     property overlap_calibration_events:
+        "Number of calibration events on invidual stations."
         def __get__(self):
             if self.c.n==2:
                 return (self.c.overlap.calibration_events[0], self.c.overlap.calibration_events[1])
@@ -412,7 +429,7 @@ cdef class event_reader:
         return event_reader_runs(self)
         
     cpdef load(self, path_to_file):
-        "Load events from file. This delete all current events and tries to load events from file"
+        "Load events from file. This delete all current events and tries to load events from file. Also tries to guess station by file name (finding station name in filename)."
         if path_to_file == '':  
             raise IOError
         if path_to_file[0]=='~':
