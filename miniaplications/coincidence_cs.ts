@@ -96,8 +96,12 @@
         <translation>Chyba!</translation>
     </message>
     <message>
-        <source>error_cant_open_data_%1</source>
-        <translation>Chyba - nelze otevřít data %1. stanice!</translation>
+        <source>error_cant_open_data_%d</source>
+        <translation>Chyba - nelze otevřít data %d. stanice!</translation>
+    </message>
+    <message>
+        <source>error_unsupported_data_%d</source>
+        <translation>Chyba - Nepodporovaný formát dat %d. stanice!</translation>
     </message>
     <message>
         <source>days</source>

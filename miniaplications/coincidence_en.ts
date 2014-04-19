@@ -96,8 +96,12 @@
         <translation>Error!</translation>
     </message>
     <message>
-        <source>error_cant_open_data_%1</source>
-        <translation>Error, can't open data of %1. station!</translation>
+        <source>error_cant_open_data_%d</source>
+        <translation>Error, can't open data of %d. station!</translation>
+    </message>
+    <message>
+        <source>error_unsupported_data_%d</source>
+        <translation>Error, unsupported format data of %d. station!</translation>
     </message>
     <message>
         <source>days</source>
