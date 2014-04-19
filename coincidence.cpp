@@ -32,6 +32,7 @@ void Coincidence::calc(double limit, bool save_events){
     events[1].clear();
     events[2].clear();
     delta.clear();
+    dirs.clear();
     this->limit = limit;
     int64_t _limit = static_cast<int64_t>(limit*10000000000);
     if(n==2){
@@ -132,7 +133,7 @@ void Coincidence::calc(double limit, bool save_events){
             memcpy(s_gps_pos, Station::getStation(stations[1]).GPSPosition(), sizeof(double)*2);
             s_gps_pos[1] = f_gps_pos[1];
             y1 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
-            if(f_gps_pos[0] > s_gps_pos[1])y1 = -y1;
+            if(f_gps_pos[0] > s_gps_pos[0])y1 = -y1;
             memcpy(s_gps_pos, Station::getStation(stations[2]).GPSPosition(), sizeof(double)*2);
             s_gps_pos[0] = f_gps_pos[0];
             x2 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
@@ -140,7 +141,7 @@ void Coincidence::calc(double limit, bool save_events){
             memcpy(s_gps_pos, Station::getStation(stations[2]).GPSPosition(), sizeof(double)*2);
             s_gps_pos[1] = f_gps_pos[1];
             y2 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
-            if(f_gps_pos[0] > s_gps_pos[1])y2 = -y2;
+            if(f_gps_pos[0] > s_gps_pos[0])y2 = -y2;
             //dirs
             for(int i=0;i<numberOfCoincidences;i++){
                 double dir_vector[3];

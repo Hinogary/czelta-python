@@ -110,16 +110,16 @@ double getJulianFromUnix( time_t unixSecs ){
    return ( unixSecs / 86400.0 ) + 2440587.5;
 }
 
-double lSideRealFromUnix(time_t unixSecs, float degres_longtitude){
+double lSideRealFromUnix(time_t unixSecs, float radians_longtitude){
 //returned time is in radians
 
 //sidereal time 0:00:00 1.1.1970 on longtitude 0
 #define ZERO_SIDEREAL_TIME (24054.40168883)
 //each day is 1.0027... sidereal day
 #define SIDEREAL_DAY_TO_DAY (1.002737909350795)
-    double side_real_unix = unixSecs*SIDEREAL_DAY_TO_DAY+ZERO_SIDEREAL_TIME;
+    double side_real_unix = unixSecs*SIDEREAL_DAY_TO_DAY+ZERO_SIDEREAL_TIME+radians_longtitude/M_PI*12*60*60;
     time_t side_real_days = floor(side_real_unix/86400.0);
-    return (side_real_unix-side_real_days*86400)/43200*M_PI+degres_longtitude;
+    return (side_real_unix-side_real_days*86400)/43200*M_PI;
 }
 
 float* localToGlobalDirection(float* local_direction, double* gps_position, time_t time){
