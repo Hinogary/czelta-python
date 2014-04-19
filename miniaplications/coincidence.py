@@ -91,7 +91,7 @@ class MainWindow(coincidence_ui.Ui_MainWindow):
             for coin in c:
                 if triple:
                     if len(coin)==6 and coin[4]!=None:
-                        text = u"%.2f μs (%.2f, %.2f) (%.2f, %.2f)\n%s\n%s\n%s\n"%(coin[0]*1e6, coin[4][0], coin[4][1], coin[5][0], coin[4][1],str(coin[1]),str(coin[2]),str(coin[3]))
+                        text = u"%.2f μs (%.2f, %.2f) (%.2f, %.2f)\n%s\n%s\n%s\n"%(coin[0]*1e6, coin[4][0], coin[4][1], coin[5][0], coin[5][1],str(coin[1]),str(coin[2]),str(coin[3]))
                     else:
                         text = u"%.2f μs\n%s\n%s\n%s\n"%(coin[0]*1e6,str(coin[1]),str(coin[2]),str(coin[3]))
                 else:
