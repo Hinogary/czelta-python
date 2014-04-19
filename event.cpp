@@ -97,7 +97,7 @@ double* Event::directionVector() const{
 
     //can't determine direction -> TDC is out of view scope
     if (vec_z < 0){
-        return NULL;
+        return nullptr;
     }
     vec_z = sqrt(vec_z);
     
@@ -110,44 +110,10 @@ double* Event::directionVector() const{
  * @return {azimuth, horizon}
  */
 float* Event::calculateDirRadians() const{
-
-    static float rtn[2];
-#define horizon rtn[1]
-#define azimut rtn[0]
-    azimut = 0;horizon = 0;
-    if(isCalib())return rtn;
-    
+    if(isCalib())return nullptr;
     double* vector = directionVector();
-    if(vector==NULL)return rtn;
-    
-    horizon = (float) asin(vec_z / SPEED_OF_LIGHT);
-    
-    //azimut based on kvadrant
-    if (vector[0] <= 0) {
-        if (vector[1] <= 0){
-            //III. Kvadrant
-            azimut = atan(vec_x / vec_y);
-        } else {
-            //II. Kvadrant
-            azimut = M_PI - atan(-vec_x / vec_y);
-        }
-    } else {
-        if (vector[1] <= 0){
-            //IV. Kvadrant
-            azimut = 2 * M_PI - atan(-vec_x / vec_y);
-        } else {
-            //I. Kvadrant
-            azimut = M_PI + atan(vec_x / vec_y);
-        }
-    }
-    
-    //if is horizont or azimut NaN return {0,0}
-    if (azimut!=azimut || horizon!=horizon){
-        horizon = 0;azimut = 0;
-        return rtn;
-    };
-    
-    return rtn;
+    if(vector==nullptr)return nullptr;
+    return dirVectorToAh(vector);
 }
 
 string Event::toString() const{

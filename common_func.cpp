@@ -17,6 +17,50 @@ double deltaDirection(double hor1, double az1, double hor2, double az2) {
     return rtn;
 }
 
+double deltaDistance(double* f_gps_pos, double* s_gps_pos){
+    double dlong = (s_gps_pos[1] - f_gps_pos[1]) * M_PI / 180.0;
+    double dlat = (s_gps_pos[0] - f_gps_pos[0]) * M_PI / 180.0;
+    double a = pow(sin(dlat/2.0), 2) + cos(s_gps_pos[0] * M_PI / 180.0) * cos(f_gps_pos[0] * M_PI / 180.0) * pow(sin(dlong/2.0), 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1-a));
+    return 6367 * c;
+}
+
+float* dirVectorToAh(double* vector){
+#define vec_x vector[0]
+#define vec_y vector[1]
+#define vec_z vector[2]
+
+#define horizon rtn[1]
+#define azimut rtn[0]    
+    static float rtn[2];
+    horizon = (float) asin(vec_z / SPEED_OF_LIGHT);
+    
+    //azimut based on kvadrant
+    if (vec_x <= 0) {
+        if (vec_y <= 0){
+            //III. Kvadrant
+            azimut = atan(vec_x / vec_y);
+        } else {
+            //II. Kvadrant
+            azimut = M_PI - atan(-vec_x / vec_y);
+        }
+    } else {
+        if (vector[1] <= 0){
+            //IV. Kvadrant
+            azimut = 2 * M_PI - atan(-vec_x / vec_y);
+        } else {
+            //I. Kvadrant
+            azimut = M_PI + atan(vec_x / vec_y);
+        }
+    }
+    
+    //if is horizont or azimut NaN return {0,0}
+    if (azimut!=azimut || horizon!=horizon){
+        return nullptr;
+    };
+    return rtn;
+}
+
 time_t date(string date) {
     struct tm tm;
     tm.tm_isdst = 0;
