@@ -9,3 +9,4 @@ Czelta Reference
    event.rst
    event_reader.rst
    station.rst
+   coincidence.rst

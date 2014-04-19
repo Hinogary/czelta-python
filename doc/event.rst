@@ -41,8 +41,8 @@
     
        Return ``(azimuth, horizont)`` direction of shower. Azimuth is from south clockwise. Both values are in Degres. Must have loaded info about stations and set station for ``event``/``event_reader``
        
-    .. data:: DRA_direction
+    .. data:: RAD_direction
     
-        Return ``(declination, right ascension)`` direction of shower in Degrees. Must have loaded info about stations and set station for ``event``/``event_reader``
+        Return ``(right ascension, declination)`` direction of shower in Degrees. Must have loaded info about stations and set station for ``event``/``event_reader``
        
     .. automethod:: set_station(station_id)
