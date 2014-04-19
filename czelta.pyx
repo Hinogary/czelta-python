@@ -210,9 +210,14 @@ cdef class coincidence:
                 return rtn
             else:
                 if self.c.dirs.size()!=0:
+                    AH = (self.c.dirs[4*i], self.c.dirs[4*i+1])
+                    if AH[0]==0 and AH[1]==0:
+                        AH = None
+                        DRA = None
+                    else:
+                        DRA = (self.c.dirs[4*i+2], self.c.dirs[4*i+3])
                     rtn = (self.c.delta[i], event(), event(), event(), 
-                          (self.c.dirs[4*i], self.c.dirs[4*i+1]),
-                          (self.c.dirs[4*i+2], self.c.dirs[4*i+3]))
+                          AH, DRA)
                 else:
                     rtn = (self.c.delta[i], event(), event(), event())
                 (<event>rtn[1]).set(self.c.events[0][i])
