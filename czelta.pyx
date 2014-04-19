@@ -573,4 +573,7 @@ try:
     import distutils.sysconfig
     station.load(open(distutils.sysconfig.get_python_lib()+os.sep+"config_data.JSON"))
 except:
-    pass
+    try:
+        station.load(open("config_data.JSON"))
+    except:
+        pass
