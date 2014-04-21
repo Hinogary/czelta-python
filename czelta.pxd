@@ -33,6 +33,7 @@ cdef extern from "station.h" namespace "Station" nogil:
     Station& getStation(int)
     Station& getStation(string)
     vector[p_Station] getStations()
+    void clear()
 
 
 cdef extern from "event_reader.h":
@@ -117,10 +118,12 @@ cdef extern from "coincidence.h" nogil:
     cppclass Coincidence:
         Coincidence() except +
         EventReader *readers[2]
+        int n
         int stations[2]
         bint events_saved
         vector[double] delta
         vector[Event] *events
+        vector[float] dirs
         double limit
         int numberOfCoincidences
         Overlap overlap

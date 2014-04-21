@@ -12,8 +12,8 @@
 
 struct Overlap{
     int measureTime;
-    int normal_events[2];
-    int calibration_events[2];
+    int normal_events[3];
+    int calibration_events[3];
 };
 
  class EventReader {
@@ -49,7 +49,7 @@ public:
     static void setFilesDirectory(string dir);
     inline static string getFilesDirectory(){return files_directory;};
     //void checkRuns(int maxDiffbetweenEvents = 0);
-    Overlap overlap(EventReader &other);
+    Overlap overlap(EventReader* other, EventReader* other2 = nullptr);
     static uint32_t* fileFromTo(char* filename);
     bool loadDatFile(char* filename);
     bool loadTxtFile(char* filename);
@@ -59,6 +59,11 @@ public:
     inline int getStation(){return _station;};
     inline Station& getRStation(){return Station::getStation(_station);};
 private:
+#define PART_SIZE (86400/64)
+    uint p_start_timestamp;
+    uint p_end_timestamp;
+    //ocupies about 1 MB per 10 years of data and very much speedup finding events by time -> needed almost by overlaps
+    vector<uint> parts_index;
     void clear();
     double _progress;
     void addRun(int endIndex = 0);

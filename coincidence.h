@@ -6,16 +6,20 @@
 #include "event_reader.h"
 #include "event.h"
 #include "station.h"
+#include "common_func.h"
 class Coincidence
 {
 public:
+#define LIMIT_N_COINCIDENCE 4
     Coincidence();
     void calc(double limit, bool save_events = true);
-    EventReader *readers[2];
-    uint8_t stations[2];
+    int n;
+    EventReader *readers[LIMIT_N_COINCIDENCE];
+    uint8_t stations[LIMIT_N_COINCIDENCE];
     bool events_saved;
     vector<double> delta;
-    vector<Event> events[2];
+    vector<Event> events[LIMIT_N_COINCIDENCE];
+    vector<float> dirs;
     double limit;
     int numberOfCoincidences;
     Overlap overlap;

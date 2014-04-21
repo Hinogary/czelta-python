@@ -46,13 +46,18 @@ bool EventReader::loadDatFile(char* filename){
     in.read((char*)events.data(),length<<5);
     in.close();
     _progress=0.5;
+    p_start_timestamp = wevents[0].timestamp/PART_SIZE*PART_SIZE;
     for(int i=0;i<length;i++){
         if(wevents[i].byte&4)
             addRun(i);
         events.push_back(Event(wevents[i],_station));
+        while(p_start_timestamp+parts_index.size()*PART_SIZE < events.back().timestamp())
+            parts_index.push_back(i);
     }
+    p_end_timestamp = events.back().timestamp()/PART_SIZE*PART_SIZE + (events.back().timestamp()%PART_SIZE==0?0:PART_SIZE);
     addRun(0);
     events.shrink_to_fit();
+    parts_index.shrink_to_fit();
     loadedFrom = filename;
     _progress = 1;
     return false;
@@ -97,11 +102,18 @@ bool EventReader::loadTxtFile(char* filename){
             ADC0, ADC1, ADC2, 
             (int)(atof(temp[0])*2), (int)(atof(temp[1])*2), (int)(atof(temp[2])*2), (int)(atof(temp[3])*2),
             c=='c'?true:false,_station));
+        if(events.size()==1){
+            p_start_timestamp = events[0].timestamp()/PART_SIZE*PART_SIZE;
+        }
         _progress = double(in.tellg())/len;
+        while(p_start_timestamp+parts_index.size()*PART_SIZE < events.back().timestamp())
+            parts_index.push_back(events.size()-1);
     }
+    p_end_timestamp = events.back().timestamp()/PART_SIZE*PART_SIZE + (events.back().timestamp()%PART_SIZE==0?0:PART_SIZE);
     addRun(events.size());
     in.close();
     events.shrink_to_fit();
+    parts_index.shrink_to_fit();
     runs.shrink_to_fit();
     loadedFrom = filename;
     _progress = 1;
@@ -167,6 +179,7 @@ int EventReader::filter(function<bool(Event&)> filter_func){
     auto old_runs = runs;
     runs.clear();
     int current_run_end = old_runs[0].endIndex;
+    parts_index.clear();
     for(uint i=0, run_id = 0;i<events.size();i++){
         if(i==current_run_end){
             addRun(current);
@@ -174,12 +187,21 @@ int EventReader::filter(function<bool(Event&)> filter_func){
         }
         if(!filter_func(events[i])){
             events[current++]=events[i];
+            if(current==1)
+                p_start_timestamp = events[0].timestamp()/PART_SIZE*PART_SIZE;
+            while(p_start_timestamp+parts_index.size()*PART_SIZE < events[current-1].timestamp())
+                parts_index.push_back(current-1);
         }
     }
+    p_end_timestamp = events.back().timestamp()/PART_SIZE*PART_SIZE + (events.back().timestamp()%PART_SIZE==0?0:PART_SIZE);
     int rtn = events.size()-current;
-    events.resize(current);
-    events.shrink_to_fit();
+    if(rtn>0){
+        events.resize(current);
+        events.shrink_to_fit();
+    }
     addRun(0);
+    runs.shrink_to_fit();
+    parts_index.shrink_to_fit();
     return rtn;
 }
 
@@ -191,30 +213,25 @@ void EventReader::clear(){
 
 int EventReader::firstOlderThan(int timestamp) const{
     uint i = 0;
-    for(i=0;i<runs.size();i++){
-        if(runs[i].beginTimestamp>timestamp){
-            if(i>0){
-                i = runs[i-1].beginIndex;
-                break;
-            }else
-                return 0;
-        }
-    }
+    if(timestamp>p_end_timestamp)
+        i = events.size()-1;
+    else if(timestamp<p_start_timestamp)
+        i = 0;
+    else
+        i = parts_index[(timestamp-p_start_timestamp)/PART_SIZE];
     while(i<events.size() && timestamp>=events[i].timestamp())
         i++;
     return i;
 }
 int EventReader::lastEarlierThan(int timestamp) const{
     uint i = 0;
-    for(i=0;i<runs.size();i++){
-        if(runs[i].beginTimestamp>timestamp){
-            if(i>0){
-                i = runs[i-1].beginIndex;
-                break;
-            }else
-                return 0;
-        }
-    }
+    
+    if(timestamp>p_end_timestamp)
+        i = events.size()-1;
+    else if(timestamp<p_start_timestamp)
+        i = 0;
+    else
+        i = parts_index[(timestamp-p_start_timestamp)/PART_SIZE]-1;
     while(i<events.size() && timestamp>events[i].timestamp())
         i++;
     return --i;
@@ -228,33 +245,61 @@ int EventReader::measurelength(){
     return len;
 }
 
-Overlap EventReader::overlap(EventReader &other){
-    Overlap rtn{0,{0,0},{0,0}};
-    int from, to, i[] = {0,0};
-    while(numberOfRuns()>i[0] && other.numberOfRuns()>i[1]){
-        from = max(runStart(i[0]),other.runStart(i[1]));
-        to = min(runEnd(i[0]),other.runEnd(i[1]));
-        if(to-from>0){
-            auto max = lastEarlierThan(to);
-            for(int i=firstOlderThan(from);i<=max;i++){
-                if(item(i).isCalib())
-                    rtn.calibration_events[0]++;
-                else
-                    rtn.normal_events[0]++;
+Overlap EventReader::overlap(EventReader* other, EventReader* other2){
+    Overlap rtn{0,{0,0,0},{0,0,0}};
+    if(other2==nullptr){
+        int from, to, i[] = {0,0};
+        while(numberOfRuns()>i[0] && other->numberOfRuns()>i[1]){
+            from = max(runStart(i[0]),other->runStart(i[1]));
+            to = min(runEnd(i[0]),other->runEnd(i[1]));
+            if(to-from>0){
+                rtn.measureTime+=to-from;
+                auto max = lastEarlierThan(to);
+                for(int i=firstOlderThan(from);i<=max;i++){
+                    if(item(i).isCalib())
+                        rtn.calibration_events[0]++;
+                    else
+                        rtn.normal_events[0]++;
+                }
+                max = other->lastEarlierThan(to);
+                for(int i=other->firstOlderThan(from);i<=max;i++){
+                    if(other->item(i).isCalib())
+                        rtn.calibration_events[1]++;
+                    else
+                        rtn.normal_events[1]++;
+                }
+            };
+            if(other->runEnd(i[1])>runEnd(i[0]))
+                i[0]++;
+            else
+                i[1]++;
+        }
+    }else{
+        int from, to, i[] = {0,0,0};
+        EventReader *ers[] = {this, other, other2};
+        while(ers[0]->numberOfRuns()>i[0] && ers[1]->numberOfRuns()>i[1] && ers[2]->numberOfRuns()>i[2]){
+            from = max(max(ers[0]->runStart(i[0]), ers[1]->runStart(i[1])), ers[2]->runStart(i[2]));
+            to = min(min(ers[0]->runEnd(i[0]), ers[1]->runEnd(i[1])), ers[2]->runEnd(i[2]));
+            if(to-from>0){
+                rtn.measureTime+=to-from;
+                int max;
+                for(int k=0;k<3;k++){
+                    max = ers[k]->lastEarlierThan(to);
+                    for(int j=ers[k]->firstOlderThan(from);j<=max;j++){
+                        if(ers[k]->item(j).isCalib())
+                            rtn.calibration_events[k]++;
+                        else
+                            rtn.normal_events[k]++;
+                    }
+                }
             }
-            max = other.lastEarlierThan(to);
-            for(int i=other.firstOlderThan(from);i<=max;i++){
-                if(other.item(i).isCalib())
-                    rtn.calibration_events[1]++;
-                else
-                    rtn.normal_events[1]++;
-            }
-            rtn.measureTime+=to-from;
-        };
-        if(other.runEnd(i[1])>runEnd(i[0]))
-            i[0]++;
-        else
-            i[1]++;
+            if(ers[0]->runEnd(i[0])==to)
+                i[0]++;
+            else if(ers[1]->runEnd(i[1])==to)
+                i[1]++;
+            else
+                i[2]++;
+        }
     }
     return rtn;
 }

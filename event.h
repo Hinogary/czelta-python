@@ -13,7 +13,6 @@ typedef unsigned int uint;
 #include <array>
 #include <stdio.h>
 #include "station.h"
-#define SPEED_OF_LIGHT 299792458.0
 using namespace std;
 
 #pragma pack(push, 1)
@@ -82,13 +81,21 @@ public:
     float* calculateDirRadians() const;
     //return azimut, horizon
     inline float* calculateDir() const{
-        float* const d = calculateDirRadians();d[0]*=180/M_PI;d[1]*=180/M_PI;return d;};
+        float* const d = calculateDirRadians();
+        if(d==nullptr)return nullptr;
+        d[0]*=180/M_PI;
+        d[1]*=180/M_PI;
+        return d;};
     inline float* calculateEarthDirRadians() const{
         float* l = calculateDirRadians();
-        if(l[0]==0 && l[1]==0)return l;
+        if(l==nullptr)return nullptr;
         return localToGlobalDirection(l, getRStation().GPSPosition(), timestamp());};
     inline float* calculateEarthDir() const{
-        float* const r = calculateEarthDirRadians();r[0]*=180/M_PI;r[1]*=180/M_PI;return r;}   
+        float* const r = calculateEarthDirRadians();
+        if(r==nullptr)return nullptr;
+        r[0]*=180/M_PI;
+        r[1]*=180/M_PI;
+        return r;}   
     string toString() const;
     inline uint8_t getStation() const{return _station;};
     inline Station& getRStation() const{return Station::getStation(_station);};

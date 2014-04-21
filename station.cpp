@@ -58,6 +58,15 @@ bool Station::addStation(Station station){
     return false;
 }
 
+void Station::clear(){
+    _actives.reset();
+    for(int i=0;i<256;i++){
+        _stations[i]._ID = 0;
+        _stations[i]._TDCCorections.clear();
+        _stations[i]._file_names.clear();
+    }
+}
+
 short* Station::lastTDCCorrect(){
     if(_TDCCorections.size()==0)return null_correction;
     else return _TDCCorections.back().tdc;
@@ -100,12 +109,7 @@ void Station::setName(char* name){
 
 double Station::distanceTo(Station& st){
     if(this->id()==0 || st.id()==0)return 0;
-   //haversine method
-    double dlong = (st.GPSPosition()[1] - this->GPSPosition()[1]) * M_PI / 180.0;
-    double dlat = (st.GPSPosition()[0] - this->GPSPosition()[0]) * M_PI / 180.0;
-    double a = pow(sin(dlat/2.0), 2) + cos(st.GPSPosition()[0] * M_PI / 180.0) * cos(this->GPSPosition()[0] * M_PI / 180.0) * pow(sin(dlong/2.0), 2);
-    double c = 2 * atan2(sqrt(a), sqrt(1-a));
-    return 6367 * c;
+    return deltaDistance(this->GPSPosition(), st.GPSPosition());
 }
 
 double* Station::GPSPosition(){

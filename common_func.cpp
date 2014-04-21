@@ -5,12 +5,59 @@
 #include <string.h>
 #include <iostream>
 #include <time.h>
-
 #include "common_func.h"
+
+#ifndef M_PI
+#define M_PI (3.14159265358979323846)
+#endif
 
 double deltaDirection(double hor1, double az1, double hor2, double az2) {
     double rtn = acos(sin(hor1) * sin(hor2) + cos(hor1) * cos(hor2) * cos(az1 - az2));
     if(rtn!=rtn)return 0;
+    return rtn;
+}
+
+double deltaDistance(double* f_gps_pos, double* s_gps_pos){
+    double dlong = (s_gps_pos[1] - f_gps_pos[1]) * M_PI / 180.0;
+    double dlat = (s_gps_pos[0] - f_gps_pos[0]) * M_PI / 180.0;
+    double a = pow(sin(dlat/2.0), 2) + cos(s_gps_pos[0] * M_PI / 180.0) * cos(f_gps_pos[0] * M_PI / 180.0) * pow(sin(dlong/2.0), 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1-a));
+    return 6367 * c;
+}
+
+float* dirVectorToAh(double* vector){
+#define vec_x vector[0]
+#define vec_y vector[1]
+#define vec_z vector[2]
+
+#define horizon rtn[1]
+#define azimut rtn[0]    
+    static float rtn[2];
+    horizon = (float) asin(vec_z / SPEED_OF_LIGHT);
+    
+    //azimut based on kvadrant
+    if (vec_x <= 0) {
+        if (vec_y <= 0){
+            //III. Kvadrant
+            azimut = atan(vec_x / vec_y);
+        } else {
+            //II. Kvadrant
+            azimut = M_PI - atan(-vec_x / vec_y);
+        }
+    } else {
+        if (vector[1] <= 0){
+            //IV. Kvadrant
+            azimut = 2 * M_PI - atan(-vec_x / vec_y);
+        } else {
+            //I. Kvadrant
+            azimut = M_PI + atan(vec_x / vec_y);
+        }
+    }
+    
+    //if is horizont or azimut NaN return {0,0}
+    if (azimut!=azimut || horizon!=horizon){
+        return nullptr;
+    };
     return rtn;
 }
 
@@ -23,7 +70,11 @@ time_t date(string date) {
     tm.tm_year = year-1900;
     tm.tm_mon = month-1;
     tm.tm_mday = day;
+#ifdef __arm__
+    tm.tm_hour = hour;
+#else
     tm.tm_hour = hour+1;
+#endif
     tm.tm_min = minute;
     tm.tm_sec = sec;
     return mktime(&tm);
@@ -44,7 +95,11 @@ time_t date(int year, int month, int day, int hour, int minute, int second) {
     tm.tm_year = year - 1900;
     tm.tm_mon = month - 1;
     tm.tm_mday = day;
+#ifdef __arm__
+    tm.tm_hour = hour;
+#else
     tm.tm_hour = hour+1;
+#endif
     tm.tm_min = minute;
     tm.tm_sec = second;
     tm.tm_isdst = 0;
@@ -55,16 +110,16 @@ double getJulianFromUnix( time_t unixSecs ){
    return ( unixSecs / 86400.0 ) + 2440587.5;
 }
 
-double lSideRealFromUnix(time_t unixSecs, float degres_longtitude){
+double lSideRealFromUnix(time_t unixSecs, float radians_longtitude){
 //returned time is in radians
 
 //sidereal time 0:00:00 1.1.1970 on longtitude 0
 #define ZERO_SIDEREAL_TIME (24054.40168883)
 //each day is 1.0027... sidereal day
 #define SIDEREAL_DAY_TO_DAY (1.002737909350795)
-    double side_real_unix = unixSecs*SIDEREAL_DAY_TO_DAY+ZERO_SIDEREAL_TIME;
+    double side_real_unix = unixSecs*SIDEREAL_DAY_TO_DAY+ZERO_SIDEREAL_TIME+radians_longtitude/M_PI*12*60*60;
     time_t side_real_days = floor(side_real_unix/86400.0);
-    return (side_real_unix-side_real_days*86400)/43200*M_PI+degres_longtitude;
+    return (side_real_unix-side_real_days*86400)/43200*M_PI;
 }
 
 float* localToGlobalDirection(float* local_direction, double* gps_position, time_t time){
