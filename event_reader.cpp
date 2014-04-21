@@ -209,6 +209,7 @@ void EventReader::clear(){
     _clearedCalibs = false;
     events.clear();
     runs.clear();
+    parts_index.clear();
 }
 
 int EventReader::firstOlderThan(int timestamp) const{
