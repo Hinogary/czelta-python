@@ -125,7 +125,7 @@ void Coincidence::calc(double limit, bool save_events){
         }
         
         //if we have all stations of triple coincidence - try to calculate direction of event based on GPS of stations
-        if(stations[0]!=0 && stations[1]!=0 && stations[2]!=0){
+        if(stations[0]!=0 && stations[1]!=0 && stations[2]!=0 && events_saved){
             double stPos[4];
     #define x1 stPos[0]
     #define y1 stPos[1]
