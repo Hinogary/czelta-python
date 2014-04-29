@@ -3,7 +3,6 @@
  */
 
 #include <string.h>
-#include <iostream>
 #include <time.h>
 #include "common_func.h"
 
@@ -56,16 +55,16 @@ float* dirVectorToAh(double* vector){
     
     //if is horizont or azimut NaN return {0,0}
     if (azimut!=azimut || horizon!=horizon){
-        return nullptr;
+        return NULL;
     };
     return rtn;
 }
 
-time_t date(string date) {
+time_t char_date(const char* date) {
     struct tm tm;
     tm.tm_isdst = 0;
     int year = 0, month = 0, day = 0, hour = 0, minute = 0, sec = 0;
-    int readed = sscanf(date.c_str(), "%i.%i.%i %i:%i:%i",&day, &month, &year, &hour, &minute, &sec);
+    int readed = sscanf(date, "%i.%i.%i %i:%i:%i",&day, &month, &year, &hour, &minute, &sec);
     if(readed<3)return 0;
     tm.tm_year = year-1900;
     tm.tm_mon = month-1;
@@ -78,15 +77,6 @@ time_t date(string date) {
     tm.tm_min = minute;
     tm.tm_sec = sec;
     return mktime(&tm);
-}
-
-time_t date(int year, int month, int day) {
-    return date(year, month, day, 0, 0, 0);
-}
-
-time_t date(int year, int month, int day, int hour, int minute) {
-    return date(year, month, day, hour, minute, 0);
-
 }
 
 time_t date(int year, int month, int day, int hour, int minute, int second) {
