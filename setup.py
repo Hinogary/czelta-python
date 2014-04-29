@@ -16,7 +16,7 @@ ext_modules = [Extension('czelta', ['czelta.pyx' if USE_CYTHON else 'czelta.cpp'
                                     'event.cpp',
                                     'event_reader.cpp',
                                     'common_func.c',
-                                    'station.cpp',
+                                    'station.c',
                                     'coincidence.cpp'],
                 language='c++',
                 extra_compile_args=['-std=c++0x']

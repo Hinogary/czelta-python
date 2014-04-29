@@ -12,7 +12,7 @@ event_reader.cpp
 event_reader.h
 README.md
 setup.py
-station.cpp
+station.c
 station.h
 LICENSE.txt
 CHANGES.txt

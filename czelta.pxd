@@ -21,7 +21,7 @@ cdef extern from "station.h" nogil:
         void setName(char* name)
         void setGPSPosition(double latitude, double longitude, double height)
         void setDetectorPosition(float x1, float y1, float x2, float y2)
-        void clearTDCCorrect(int capacity)
+        void clearTDCCorrect()
         void pushTDCCorrect(int fr, short tdc0, short tdc1, short tdc2)
         void pushTDCCorrect(string fr, short tdc0, short tdc1, short tdc2)
         void pushFileName(string name)

@@ -83,7 +83,7 @@ cdef class station:
                         file_name = name.encode(system_encoding)
                         st.pushFileName(file_name)
                 if 'TDCCorrection' in station and len(station['TDCCorrection'])>0:
-                    st.clearTDCCorrect(len(station['TDCCorrection']))
+                    st.clearTDCCorrect()
                     for correction in station['TDCCorrection']:
                         tdc = correction['correction']
                         if not 'from' in correction:

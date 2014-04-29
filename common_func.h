@@ -12,7 +12,6 @@
 extern "C"{
 #endif
 
-double deltaDirection(double hor1, double az1, double hor2, double az2);
 //haversine method
 double deltaDistance(double* f_gps_pos, double* s_gps_pos);
 float* dirVectorToAh(double* vector);
