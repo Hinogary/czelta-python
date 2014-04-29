@@ -126,7 +126,7 @@ void Station::pushTDCCorrect(time_t from, short tdc0, short tdc1, short tdc2){
 }
 
 void Station::pushTDCCorrect(string from, short tdc0, short tdc1, short tdc2){
-    pushTDCCorrect(date(from), tdc0, tdc1, tdc2);
+    pushTDCCorrect(string_date(from), tdc0, tdc1, tdc2);
 }
 
 void Station::pushFileName(string name){

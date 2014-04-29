@@ -15,7 +15,7 @@ except ImportError:
 ext_modules = [Extension('czelta', ['czelta.pyx' if USE_CYTHON else 'czelta.cpp',
                                     'event.cpp',
                                     'event_reader.cpp',
-                                    'common_func.cpp',
+                                    'common_func.c',
                                     'station.cpp',
                                     'coincidence.cpp'],
                 language='c++',

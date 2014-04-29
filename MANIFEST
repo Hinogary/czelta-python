@@ -1,6 +1,6 @@
 coincidence.cpp
 coincidence.h
-common_func.cpp
+common_func.c
 common_func.h
 config_data.JSON
 czelta.pxd
