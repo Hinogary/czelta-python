@@ -111,8 +111,12 @@ cdef extern from "event.h" nogil:
         short TDC1Corrected()
         short TDC2Corrected()
         float* calculateDir()
+        float* calculateDirRadians()
         inline float* calculateEarthDir()
+        inline float* calculateEarthDirRadians()
         inline void setStation(int station)
+        inline int getStation()
+        inline Station& getRStation()
 
 cdef extern from "coincidence.h" nogil:
     cppclass Coincidence:
@@ -135,9 +139,8 @@ cdef extern from "coincidence.h" nogil:
 
 cdef extern from "common_func.h" nogil:
     double deltaDirection(double hor1, double az1, double hor2, double az2)
-    int date(string date)
-    int date(int year, int month, int day)
-    int date(int year, int month, int day, int hour, int minute)
+    int string_date(string date)
+    int char_date(char*)
     int date(int year, int month, int day, int hour, int minute, int second)
 
 cpdef int date_to_timestamp(date)

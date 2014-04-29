@@ -17,7 +17,7 @@ cpdef int date_to_timestamp(d):
     if type(d)==datetime.datetime:
         return date(d.year, d.month, d.day, d.hour, d.minute, d.second)
     else:
-        return date(<string>d.encode(system_encoding))
+        return char_date((<string>d.encode(system_encoding)).c_str())
 
 cdef class station:
     "Class for working with station data. On import it tries to load config_data.JSON (in python lib path and after failture in local directory."
@@ -656,3 +656,4 @@ except:
         station.load(open("config_data.JSON"))
     except:
         pass
+
