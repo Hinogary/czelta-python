@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 #ifndef COMMONFUNC_H
 #define	COMMONFUNC_H
 #define SPEED_OF_LIGHT 299792458.0
