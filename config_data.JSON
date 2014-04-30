@@ -3,7 +3,6 @@
         {
             "ID":6, 
             "name":"praha_utef",
-            "file_names":["praha_utef.dat","praha_utef_data.txt"],
             "GPSposition":[50.0673815, 14.4229437, 258.83, 213.57],
             "detectorsPos":[-6.403,-7.907,3.602,-9.286],
             "TDCCorrection":[
@@ -47,7 +46,6 @@
         },{
             "ID":5,
             "name":"kladno_sps",
-            "file_names":["kladno_sps.dat","kladno_sps_data.txt"],
             "GPSposition":[50.1404958, 14.1009331, 446.18, 400.82],
             "detectorsPos":[-8.620, 4.955, -0.139, 10.017],
             "TDCCorrection":[
@@ -64,7 +62,6 @@
         },{
             "ID":203,
             "name":"ro_bucharest",
-            "file_names":["ro_bucharest.dat","ro_bucharest_data.txt"],
             "GPSposition":[],
             "detectorsPos":[],
             "TDCCorrection":[
@@ -72,7 +69,6 @@
         },{
             "ID":12,
             "name":"brno_mu",
-            "file_names":["brno_mu.dat","brno_mu_data.txt"],
             "GPSposition":[49.204122222, 16.596805556],
             "detectorsPos":[-7.91, -5.65, 0.98, -10.29],
             "TDCCorrection":[ 
@@ -80,7 +76,6 @@
         },{
             "ID":8,
             "name":"sk_kosice_upjs",
-            "file_names":["sk_kosice_upjs.dat","sk_kosice_upjs_data.txt"],
             "GPSposition":[50.1404958, 14.1009331, 446.18, 400.82],
             "detectorsPos":[],
             "TDCCorrection":[
@@ -91,7 +86,6 @@
         },{
             "ID":3,
             "name":"opava_mg",
-            "file_names":["opava_mg.dat","opava_mg_data.txt"],
             "GPSposition":[49.93840557251803, 17.907371520996108, 321.74],
             "detectorsPos":[0.36, 9.97, 9.56, 3.56],
             "TDCCorrection":[
@@ -103,7 +97,6 @@
         },{
             "ID":4,
             "name":"opava_su",
-            "file_names":["opava_su.dat","opava_su_data.txt"],
             "GPSposition":[49.937908395964676, 17.897758483886708, 326.60, 283.37],
             "detectorsPos":[3.84, 9.23, -6.16, 7.90],
             "TDCCorrection":[
@@ -117,7 +110,6 @@
         },{
             "ID":7,
             "name":"opava_su2",
-            "file_names":["opava_su2.dat","opava_su2_data.txt"],
             "GPSposition":[49.937908395964676, 17.897758483886708, 326.60, 283.37],
             "detectorsPos":[6.01, 7.92, -3.78, 9.64],
             "TDCCorrection":[
@@ -125,7 +117,6 @@
         },{
             "ID":11,
             "name":"opava_zsbn",
-            "file_names":["opava_zsbn.dat","opava_zsbn_data.txt"],
             "GPSposition":[49.9315451, 17.9052476, 354.59, 311.37],
             "detectorsPos":[-1.343, -9.15, 8.036, -6.339],
             "TDCCorrection":[
@@ -136,7 +127,6 @@
         },{
             "ID":2,
             "name":"pardubice_gd",
-            "file_names":["pardubice_gd.dat","pardubice_gd_data.txt"],
             "GPSposition":[50.0359507, 15.7894172, 284.18, 239.71],
             "detectorsPos":[-1.811, 9.869, 7.672, 5.636],
             "TDCCorrection":[
@@ -156,7 +146,6 @@
         },{
             "ID":10,
             "name":"pardubice_spse",
-            "file_names":["pardubice_spse.dat","pardubice_spse_data.txt"],
             "GPSposition":[50.0366421, 15.7800704, 282.84, 238.36],
             "detectorsPos":[8.540, 4.391, 7.803, -5.473],
             "TDCCorrection":[
@@ -167,7 +156,6 @@
         },{
             "ID":204,
             "name":"fr_pons",
-            "file_names":["fr_pons.dat","fr_pons_data.txt"],
             "GPSposition":[50.0366421, 15.7800704],
             "detectorsPos":[6.91, 7.31, -2.82, 9.56],
             "TDCCorrection":[
