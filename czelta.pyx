@@ -66,7 +66,6 @@ cdef class station:
             file = open("config_data.JSON")
         cfg = json.load(file)
         file.close()
-        clear()
         for station in cfg['stations']:
             try:
                 st = Station(int(station['ID']))
@@ -78,10 +77,6 @@ cdef class station:
                 if 'detectorsPos' in station and len(station['detectorsPos'])==4:
                     pos = station['detectorsPos']
                     st.setDetectorPosition(pos[0], pos[1], pos[2], pos[3])
-                if 'file_names' in station:
-                    for name in station['file_names']:
-                        file_name = name.encode(system_encoding)
-                        st.pushFileName(file_name)
                 if 'TDCCorrection' in station and len(station['TDCCorrection'])>0:
                     st.clearTDCCorrect()
                     for correction in station['TDCCorrection']:
@@ -93,8 +88,7 @@ cdef class station:
                         else:
                             from_cor = correction['from'].encode(system_encoding)
                             st.pushTDCCorrect(<string>from_cor, <short>tdc[0], <short>tdc[1], <short>tdc[2])
-                if addStation(st):
-                    print "Station can't be added, already exist, id: "+str(st.id())+", name: "+st.name()
+                addStation(st)
             except Warning:
                 st_name = (<char*>st.name()).decode(system_encoding)
                 print "Station can't be added, bad format of JSON, id: "+str(st.id())+", name: "+st_name

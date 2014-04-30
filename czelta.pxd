@@ -24,16 +24,14 @@ cdef extern from "station.h" nogil:
         void clearTDCCorrect()
         void pushTDCCorrect(int fr, short tdc0, short tdc1, short tdc2)
         void pushTDCCorrect(string fr, short tdc0, short tdc1, short tdc2)
-        void pushFileName(string name)
         
         
 ctypedef Station* p_Station
 cdef extern from "station.h" namespace "Station" nogil:
-    bint addStation(Station)
+    void addStation(Station)
     Station& getStation(int)
     Station& getStation(string)
     vector[p_Station] getStations()
-    void clear()
 
 
 cdef extern from "event_reader.h":
