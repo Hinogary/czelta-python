@@ -651,3 +651,47 @@ except:
     except:
         pass
 
+
+cdef double delta_dir(float az1, float hor1, float az2, float hor2):
+    cdef double sum = m.sin(hor1)*m.sin(hor2) + m.cos(hor1)*m.cos(hor2)*m.cos(az1-az2)
+    return m.acos(sum)
+    
+def mapa_smeru():
+    cdef double citlivost = 5
+
+    cdef czelta.event_reader er = czelta.event_reader('~/data/pardubice_spse.dat')
+    def f(e):
+        return e.datetime.year<2014 or e.datetime.month<2
+    er.filter(f)
+    er.filter_calibrations()
+    er.filter_maximum_TDC()
+    cdef np.ndarray[np.int_t, ndim=2] hist = np.zeros((91,46))
+
+    cdef vector[float] RA
+    cdef vector[float] D
+    cdef czelta.event e
+    cdef float* dir
+    for e in er:
+        dir = (<czelta.event>e).e.calculateEarthDirRadians()
+        if dir:
+            RA.push_back(dir[0])
+            D.push_back(dir[1])
+    
+    cdef int xx, yy, i
+    cdef float x,y
+    
+    for xx in range(91):
+        x = 4*xx-180
+        print(x)
+        for yy in range(46):
+            y = 4*yy-90
+            for i in range(RA.size()):
+                if delta_dir(RA[i], D[i], x, y)<citlivost:
+                    hist[xx,yy]+=1
+            
+    # the x distribution will be centered at -1, the y distro
+    # at +1 with twice the width.
+    extent = [-180, 180, -90, 90]
+    pylab.imshow(hist,extent=extent,interpolation='nearest',origin='lower')
+    pylab.colorbar()
+    pylab.show()
