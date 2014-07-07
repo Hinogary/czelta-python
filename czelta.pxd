@@ -6,6 +6,9 @@ cdef extern from "Python.h":
         PY_MAJOR_VERSION
 
 cdef extern from "station.h" nogil:
+    ctypedef struct TDCCorrection:
+        int _from
+        int* correction
     cppclass Station:
         Station() except +
         Station(int ID) except +
@@ -15,6 +18,9 @@ cdef extern from "station.h" nogil:
         short* TDCCorrect(int timestamp)
         float* detectorPosition()
         double* GPSPosition()
+        
+        TDCCorrection* TDCCorrections()
+        int TDCCorrections_size()
         
         double distanceTo(Station& st)
         
@@ -136,10 +142,33 @@ cdef extern from "coincidence.h" nogil:
         void calc(double limit, bint save_events)
 
 cdef extern from "common_func.h" nogil:
+    enum:
+        TIMESTAMP_ZERO_SIDEREAL
     double deltaDirection(double hor1, double az1, double hor2, double az2)
     int string_date(string date)
     int char_date(char*)
     int date(int year, int month, int day, int hour, int minute, int second)
+    double lSideRealFromUnix(int unixSecs, float degres_longtitude)
+    float* localToGlobalDirection(float* local_direction, double* gps_position, int time)
+    float* localToAGlovalDirection(float* local_direction, double* gps_position)
+
+cdef extern from "libnova.h" nogil:
+    double ln_get_julian_from_timet(long int* in_time)
+    void ln_get_lunar_equ_coords(double JD, ln_equ_posn* position)
+    void ln_get_lunar_equ_coords_prec(double JD, ln_equ_posn* position, double precision)
+    void ln_get_equ_from_hrz (ln_hrz_posn* object,ln_lnlat_posn* observer, double JD, ln_equ_posn* position)
+    void ln_get_hrz_from_equ(ln_equ_posn* object, ln_lnlat_posn* observer, double JD, ln_hrz_posn* position)
+    double ln_get_angular_separation(ln_equ_posn* posn1, ln_equ_posn* posn2)
+    double 	ln_get_rel_posn_angle(ln_equ_posn *posn1, ln_equ_posn *posn2)	
+    struct ln_equ_posn:
+        double ra
+        double dec
+    struct ln_lnlat_posn:
+        double lng
+        double lat
+    struct ln_hrz_posn:
+        double az
+        double alt
 
 cpdef int date_to_timestamp(date)
 
@@ -150,6 +179,9 @@ cdef class station:
     cpdef distance_to(self, station other_station)
     cpdef gps_position(self)
     cpdef detector_position(self)
+    cpdef get_corrections(self)
+    #static load(file)
+    #static get_stations()
         
 
 cdef class event:
@@ -165,7 +197,8 @@ cdef class event:
     #property temp_crate
     #property calibration
     #property AH_direction
-    #property DRA_direction
+    #property RAD_direction
+    #property station
     cpdef set_station(self, station_id)
 
 cdef class coincidence:
@@ -193,7 +226,9 @@ cdef class event_reader:
     cpdef int measure_length(self)
     cdef Event c_item(self, int i)
     cpdef event item(self, int i)
+    cpdef int measure_time(self)
     
+    cpdef station get_station(self)
     cpdef set_station(self, object st)
     
     #filters
