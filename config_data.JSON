@@ -50,13 +50,17 @@
             "detectorsPos":[-8.620, 4.955, -0.139, 10.017],
             "TDCCorrection":[
                 {
-                    "correction":[0,-2,163]
+                    "from":"11.1.2008 14:20",
+                    "correction":[0,196,205]
                 },{
                     "from":"18.2.2009 13:36",
-                    "correction":[0,-1252,1298]                
+                    "correction":[0,-1346,1134]                
                 },{
                     "from":"10.6.2011 14:33",
-                    "correction":[0,-1288,2568]
+                    "correction":[0,1274,2548]
+                },{
+                    "from":"10.6.2011 14:33",
+                    "correction":[0,-1284,1259]
                 }     
             ]
         },{
@@ -71,7 +75,11 @@
             "name":"brno_mu",
             "GPSposition":[49.204122222, 16.596805556],
             "detectorsPos":[-7.91, -5.65, 0.98, -10.29],
-            "TDCCorrection":[ 
+            "TDCCorrection":[
+                {
+                    "from":"23.9.2013 16:07",
+                    "correction":[0,-1159,-2349]
+                }
             ]
         },{
             "ID":8,
