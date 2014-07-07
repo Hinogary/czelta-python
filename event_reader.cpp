@@ -55,7 +55,7 @@ bool EventReader::loadDatFile(char* filename){
             parts_index.push_back(i);
     }
     p_end_timestamp = events.back().timestamp()/PART_SIZE*PART_SIZE + (events.back().timestamp()%PART_SIZE==0?0:PART_SIZE);
-    addRun(0);
+    addRun();
     events.shrink_to_fit();
     parts_index.shrink_to_fit();
     loadedFrom = filename;
@@ -93,7 +93,7 @@ bool EventReader::loadTxtFile(char* filename){
             return true;
         };
         if(c=='x'){
-            addRun(events.size());
+            addRun();
             continue;
         }
         events.push_back(Event(date(year,month,day,hour,minute,second), 
@@ -110,7 +110,7 @@ bool EventReader::loadTxtFile(char* filename){
             parts_index.push_back(events.size()-1);
     }
     p_end_timestamp = events.back().timestamp()/PART_SIZE*PART_SIZE + (events.back().timestamp()%PART_SIZE==0?0:PART_SIZE);
-    addRun(events.size());
+    addRun();
     in.close();
     events.shrink_to_fit();
     parts_index.shrink_to_fit();
@@ -164,13 +164,15 @@ bool EventReader::saveTxtFile(char* filename, bool x_events){
 }
 
 void EventReader::addRun(int endIndex){
-    if(endIndex == 0){
+    if(endIndex == -1){
         endIndex = events.size();
     }
     int startIndex = 0;
     if(runs.size()>0)
         startIndex = runs[runs.size()-1].endIndex;
-    if(startIndex>=endIndex)return;
+    if(startIndex>=endIndex){
+        return;
+    }
     runs.push_back(Run{events[startIndex].timestamp(),startIndex,events[endIndex-1].timestamp(),endIndex});
 }
 
@@ -199,7 +201,7 @@ int EventReader::filter(function<bool(Event&)> filter_func){
         events.resize(current);
         events.shrink_to_fit();
     }
-    addRun(0);
+    addRun();
     runs.shrink_to_fit();
     parts_index.shrink_to_fit();
     return rtn;
