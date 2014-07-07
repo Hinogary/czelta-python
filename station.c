@@ -96,7 +96,7 @@ void czelta_station_clearTDCCorrect(czelta_station* st){
     st->corrections_size = 0;
 }
 
-void czelta_station_pushTDCCorrect(czelta_station* st, time_t from, short tdc0, short tdc1, short tdc2){
+void czelta_station_pushTDCCorrect(czelta_station* st, time_t _from, short tdc0, short tdc1, short tdc2){
     if(st->corrections == NULL || st->corrections_capacity <= st->corrections_size){
         TDCCorrection* new_ptr;
         int new_capacity = st->corrections_capacity*2;
@@ -107,7 +107,7 @@ void czelta_station_pushTDCCorrect(czelta_station* st, time_t from, short tdc0, 
         st->corrections_capacity = new_capacity;
         st->corrections = new_ptr;
     }
-    TDCCorrection c = {from, {tdc0, tdc1, tdc2}};
+    TDCCorrection c = {_from, {tdc0, tdc1, tdc2}};
     st->corrections[st->corrections_size++] = c;
 }
 
@@ -131,7 +131,7 @@ short* czelta_station_TDCCorrect(czelta_station* st, time_t t){
     int r = st->corrections_size - 1;
     int i = r;
     for(;i>=0;i--){
-        if(st->corrections[i].from>time)
+        if(st->corrections[i]._from>time)
             r=i-1;
         else
             break;

@@ -12,7 +12,7 @@
 extern "C"{
 #endif
 typedef struct{
-    time_t from;
+    time_t _from;
     short correction[3];
 } TDCCorrection;
 
@@ -143,6 +143,14 @@ public:
     inline static bool active(uint8_t index){
         return czelta_station_activate[index];
     };
+    
+    inline TDCCorrection* TDCCorrections(){
+        return st.corrections;
+    }
+    
+    inline int TDCCorrections_size(){
+        return st.corrections_size;
+    }
     
 private:
     czelta_station st;
