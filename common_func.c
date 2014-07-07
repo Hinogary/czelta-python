@@ -114,8 +114,6 @@ double lSideRealFromUnix(time_t unixSecs, float radians_longtitude){
 
 float* localToGlobalDirection(float* local_direction, double* gps_position, time_t time){
     static float rtn[2];
-    rtn[0] = 0;
-    rtn[1] = 0;
 #define horizon local_direction[1]
 #define azimut local_direction[0]
 #define declination rtn[1]
@@ -130,6 +128,22 @@ float* localToGlobalDirection(float* local_direction, double* gps_position, time
                           /cos(declination));
     if(azimut>M_PI)rightascention=-rightascention;
     rightascention = lSideRealFromUnix(time, longtitude) - rightascention;
+    if(rightascention<0)rightascention+=2*M_PI;
+    return rtn;
+}
+
+float* localToAGlobalDirection(float* local_direction, double* gps_position){
+    static float rtn[2];
+    const double longtitude = gps_position[1]*M_PI/180;
+    const double altitude = gps_position[0]*M_PI/180;
+    declination = asin(sin(horizon)*sin(altitude) -
+                cos(horizon)*cos(azimut)*cos(altitude));
+
+    //delta of sidereal time
+    rightascention = acos((sin(horizon)*cos(altitude)+cos(azimut)*cos(horizon)*sin(altitude))
+                          /cos(declination));
+    if(azimut>M_PI)rightascention=-rightascention;
+    rightascention = longtitude - rightascention;
     if(rightascention<0)rightascention+=2*M_PI;
     return rtn;
 }

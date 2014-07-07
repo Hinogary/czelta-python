@@ -8,6 +8,7 @@
 #ifndef COMMONFUNC_H
 #define	COMMONFUNC_H
 #define SPEED_OF_LIGHT 299792458.0
+#define TIMESTAMP_ZERO_SIDEREAL 83124
 
 #ifdef __cplusplus
 extern "C"{
@@ -21,6 +22,7 @@ time_t date(int year, int month, int day, int hour, int minute, int second);
 double getJulianFromUnix(time_t unixSecs);
 double lSideRealFromUnix(time_t unixSecs, float degres_longtitude);
 float* localToGlobalDirection(float* local_direction, double* gps_position, time_t time);
+float* localToAGlobalDirection(float* local_direction, double* gps_position);
 
 #ifdef __cplusplus
 }
