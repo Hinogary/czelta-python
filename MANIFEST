@@ -1,5 +1,6 @@
 coincidence.cpp
 coincidence.h
+coincidence.pxi
 common_func.c
 common_func.h
 config_data.JSON
@@ -8,11 +9,14 @@ czelta.pyx
 czelta.cpp
 event.cpp
 event.h
+event.pxi
 event_reader.cpp
 event_reader.h
+event_reader.pxi
 README.md
 setup.py
 station.c
 station.h
+station.pxi
 LICENSE.txt
 CHANGES.txt
