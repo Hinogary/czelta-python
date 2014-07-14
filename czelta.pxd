@@ -75,6 +75,7 @@ cdef extern from "event_reader.h":
         inline int runStart(int i)
         inline int runEndIndex(int i)
         inline int runEnd(int i)
+        int flux(int _from, int to)
     
 cdef extern from "event_reader.h" namespace "EventReader" nogil:
     void setFilesDirectory(string dir)
@@ -150,7 +151,7 @@ cdef extern from "common_func.h" nogil:
     int date(int year, int month, int day, int hour, int minute, int second)
     double lSideRealFromUnix(int unixSecs, float degres_longtitude)
     float* localToGlobalDirection(float* local_direction, double* gps_position, int time)
-    float* localToAGlovalDirection(float* local_direction, double* gps_position)
+    float* localToAGlobalDirection(float* local_direction, double* gps_position)
 
 cdef extern from "libnova.h" nogil:
     double ln_get_julian_from_timet(long int* in_time)
@@ -227,6 +228,7 @@ cdef class event_reader:
     cdef Event c_item(self, int i)
     cpdef event item(self, int i)
     cpdef int measure_time(self)
+    cpdef int flux(self, int _from, int to)
     
     cpdef station get_station(self)
     cpdef set_station(self, object st)
