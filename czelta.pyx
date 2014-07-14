@@ -479,6 +479,9 @@ cdef class event_reader:
     
     cpdef station get_station(self):
         return station(self.er.getStation())
+
+    cpdef int flux(self, int _from, int to):
+        return self.er.flux(_from, to)
             
     cpdef set_station(self, object st):
         "Set station for event_reader. Station is also set for all current events."
@@ -680,7 +683,7 @@ import pylab
 import sys
 from cython.parallel import parallel, prange
 
-def mapa_smeru(double citlivost = 5, path = '~/data/pardubice_spse.dat', int scale = 1, filter = None):
+def mapa_smeru(double citlivost = 5, path = '~/data/pardubice_spse.dat', int scale = 1, filter = None, int flux_len = 3600, bint flux_cor = True):
     scale*=2
     if scale == 0:
         scale = 1
@@ -690,28 +693,34 @@ def mapa_smeru(double citlivost = 5, path = '~/data/pardubice_spse.dat', int sca
     cdef event_reader er = event_reader(path)
     def f(e):
         dir = e.AH_direction
-        return not dir or e.AH_direction[1] < 40
-    er.filter(f)
+        tdc = e.TDC
+        return not dir or e.AH_direction[1] < 40 or e.TDC[0]==4095 or e.TDC[1]==4095 or e.TDC[2]==4095
+    #er.filter(f)
     er.filter_calibrations()
-    er.filter_maximum_TDC()
+    #er.filter_maximum_TDC()
+    
     if filter:
         er.filter(filter)
     if len(er)==0:
         return None
     
     cdef int measure_time = er.measure_time()
-    cdef np.ndarray[np.int_t, ndim=2] data = np.zeros((360/scale+1,720/scale), dtype=np.int)
+    cdef np.ndarray[np.double_t, ndim=2] data = np.zeros((360/scale+1,720/scale), dtype=np.double)
 
     cdef vector[float] RA
     cdef vector[float] D
+    cdef vector[int] flux
     
     cdef float* dir
     cdef event e
     for e in er:
+        if(f(e)):
+            continue
         dir = e.e.calculateEarthDirRadians()
         if dir:
             RA.push_back(dir[0])
             D.push_back(dir[1])
+            flux.push_back(er.er.flux(e.timestamp-flux_len/2, e.timestamp+flux_len/2))
     cdef int length = RA.size()
     cdef vector[float] deltas
     deltas.resize(length)
@@ -730,9 +739,10 @@ def mapa_smeru(double citlivost = 5, path = '~/data/pardubice_spse.dat', int sca
             else:
                 deltas[i] = delta_dir(0, y, RA[i], D[i])
         maxdelta = delta_dir(0,y,scale/360.0*m.M_PI,y)
+        #remove last progress and replace with new
         sys.stdout.write("\033[F")
         sys.stdout.write("\033[K")
-        print("%i/%i"%(yy+1,360/scale+1)) #printing progress
+        print("%i/%i"%(yy+1,360/scale+1))
         for xx in range(720/scale):
             x = scale*xx/360.0*m.M_PI
             for i in range(length):
@@ -743,7 +753,15 @@ def mapa_smeru(double citlivost = 5, path = '~/data/pardubice_spse.dat', int sca
                 else:
                     deltas[i] = delta_dir(x, y, RA[i], D[i])
                 if deltas[i]<citlivost:
-                    data[yy, xx]+=1
+                    if flux_cor:
+                        if flux[i]<30:
+                            continue
+                        data[yy, xx]+=1.0/flux[i]
+                    else:
+                        data[yy, xx]+=1
+    
+    if flux_cor:
+        data *= 1.0*len(er)*flux_len/measure_time
     #calc of "source" array for calculating expected values
     cdef np.ndarray[np.double_t, ndim=2] source = np.zeros((360/scale+1,720/scale), dtype=np.double)
     
