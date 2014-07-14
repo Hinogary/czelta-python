@@ -43,6 +43,7 @@ public:
     //return number of events being filtered
     int filter(function<bool(Event&)>);
     inline int filter(bool (*func)(Event&)){return filter(function<bool(Event&)>(func));};
+    inline int flux(int from, int to){return firstOlderThan(to)-firstOlderThan(from);};
     int firstOlderThan(int timestamp) const;
     int lastEarlierThan(int timestamp) const;
     ~EventReader();
