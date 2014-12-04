@@ -137,7 +137,15 @@ cdef class event_reader:
         return station(self.er.getStation())
 
     cpdef int flux(self, int _from, int to):
-        return self.er.flux(_from, to)
+        val = False
+        for r in self.runs():
+            if _from < r[0].timestamp:
+                break
+            if to <= r[-1].timestamp:
+                val = True
+                break
+        if val:
+            return self.er.flux(_from, to)
             
     cpdef set_station(self, object st):
         "Set station for event_reader. Station is also set for all current events."
@@ -222,7 +230,6 @@ cdef bint _filter_func(Event& e):
         return _filter_func_object(_filter_func_event)
     except:
         traceback.print_exc()
-        print "Error in filter func"
         return False
 
 cdef class event_reader_runs:

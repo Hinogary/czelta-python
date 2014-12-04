@@ -42,6 +42,7 @@ public:
     inline bool clearedCalibs(){return _clearedCalibs;};
     //return number of events being filtered
     int filter(function<bool(Event&)>);
+    int removeInterval(int from, int to);
     inline int filter(bool (*func)(Event&)){return filter(function<bool(Event&)>(func));};
     inline int flux(int from, int to){return firstOlderThan(to)-firstOlderThan(from);};
     int firstOlderThan(int timestamp) const;
