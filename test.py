@@ -73,22 +73,22 @@ assert l==[8576, 12239, 17336, 12167, 2641, 5958]
 
 czelta.station.load()
 kladno_sps = czelta.station(5)
-assert kladno_sps.name() == "kladno_sps"
-assert kladno_sps.id() == 5
-assert kladno_sps.gps_position() == (50.1404958, 14.1009331, 446.18)
+assert kladno_sps.name == "kladno_sps"
+assert kladno_sps.id == 5
+assert kladno_sps.gps_position == (50.1404958, 14.1009331, 446.18)
 praha_utef = czelta.station(6)
-assert praha_utef.name() == "praha_utef"
+assert praha_utef.name == "praha_utef"
 assert kladno_sps.distance_to(praha_utef) == 24.34704590484944
-assert czelta.station("pardubice_gd").id() == 2 
+assert czelta.station("pardubice_gd").id == 2 
 try:
     assert not czelta.station(125)
 except RuntimeError:
     pass
 stations = czelta.station.get_stations()
-assert stations[0].id() == 2
-assert stations[0].name() == "pardubice_gd"
-assert stations[1].id() == 3
-assert stations[1].name() == "opava_mg" 
+assert stations[0].id == 2
+assert stations[0].name == "pardubice_gd"
+assert stations[1].id == 3
+assert stations[1].name == "opava_mg" 
 
 er.set_station('pardubice_spse')
 assert er[0].AH_direction == (120.57520294189453, 63.383602142333984), er[0].AH_direction

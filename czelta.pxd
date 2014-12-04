@@ -175,12 +175,12 @@ cpdef int date_to_timestamp(date)
 
 cdef class station:
     cdef Station* st
-    cpdef int id(self)
-    cpdef name(self)
-    cpdef distance_to(self, station other_station)
-    cpdef gps_position(self)
-    cpdef detector_position(self)
+    #property id
+    #property name
+    #property gps_position
+    #property detector_position
     cpdef get_corrections(self)
+    cpdef distance_to(self, station other_station)
     #static load(file)
     #static get_stations()
         

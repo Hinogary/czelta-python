@@ -153,9 +153,9 @@ cdef class event_reader:
         if type(st)==int:
             _id = st
         elif type(st)==str:
-            _id = station(st).id()
+            _id = station(st).id
         elif type(st)==station:
-            _id = st.id()
+            _id = st.id
         else:
             raise ValueError("Unknown type of station")
         self.er.setStation(_id)
