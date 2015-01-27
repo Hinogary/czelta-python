@@ -3,7 +3,7 @@
 
 #auto rebuild for debuging process
 import sys
-if len(sys.argv):
+if len(sys.argv)>1:
     from subprocess import call
     assert call('./setup.py build_ext -i',shell=True)==0
 import czelta
@@ -98,6 +98,21 @@ assert er[4].AH_direction == (281.7551574707031, 69.92161560058594), er[4].AH_di
 assert er[5].AH_direction == (88.83272552490234, 71.3564682006836), er[5].AH_direction
 assert er[26].AH_direction == (254.46205139160156, 58.906494140625), er[26].AH_direction
 assert er[22].AH_direction == (345.6707458496094, 57.61233139038086), er[22].AH_direction
+
+ass = False
+try:
+    print(er[len(er)])
+except IndexError:
+    ass = True
+finally:
+    assert ass
+ass = False
+try:
+    er[-len(er)-1]
+except IndexError:
+    ass = True
+finally:
+    assert ass
 
 txt = czelta.event_reader('test.txt')
 assert str(txt[1000])=='a 2014 02 18 12 22 02 450020121.2 1712 2927 3776 139 136 145 15.0 13.5 12.5 23.5'

@@ -34,6 +34,7 @@ cdef class event_reader:
         
     def __getitem__(self, i):
         cdef int ii, start, stop
+        cdef event e
         if type(i)==slice:
             if i.start==None:
                 start = 0
@@ -43,7 +44,9 @@ cdef class event_reader:
             else:
                 start = i.start
                 start = start if start>=0 else self.er.numberOfEvents()+start
-            
+            if start >= self.er.numberOfEvents():
+                raise IndexError
+
             if i.stop==None:
                 stop = self.er.numberOfEvents()
             elif type(i.stop)==datetime.datetime:
@@ -52,7 +55,9 @@ cdef class event_reader:
             else:
                 stop = i.stop
                 stop = stop if stop>=0 else self.er.numberOfEvents()+stop
-                
+            if stop >= self.er.numberOfEvents():
+                raise IndexError
+
             if i.step != None:
                 raise NotImplementedError("step can't be defined")
                 
@@ -66,6 +71,8 @@ cdef class event_reader:
             ii = i
             if ii<0:
                 ii += self.er.numberOfEvents()
+            if ii >= self.er.numberOfEvents() or ii<0:
+                raise IndexError
             e = event()
             e.set(self.er.item(ii))
             return e
