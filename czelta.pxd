@@ -153,24 +153,6 @@ cdef extern from "common_func.h" nogil:
     float* localToGlobalDirection(float* local_direction, double* gps_position, int time)
     float* localToAGlobalDirection(float* local_direction, double* gps_position)
 
-cdef extern from "libnova.h" nogil:
-    double ln_get_julian_from_timet(long int* in_time)
-    void ln_get_lunar_equ_coords(double JD, ln_equ_posn* position)
-    void ln_get_lunar_equ_coords_prec(double JD, ln_equ_posn* position, double precision)
-    void ln_get_equ_from_hrz (ln_hrz_posn* object,ln_lnlat_posn* observer, double JD, ln_equ_posn* position)
-    void ln_get_hrz_from_equ(ln_equ_posn* object, ln_lnlat_posn* observer, double JD, ln_hrz_posn* position)
-    double ln_get_angular_separation(ln_equ_posn* posn1, ln_equ_posn* posn2)
-    double 	ln_get_rel_posn_angle(ln_equ_posn *posn1, ln_equ_posn *posn2)	
-    struct ln_equ_posn:
-        double ra
-        double dec
-    struct ln_lnlat_posn:
-        double lng
-        double lat
-    struct ln_hrz_posn:
-        double az
-        double alt
-
 cpdef int date_to_timestamp(date)
 
 cdef class station:

@@ -19,8 +19,7 @@ ext_modules = [Extension('czelta', ['czelta.pyx' if USE_CYTHON else 'czelta.cpp'
                                     'station.c',
                                     'coincidence.cpp'],
                 language='c++',
-                extra_compile_args=['-std=c++0x', '-fopenmp','-I/usr/include/libnova'],
-                extra_link_args=['-fopenmp','-lnova']
+                extra_compile_args=['-std=c++0x']
     )]
 if USE_CYTHON:
     ext_modules = cythonize(ext_modules)

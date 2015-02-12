@@ -33,5 +33,3 @@ except:
         station.load(open("config_data.JSON"))
     except:
         pass
-
-include "my_analysis.pxi"
