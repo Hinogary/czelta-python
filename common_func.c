@@ -25,6 +25,8 @@ double deltaDistance(double* f_gps_pos, double* s_gps_pos){
 }
 
 float* dirVectorToAh(double* vector){
+
+//aliases
 #define vec_x vector[0]
 #define vec_y vector[1]
 #define vec_z vector[2]
@@ -34,26 +36,10 @@ float* dirVectorToAh(double* vector){
     static float rtn[2];
     horizon = (float) asin(vec_z / SPEED_OF_LIGHT);
     
-    //azimut based on kvadrant
-    if (vec_x <= 0) {
-        if (vec_y <= 0){
-            //III. Kvadrant
-            azimut = atan(vec_x / vec_y);
-        } else {
-            //II. Kvadrant
-            azimut = M_PI - atan(-vec_x / vec_y);
-        }
-    } else {
-        if (vector[1] <= 0){
-            //IV. Kvadrant
-            azimut = 2 * M_PI - atan(-vec_x / vec_y);
-        } else {
-            //I. Kvadrant
-            azimut = M_PI + atan(vec_x / vec_y);
-        }
-    }
+    azimut = atan(vec_x / vec_y);
+    //magic
+    azimut += (vec_y > 0 ^ vec_x > 0) * M_PI + (vec_x > 0) * M_PI;
     
-    //if is horizont or azimut NaN return {0,0}
     if (azimut!=azimut || horizon!=horizon){
         return NULL;
     };
