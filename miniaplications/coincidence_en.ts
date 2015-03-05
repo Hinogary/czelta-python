@@ -105,7 +105,7 @@
     </message>
     <message>
         <source>days</source>
-        <translation>dní</translation>
+        <translation>days</translation>
     </message>
     <message>
         <source>question_limit</source>
