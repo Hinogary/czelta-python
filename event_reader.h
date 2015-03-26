@@ -19,7 +19,7 @@ struct Overlap{
  class EventReader {
 public:
     EventReader();
-    EventReader(const EventReader&) = delete;
+    EventReader(const EventReader&);
     inline Event& item(int index){return events[index];};
     inline Event& item(int run, int index){return item(runs[run].beginIndex+index);};
     inline int numberOfEvents(){return events.size();};
@@ -38,7 +38,6 @@ public:
     inline int filterMaxTDC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.TDC0()==4095 || e.TDC1()==4095 || e.TDC2()==4095;}));};
     inline int filterMaxADC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.ADC0()==2047 || e.ADC1()==2047 || e.ADC2()==2047;}));};
     inline int filterMinADC(){return filter(function<bool(Event&)>([](Event& e)->bool{return e.ADC0()==0 || e.ADC1()==0 || e.ADC2()==0;}));};
-    inline double progress(){return _progress;};
     inline bool clearedCalibs(){return _clearedCalibs;};
     //return number of events being filtered
     int filter(function<bool(Event&)>);
@@ -67,10 +66,8 @@ private:
     //ocupies about 20 MB per 10 years of data and very much speedup finding events by time -> needed almost by overlaps
     vector<uint> parts_index;
     void clear();
-    double _progress;
     void addRun(int endIndex = -1);
     bool _clearedCalibs;
-    char* loadedFrom;
     static string files_directory;
     uint8_t _station;
     vector<Event> events;

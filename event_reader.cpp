@@ -15,13 +15,22 @@ EventReader::~EventReader() {
     clear();
 }
 
+EventReader::EventReader(const EventReader& er){
+    events = er.events;
+    p_start_timestamp = er.p_start_timestamp;
+    p_end_timestamp = er.p_end_timestamp;
+    parts_index = er.parts_index;
+    _clearedCalibs = er._clearedCalibs;
+    _station = er._station;
+    runs = runs;
+}
+
 void EventReader::setFilesDirectory(string dir){
     files_directory = dir;
 }
 
 bool EventReader::loadDatFile(char* filename){
     clear();
-    _progress = 0;
     ifstream in;
     in.open(filename, ios_base::binary);
     if(!in.is_open()){
@@ -42,10 +51,8 @@ bool EventReader::loadDatFile(char* filename){
     static_assert(sizeof(WebEvent) >= sizeof(Event),"Event cannot be bigger than WebEvent");
     events.reserve(length*sizeof(WebEvent)/sizeof(Event)+1);
     WebEvent* wevents = (WebEvent*)events.data();
-    _progress=0.1;
     in.read((char*)events.data(),length<<5);
     in.close();
-    _progress=0.5;
     p_start_timestamp = wevents[0].timestamp/PART_SIZE*PART_SIZE;
     for(int i=0;i<length;i++){
         if(wevents[i].byte&4)
@@ -58,8 +65,6 @@ bool EventReader::loadDatFile(char* filename){
     addRun();
     events.shrink_to_fit();
     parts_index.shrink_to_fit();
-    loadedFrom = filename;
-    _progress = 1;
     return false;
 }
 
@@ -105,7 +110,6 @@ bool EventReader::loadTxtFile(char* filename){
         if(events.size()==1){
             p_start_timestamp = events[0].timestamp()/PART_SIZE*PART_SIZE;
         }
-        _progress = double(in.tellg())/len;
         while(p_start_timestamp+parts_index.size()*PART_SIZE < events.back().timestamp())
             parts_index.push_back(events.size()-1);
     }
@@ -115,8 +119,6 @@ bool EventReader::loadTxtFile(char* filename){
     events.shrink_to_fit();
     parts_index.shrink_to_fit();
     runs.shrink_to_fit();
-    loadedFrom = filename;
-    _progress = 1;
     return false;
 }
 
