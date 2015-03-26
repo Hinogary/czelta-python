@@ -30,9 +30,9 @@ struct WebEvent {
     uint8_t byte;
 };
 class Event {
-    friend class EventReader;
 public:
     Event();
+    inline Event(WebEvent& e):Event(e, 0){};
     Event(WebEvent& e, uint8_t station);
     Event(time_t timestamp,double last_second, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration, uint8_t station);
     Event(const Event& orig);
