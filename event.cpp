@@ -87,7 +87,7 @@ double* Event::directionVector() const{
 #define vec_z vector[2]
     const short t1 = TDC[1] - TDC[0];
     const short t2 = TDC[2] - TDC[0];
-    
+
     vec_x = c2*25*1e-12*(t2*y1 - t1*y2)/
                     (x1*y2 - x2*y1);
     vec_y = c2*25*1e-12*(t2*x1 - t1*x2)/

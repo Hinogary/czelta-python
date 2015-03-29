@@ -5,7 +5,10 @@ from data_convertor_ui import _translate
 from PyQt4 import QtGui, QtCore
 import sys, os, czelta,locale
 
-path = os.path.dirname(__file__)
+try:
+    path = os.path.dirname(__file__)
+except NameError:
+    path = ""
 path = path+os.sep if path!="" else ""
 sys_lang = locale.getdefaultlocale()[0][:2]
 

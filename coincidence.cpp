@@ -2,7 +2,8 @@
  * Author: Martin Quarda
  */
 #include "coincidence.h"
-#include "cstring"
+#include <cstring>
+#include <stdlib.h>
 
 Coincidence::Coincidence()
 {

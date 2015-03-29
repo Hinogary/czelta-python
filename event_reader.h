@@ -7,6 +7,7 @@
 #include <functional>
 #include <fstream>
 #include <iostream>
+#include <stdlib.h>
 #include "event.h"
 #include "station.h"
 

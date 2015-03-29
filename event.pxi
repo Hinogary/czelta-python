@@ -68,9 +68,9 @@ cdef class event:
     property RAD_direction:
         "Return ``(right ascension, declination)`` direction of shower in Degrees. Must have loaded info about stations and set station for ``event``/``event_reader``"
         def __get__(self):
-            cdef float *DRA = self.e.calculateEarthDir()
-            if DRA:
-                return (DRA[0], DRA[1])
+            cdef float *RAD = self.e.calculateEarthDir()
+            if RAD:
+                return (RAD[0], RAD[1])
                 
     property station:
         def __get__(self):
