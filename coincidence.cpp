@@ -47,7 +47,7 @@ void Coincidence::calc(double limit, bool save_events){
                 return;
             int64_t a = readers[0]->item(i).tenthOfNSTimestamp()
                   , b = readers[1]->item(j).tenthOfNSTimestamp();
-            if(abs(a-b)<_limit){
+            if((a>b?a-b:b-a)<_limit){
                 if(!readers[0]->item(i).isCalib() && !readers[1]->item(j).isCalib()){
                     numberOfCoincidences++;
                     delta.push_back(abs(a-b)/1e10);
