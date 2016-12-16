@@ -50,6 +50,8 @@
             "detectorsPos":[-8.620, 4.955, -0.139, 10.017],
             "TDCCorrection":[
                 {
+                    "correction":[0,0,0]
+                },{
                     "from":"11.1.2008 14:20",
                     "correction":[0,196,205]
                 },{
@@ -77,6 +79,8 @@
             "detectorsPos":[-7.91, -5.65, 0.98, -10.29],
             "TDCCorrection":[
                 {
+                    "correction":[0,0,0]
+                },{
                     "from":"23.9.2013 16:07",
                     "correction":[0,-1159,-2349]
                 }
@@ -98,6 +102,8 @@
             "detectorsPos":[0.36, 9.97, 9.56, 3.56],
             "TDCCorrection":[
                 {
+                    "correction":[0,0,0]
+                },{
                     "from":"9.10.2007",
                     "correction":[0,-1058,-3001]
                 }
