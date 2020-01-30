@@ -8,12 +8,12 @@ import platform
 from Cython.Build import cythonize
 
 ext_modules = [
-    Extension('czelta', ['czelta.pyx',
-                         'event.cpp',
-                         'event_reader.cpp',
-                         'common_func.c',
-                         'station.c',
-                         'coincidence.cpp'],
+    Extension('czelta', ['czelta/czelta.pyx',
+                         'czelta/event.cpp',
+                         'czelta/event_reader.cpp',
+                         'czelta/common_func.c',
+                         'czelta/station.c',
+                         'czelta/coincidence.cpp'],
               language='c++',
               extra_compile_args=['--std=c11'],
     )
