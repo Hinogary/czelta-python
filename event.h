@@ -21,7 +21,7 @@ struct WebEvent {
     //don't change anything, this is CzeltaDataFile.1 format of showers
     WebEvent();
     WebEvent(const Event& e, bool run);
-    int32_t timestamp; 
+    int32_t timestamp;
     double last_second;
     int16_t TDC[3];
     int16_t ADC[3];
@@ -36,6 +36,7 @@ public:
     Event(WebEvent& e, uint8_t station);
     Event(time_t timestamp,double last_second, int16_t TDC0, int16_t TDC1, int16_t TDC2, int16_t ADC0, int16_t ADC1, int16_t ADC2, int16_t t0, int16_t t1, int16_t t2, int8_t tCrateRaw, bool calibration, uint8_t station);
     Event(const Event& orig);
+    bool operator==(const Event&) const;
     inline int timestamp() const{return _timestamp;};
     inline double last_second() const{return _last_second*1e-1;}; //time since last second, in nanoseconds
     inline double time_since_second() const{return _last_second*1e-10;};//time since last second, in seconds
@@ -70,12 +71,14 @@ public:
         static short static_raw_temps[4];
         static_raw_temps[0]=t0raw(); static_raw_temps[1]=t1raw();
         static_raw_temps[2]=t2raw(); static_raw_temps[3]=tCrateRaw();
-        return static_raw_temps;};
+        return static_raw_temps;
+    };
     inline float* temps() const{
         static float static_temps[4];
         static_temps[0]=t0(); static_temps[1]=t1();
         static_temps[2]=t2(); static_temps[3]=tCrate();
-        return static_temps;};
+        return static_temps;
+    };
     inline bool isCalib() const{return _calibration;};
     inline tm getTime() const{time_t tm = _timestamp;return *gmtime(&tm);};
     float* calculateDirRadians() const;
@@ -95,14 +98,14 @@ public:
         if(r==nullptr)return nullptr;
         r[0]*=180/M_PI;
         r[1]*=180/M_PI;
-        return r;}   
+        return r;}
     string toString() const;
     inline uint8_t getStation() const{return _station;};
     inline Station& getRStation() const{return Station::getStation(_station);};
     inline void setStation(uint8_t st){_station=st;};
 private:
     double* directionVector() const;
-    uint32_t _timestamp; 
+    uint32_t _timestamp;
     uint64_t _last_second:39;//6 unused bits
     bool _calibration:1;
     uint16_t _TDC0:12;

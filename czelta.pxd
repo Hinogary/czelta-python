@@ -1,10 +1,6 @@
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
-cdef extern from "Python.h":
-    enum:
-        PY_MAJOR_VERSION
-
 cdef extern from "station.h" nogil:
     ctypedef struct TDCCorrection:
         int _from
@@ -12,26 +8,27 @@ cdef extern from "station.h" nogil:
     cppclass Station:
         Station() except +
         Station(int ID) except +
+        void delet()
         inline int id()
         inline char* name()
         short* lastTDCCorrect()
         short* TDCCorrect(int timestamp)
         float* detectorPosition()
         double* GPSPosition()
-        
+
         TDCCorrection* TDCCorrections()
         int TDCCorrections_size()
-        
+
         double distanceTo(Station& st)
-        
+
         void setName(char* name)
         void setGPSPosition(double latitude, double longitude, double height)
         void setDetectorPosition(float x1, float y1, float x2, float y2)
         void clearTDCCorrect()
         void pushTDCCorrect(int fr, short tdc0, short tdc1, short tdc2)
         void pushTDCCorrect(string fr, short tdc0, short tdc1, short tdc2)
-        
-        
+
+
 ctypedef Station* p_Station
 cdef extern from "station.h" namespace "Station" nogil:
     void addStation(Station)
@@ -55,20 +52,20 @@ cdef extern from "event_reader.h":
         bint saveTxtFile(char* filename, bint x_events) nogil
         inline Event& item(int index) nogil
         inline Event& item(int run, int index) nogil
-        
+
         void setStation(int station) nogil
         inline int getStation() nogil
-        
+
         int firstOlderThan(int timestamp) nogil
         int lastEarlierThan(int timestamp) nogil
-        
+
         #filters
         inline int filter(bint (*func)(Event&))
         inline int filterCalibs() nogil
         inline int filterMaxTDC() nogil
         inline int filterMaxADC() nogil
         inline int filterMinADC() nogil
-        
+
         inline int numberOfEvents(int run)
         inline int numberOfRuns()
         inline int runStartIndex(int i)
@@ -76,17 +73,18 @@ cdef extern from "event_reader.h":
         inline int runEndIndex(int i)
         inline int runEnd(int i)
         int flux(int _from, int to)
-    
+
 cdef extern from "event_reader.h" namespace "EventReader" nogil:
     void setFilesDirectory(string dir)
     inline string getFilesDirectory()
 
-        
+
 cdef extern from "event.h" nogil:
     cppclass Event:
         Event() except +
         Event(int timestamp,double last_secod, int TDC0, int TDC1, int TDC2, int ADC0, int ADC1, int ADC2, int t0, int t1, int t2, int tCrateRaw, bint calibration, bint run) except +
         Event(const Event& orig)
+        bint operator==(Event&)
         inline int timestamp()
         inline double last_second()
         inline double time_since_second()
@@ -138,7 +136,7 @@ cdef extern from "coincidence.h" nogil:
         Overlap overlap
         double medium_value
         double chance
-        
+
         void calc(double limit)
         void calc(double limit, bint save_events)
 
@@ -153,7 +151,7 @@ cdef extern from "common_func.h" nogil:
     float* localToGlobalDirection(float* local_direction, double* gps_position, int time)
     float* localToAGlobalDirection(float* local_direction, double* gps_position)
 
-cpdef int date_to_timestamp(date)
+cpdef date_to_timestamp(date)
 
 cdef class station:
     cdef Station* st
@@ -161,11 +159,15 @@ cdef class station:
     #property name
     #property gps_position
     #property detector_position
-    cpdef get_corrections(self)
+    #get_corrections(self, timestamps=False)
+    cpdef clear_corrections(self)
+    #autofit_corrections(self, event_reader er, float confidence_level)
+    #static clear_corrections
     cpdef distance_to(self, station other_station)
     #static load(file)
+    #static save(file)
     #static get_stations()
-        
+
 
 cdef class event:
     cdef Event e
@@ -182,7 +184,8 @@ cdef class event:
     #property AH_direction
     #property RAD_direction
     #property station
-    cpdef set_station(self, station_id)
+    cpdef set_station(self, int station_id)
+
 
 cdef class coincidence:
     cdef Coincidence c
@@ -197,6 +200,7 @@ cdef class coincidence:
     #property chance
     #property overlap_measeure_time (total measure time)
 
+
 cdef class event_reader:
     cdef EventReader er
     cdef int i
@@ -210,11 +214,11 @@ cdef class event_reader:
     cdef Event c_item(self, int i)
     cpdef event item(self, int i)
     cpdef int measure_time(self)
-    cpdef int flux(self, int _from, int to)
-    
+    cpdef int flux(self, _from, to)
+
     cpdef station get_station(self)
     cpdef set_station(self, object st)
-    
+
     #filters
     cpdef int filter(self, filter_func)
     cpdef int filter_calibrations(self)
@@ -222,16 +226,18 @@ cdef class event_reader:
     cpdef int filter_maximum_ADC(self)
     cpdef int filter_minimum_ADC(self)
 
+
 #func wrapper for custom func
 cdef event _filter_func_event
 cdef object _filter_func_object
 cdef bint _filter_func(Event& e)
 
+
 cdef class event_reader_runs:
     cdef event_reader er
     cdef int i
-    
-    
+
+
 cdef class event_reader_run:
     cdef event_reader er
     cdef int _run_id

@@ -77,4 +77,3 @@ private:
 
 
 #endif	/* EVENTREADER_H */
-

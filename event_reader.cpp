@@ -101,10 +101,10 @@ bool EventReader::loadTxtFile(char* filename){
             addRun();
             continue;
         }
-        events.push_back(Event(date(year,month,day,hour,minute,second), 
-            atof(_double), 
-            TDC0, TDC1, TDC2, 
-            ADC0, ADC1, ADC2, 
+        events.push_back(Event(date(year,month,day,hour,minute,second),
+            atof(_double),
+            TDC0, TDC1, TDC2,
+            ADC0, ADC1, ADC2,
             (int)(atof(temp[0])*2), (int)(atof(temp[1])*2), (int)(atof(temp[2])*2), (int)(atof(temp[3])*2),
             c=='c'?true:false,_station));
         if(events.size()==1){
@@ -134,7 +134,7 @@ bool EventReader::saveDatFile(char* filename){
     for(int i=0, chunk_size = 0;i<numberOfEvents();i+=(1<<20)){
         chunk_size = numberOfEvents()-i;
         chunk_size = chunk_size>(1<<20)?(1<<20):chunk_size;
-        
+
         for(int j=0;j<chunk_size;j++){
             if(run(run_id).beginIndex == i+j){
                 is_run = true;
@@ -230,7 +230,7 @@ int EventReader::firstOlderThan(int timestamp) const{
 }
 int EventReader::lastEarlierThan(int timestamp) const{
     uint i = 0;
-    
+
     if(timestamp>p_end_timestamp)
         i = events.size()-1;
     else if(timestamp<p_start_timestamp)

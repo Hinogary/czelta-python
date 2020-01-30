@@ -36,8 +36,8 @@ void Coincidence::calc(double limit, bool save_events){
     delta.clear();
     dirs.clear();
     this->limit = limit;
-    
-    
+
+
     //limit converted to tenth of nanosecond
     int64_t _limit = static_cast<int64_t>(limit*10000000000);
     if(n==2){
@@ -75,7 +75,7 @@ void Coincidence::calc(double limit, bool save_events){
         overlap = readers[0]->overlap(readers[1], readers[2]);
         //auto try to find coincidences and overlap coincidences, return index of reader which should be adjected
         std::function<int(int*)> find_3coincidence = [this, _limit, &find_3coincidence](int* i)->int{
-            if(i[0] >= readers[0]->numberOfEvents() 
+            if(i[0] >= readers[0]->numberOfEvents()
             || i[1] >= readers[1]->numberOfEvents()
             || i[2] >= readers[2]->numberOfEvents())
                 return 0;
@@ -98,7 +98,7 @@ void Coincidence::calc(double limit, bool save_events){
             }
             med_index = min_index!=0&&max_index!=0?0:min_index!=1&&max_index!=1?1:2;
             if(max-min<_limit && !readers[min_index]->item(i[min_index]).isCalib()){
-                if(!readers[med_index]->item(i[med_index]).isCalib() 
+                if(!readers[med_index]->item(i[med_index]).isCalib()
                 && !readers[max_index]->item(i[max_index]).isCalib()){
                     numberOfCoincidences++;
                     delta.push_back((max-min)/1e10);
@@ -107,7 +107,7 @@ void Coincidence::calc(double limit, bool save_events){
                         events[1].push_back(readers[1]->item(i[1]));
                         events[2].push_back(readers[2]->item(i[2]));
                     }
-                    
+
                     //little chance of finding one triple coincidence multiple times
                     ++i[med_index];
                     find_3coincidence(i);
@@ -124,61 +124,61 @@ void Coincidence::calc(double limit, bool save_events){
            && i[2]<readers[2]->numberOfEvents()){
             i[find_3coincidence(i)]++;
         }
-        
+
         //if we have all stations of triple coincidence - try to calculate direction of event based on GPS of stations
         if(stations[0]!=0 && stations[1]!=0 && stations[2]!=0 && events_saved){
             double stPos[4];
     #define x1 stPos[0]
     #define y1 stPos[1]
     #define x2 stPos[2]
-    #define y2 stPos[3]        
+    #define y2 stPos[3]
             double f_gps_pos[2];
             double s_gps_pos[2];
             //avg gps pos -> middle of stations
             double a_gps_pos[2];
             memcpy(f_gps_pos, Station::getStation(stations[0]).GPSPosition(), sizeof(double)*2);
             memcpy(s_gps_pos, Station::getStation(stations[1]).GPSPosition(), sizeof(double)*2);
-            
+
             a_gps_pos[0]+=f_gps_pos[0];a_gps_pos[1]+=f_gps_pos[1];
             a_gps_pos[0]+=s_gps_pos[0];a_gps_pos[1]+=s_gps_pos[1];
-            
+
             //calculating of x1
             s_gps_pos[0] = f_gps_pos[0];
             x1 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
             if(f_gps_pos[1] > s_gps_pos[1])x1 = -x1;
-            
+
             //calculating of y1
             memcpy(s_gps_pos, Station::getStation(stations[1]).GPSPosition(), sizeof(double)*2);
             s_gps_pos[1] = f_gps_pos[1];
             y1 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
             if(f_gps_pos[0] > s_gps_pos[0])y1 = -y1;
-            
+
             //calculating of x2
             memcpy(s_gps_pos, Station::getStation(stations[2]).GPSPosition(), sizeof(double)*2);
             a_gps_pos[0]+=s_gps_pos[0];a_gps_pos[1]+=s_gps_pos[1];
             s_gps_pos[0] = f_gps_pos[0];
             x2 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
             if(f_gps_pos[1] > s_gps_pos[1])x2 = -x2;
-            
+
             //calculating of y2
             memcpy(s_gps_pos, Station::getStation(stations[2]).GPSPosition(), sizeof(double)*2);
             s_gps_pos[1] = f_gps_pos[1];
             y2 = deltaDistance(f_gps_pos, s_gps_pos)*1000;
             if(f_gps_pos[0] > s_gps_pos[0])y2 = -y2;
-            
+
             //avg gps pos
             a_gps_pos[0]/=3;a_gps_pos[1]/=3;
-            
+
             //dirs
             for(int i=0;i<numberOfCoincidences;i++){
                 double dir_vector[3];
-                const double t1 = (events[1][i].timestamp()-events[0][i].timestamp()) 
+                const double t1 = (events[1][i].timestamp()-events[0][i].timestamp())
                  +(events[1][i].time_since_second()-events[0][i].time_since_second());
-                const double t2 = (events[2][i].timestamp()-events[0][i].timestamp()) 
-                 +(events[2][i].time_since_second()-events[0][i].time_since_second());   
+                const double t2 = (events[2][i].timestamp()-events[0][i].timestamp())
+                 +(events[2][i].time_since_second()-events[0][i].time_since_second());
     #define vec_x dir_vector[0]
     #define vec_y dir_vector[1]
-    #define vec_z dir_vector[2]                        
+    #define vec_z dir_vector[2]
     #define c2 (SPEED_OF_LIGHT*SPEED_OF_LIGHT)
                  vec_x = c2*(t2*y1 - t1*y2)/
                         (x1*y2 - x2*y1);
@@ -205,7 +205,7 @@ void Coincidence::calc(double limit, bool save_events){
                  dirs.push_back(DRA[1]/M_PI*180);
             }
         }
-        
+
         //expected value of numberOfCoincidences -> random coincidences
         double lambda[3];
         for(int k=0;k<3;k++)

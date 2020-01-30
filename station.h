@@ -68,6 +68,9 @@ public:
         czelta_station_init(&st);
         st.id = ID;
     };
+    //can't delete because of cython
+    //Station operator=(Station&) = delete;
+    Station(Station&) = delete;
     inline ~Station(){
         czelta_station_clear(&st);
     };
@@ -90,6 +93,9 @@ public:
     inline int id(){
         return czelta_station_id(&st);
     };
+    void delet(){
+        czelta_station_delete(st.id);
+    }
     inline double distanceTo(Station& st){
         return czelta_station_distance_beetwen(&this->st, &st.st);
     };
@@ -112,12 +118,12 @@ public:
     inline void pushTDCCorrect(std::string from, short tdc0, short tdc1, short tdc2){
         czelta_station_pushTDCCorrect(&st, string_date(from), tdc0, tdc1, tdc2);
     };
-    
+
     //static methods
     inline static Station& getStation(uint8_t ID){
         return *(Station*)&czelta_station_stations[ID];
     };
-    
+
     inline static Station& getStation(std::string name){
         const char* name_char = name.c_str();
         for(int i=1;i<256;i++){
@@ -126,7 +132,7 @@ public:
         }
         return *(Station*)&czelta_station_stations[0];
     };
-    
+
     inline static std::vector<Station*> getStations(){
         std::vector<Station*> sts;
         for(int i=1;i<256;i++)
@@ -134,24 +140,23 @@ public:
                 sts.push_back((Station*)&czelta_station_stations[i]);
         return sts;
     };
-    
-    //return false if added
-    inline static void addStation(Station station){
+
+    inline static void addStation(Station& station){
         czelta_station_add(&station.st);
     };
-    
+
     inline static bool active(uint8_t index){
         return czelta_station_activate[index];
     };
-    
+
     inline TDCCorrection* TDCCorrections(){
         return st.corrections;
     }
-    
+
     inline int TDCCorrections_size(){
         return st.corrections_size;
     }
-    
+
 private:
     czelta_station st;
 };

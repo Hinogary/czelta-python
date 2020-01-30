@@ -10,7 +10,7 @@
 #include "station.h"
 
 WebEvent::WebEvent(){
-    
+
 }
 
 WebEvent::WebEvent(const Event& e, bool run){
@@ -71,36 +71,58 @@ Event::Event(const Event& orig){
     memcpy(this,&orig,sizeof(Event));
 }
 
-double* Event::directionVector() const{
+bool Event::operator==(const Event& other) const{
+    return (_timestamp == other._timestamp
+        // _last_second have sometimes error in last digit
+        // because of different treating by different platforms
+        // for double (double -> long int and back)
+        // precision is enought, that it is not important
+        && labs(_last_second - other._last_second) < 10
+        && _calibration == other._calibration
+        && _TDC0 == other._TDC0
+        && _TDC1 == other._TDC1
+        && _TDC2 == other._TDC2
+        && _ADC0 == other._ADC0
+        && _ADC1 == other._ADC1
+        && _ADC2 == other._ADC2
+        && _t0 == other._t0
+        && _t1 == other._t1
+        && _t2 == other._t2
+        && _t_crate == other._t_crate);
+        // station not sure if it should be compared, because user sets it and others values should be already sufficient to unique identify event
+}
 
-    
+double* Event::directionVector() const{
     static double vector[3];
+
     short* TDC = TDCCorrected();
-    float *detPos = getRStation().detectorPosition(); 
-#define c2 (SPEED_OF_LIGHT*SPEED_OF_LIGHT)
-#define x1 detPos[0]
-#define y1 detPos[1]
-#define x2 detPos[2]
-#define y2 detPos[3]
-#define vec_x vector[0]
-#define vec_y vector[1]
-#define vec_z vector[2]
+    float *detPos = getRStation().detectorPosition();
+    const auto c2 = (SPEED_OF_LIGHT*SPEED_OF_LIGHT);
+    const auto x1 = detPos[0];
+    const auto y1 = detPos[1];
+    const auto x2 = detPos[2];
+    const auto y2 = detPos[3];
     const short t1 = TDC[1] - TDC[0];
     const short t2 = TDC[2] - TDC[0];
+
+    // just aliases
+    auto& vec_x = vector[0];
+    auto& vec_y = vector[1];
+    auto& vec_z = vector[2];
 
     vec_x = c2*25*1e-12*(t2*y1 - t1*y2)/
                     (x1*y2 - x2*y1);
     vec_y = c2*25*1e-12*(t2*x1 - t1*x2)/
                     (y1*x2 - y2*x1);
     //vec_z squared
-    vec_z = c2 - vector[0]*vector[0] - vector[1]*vector[1];
+    vec_z = c2 - vec_x*vec_x - vec_y*vec_y;
 
     //can't determine direction -> TDC is out of view scope
     if (vec_z < 0){
         return nullptr;
     }
     vec_z = sqrt(vec_z);
-    
+
     return vector;
 }
 

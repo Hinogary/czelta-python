@@ -29,9 +29,8 @@ float* localToAGlobalDirection(float* local_direction, double* gps_position);
 
 #include <string>
 inline time_t string_date(std::string date){return char_date(date.c_str());};
-inline time_t date(int year, int month, int day){return date(year, month, day, 0, 0, 0);}; 
+inline time_t date(int year, int month, int day){return date(year, month, day, 0, 0, 0);};
 inline time_t date(int year, int month, int day, int hour, int minute){return date(year, month, day, hour, minute, 0);};
 #endif
 
 #endif	/* COMMONFUNC_H */
-

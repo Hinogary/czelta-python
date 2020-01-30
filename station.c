@@ -7,9 +7,11 @@
 czelta_station czelta_station_stations[256];
 #define stations czelta_station_stations
 
+// predefined correction which corrects nothing
 short czelta_station_nullCorrection[3] = {0,0,0};
 #define nullCorrection czelta_station_nullCorrection
 
+// array of booleans which spetifies, if station with given index exists
 char czelta_station_activate[256];
 #define activate czelta_station_activate
 

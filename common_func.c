@@ -12,7 +12,7 @@
 
 double deltaDirection(double hor1, double az1, double hor2, double az2) {
     double rtn = acos(sin(hor1) * sin(hor2) + cos(hor1) * cos(hor2) * cos(az1 - az2));
-    if(rtn!=rtn)return 0;
+    if(rtn!=rtn) return 0; // NaN
     return rtn;
 }
 
@@ -21,7 +21,7 @@ double deltaDistance(double* f_gps_pos, double* s_gps_pos){
     double dlat = (s_gps_pos[0] - f_gps_pos[0]) * M_PI / 180.0;
     double a = pow(sin(dlat/2.0), 2) + cos(s_gps_pos[0] * M_PI / 180.0) * cos(f_gps_pos[0] * M_PI / 180.0) * pow(sin(dlong/2.0), 2);
     double c = 2 * atan2(sqrt(a), sqrt(1-a));
-    return 6367 * c;
+    return 6367000 * c;
 }
 
 float* dirVectorToAh(double* vector){
@@ -32,15 +32,15 @@ float* dirVectorToAh(double* vector){
 #define vec_z vector[2]
 
 #define horizon rtn[1]
-#define azimut rtn[0]    
+#define azimut rtn[0]
     static float rtn[2];
     horizon = (float) asin(vec_z / SPEED_OF_LIGHT);
-    
+
     azimut = atan(vec_x / vec_y);
     //magic
     azimut += (vec_y > 0 ^ vec_x > 0) * M_PI + (vec_x > 0) * M_PI;
-    
-    if (azimut!=azimut || horizon!=horizon){
+
+    if (azimut!=azimut || horizon!=horizon){ // NaNs
         return NULL;
     };
     return rtn;

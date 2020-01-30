@@ -5,39 +5,46 @@ from distutils.extension import Extension
 import distutils.sysconfig
 import platform
 
-try:
-    from Cython.Build import cythonize
-    USE_CYTHON = True
-except ImportError:
-    print("USE_CYTHON = False")
-    USE_CYTHON = False
+from Cython.Build import cythonize
 
-ext_modules = [Extension('czelta', ['czelta.pyx' if USE_CYTHON else 'czelta.cpp',
-                                    'event.cpp',
-                                    'event_reader.cpp',
-                                    'common_func.c',
-                                    'station.c',
-                                    'coincidence.cpp'],
-                language='c++',
-                extra_compile_args=['-std=c++0x', '-std=c11']
-    )]
-if USE_CYTHON:
-    ext_modules = cythonize(ext_modules)
+ext_modules = [
+    Extension('czelta', ['czelta.pyx',
+                         'event.cpp',
+                         'event_reader.cpp',
+                         'common_func.c',
+                         'station.c',
+                         'coincidence.cpp'],
+              language='c++',
+              extra_compile_args=['--std=c11'],
+    )
+]
+ext_modules = cythonize(ext_modules)
 
-if platform.system()=='Windows':
-    data_files = [(distutils.sysconfig.get_python_lib(), ['libgcc_s_dw2-1.dll','libstdc++-6.dll', 'config_data.JSON', 'LICENSE.txt'])]
+if platform.system() == 'Windows':
+    data_files = [(distutils.sysconfig.get_python_lib(), ['libgcc_s_dw2-1.dll', 'libstdc++-6.dll', 'config_data.JSON', 'LICENSE.txt'])]
 else:
     data_files = [(distutils.sysconfig.get_python_lib(), ['config_data.JSON', 'LICENSE.txt'])]
 
 setup(
-  name = 'czelta',
-  version = '0.1',
-  description = 'Analysis libraty for project CZELTA (http://czelta.utef.cvut.cz/)',
-  author = 'Martin Quarda',
-  author_email = 'hinogary@gmail.com',
-  url = 'http://czelta.quarda.cz/',
+  name='czelta',
+  version='1.0',
+  description='Analysis libraty for project CZELTA (http://czelta.utef.cvut.cz/)',
+  classifiers=[
+      'Framework :: Sphinx',
+      'Framework :: Pytest',
+      'Intended Audience :: Developers',
+      'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+      'Programming Language :: Cython',
+      'Programming Language :: C++',
+      'Topic :: Scientific/Engineering :: Physics',
+  ],
+  keywords='czelta cosmic rays',
+  author='Martin Quarda',
+  author_email='hinogary@gmail.com',
+  url='https://github.com/Hinogary/czelta-python/',
   license='LICENSE.txt',
-  long_description = open('README.md').read(),
-  ext_modules = ext_modules,
-  data_files = data_files
+  install_requires=['scipy', 'PyYAML'],
+  long_description=open('README.md').read(),
+  ext_modules=ext_modules,
+  data_files=data_files,
 )
