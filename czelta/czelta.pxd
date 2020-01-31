@@ -124,7 +124,8 @@ cdef extern from "event.h" nogil:
 cdef extern from "coincidence.h" nogil:
     cppclass Coincidence:
         Coincidence() except +
-        EventReader *readers[2]
+        vector[EventReader*] readers
+        void resize(int n)
         int n
         int stations[2]
         bint events_saved

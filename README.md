@@ -1,7 +1,7 @@
 Czelta file loading and analysis library
 ========================================
 
-documentation: (czelta-python.readthedocs.io)[https://czelta-python.readthedocs.io/en/latest/]
+documentation: [czelta-python.readthedocs.io](https://czelta-python.readthedocs.io/en/latest/)
 
 Compilation requirement:
 ------------------------

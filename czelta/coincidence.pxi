@@ -8,21 +8,25 @@ coincidence object is also iterable, more in examples.
 """
     def __init__(self,event_readers,float max_difference, bint save_events = True, stations = None):
         cdef int st_id, st
-        if not len(event_readers) in [2,3]:
-            raise TypeError
+        if len(event_readers) < 2:
+            raise ValueError('At least two instances of event_reader are needed')
+        self.c.resize(len(event_readers))
         for i in range(len(event_readers)):
             if not isinstance(event_readers[i], event_reader):
                 raise TypeError
             self.c.readers[i] = &(<event_reader>event_readers[i]).er
-        self.c.n = len(event_readers)
-        if stations!= None and len(stations)==len(event_readers):
-            for st in range(len(stations)):
-                st_id = 0
-                if type(stations[st]) == station:
-                    st_id = stations[st].id()
-                else:
-                    st_id = station(stations[st]).id()
-                self.c.stations[st] = st_id
+
+        if stations != None:
+            if len(stations)==len(event_readers):
+                for st in range(len(stations)):
+                    st_id = 0
+                    if type(stations[st]) == station:
+                        st_id = stations[st].id()
+                    else:
+                        st_id = station(stations[st]).id()
+                    self.c.stations[st] = st_id
+            else:
+                raise ValueError('Number of stations and eventreaders do not match!')
         else:
             for st in range(len(event_readers)):
                 st_id = (<event_reader>event_readers[st]).er.getStation();
@@ -38,27 +42,22 @@ coincidence object is also iterable, more in examples.
             raise TypeError
         i = index
         if self.c.events_saved:
-            if self.c.n == 2:
-                rtn = (self.c.delta[i], event(), event())
-                (<event>rtn[1]).set(self.c.events[0][i])
-                (<event>rtn[2]).set(self.c.events[1][i])
-                return rtn
-            else:
-                if self.c.dirs.size()!=0:
-                    AH = (self.c.dirs[4*i], self.c.dirs[4*i+1])
-                    if AH[0]==0 and AH[1]==0:
-                        AH = None
-                        DRA = None
-                    else:
-                        DRA = (self.c.dirs[4*i+2], self.c.dirs[4*i+3])
-                    rtn = (self.c.delta[i], event(), event(), event(),
-                          AH, DRA)
+            if self.c.n == 3 and self.c.dirs.size()!=0:
+                # for triple coincidence, we can have direction
+                AH = (self.c.dirs[4*i], self.c.dirs[4*i+1])
+                if AH[0]==0 and AH[1]==0:
+                    AH = None
+                    DRA = None
                 else:
-                    rtn = (self.c.delta[i], event(), event(), event())
-                (<event>rtn[1]).set(self.c.events[0][i])
-                (<event>rtn[2]).set(self.c.events[1][i])
-                (<event>rtn[3]).set(self.c.events[2][i])
-                return rtn
+                    DRA = (self.c.dirs[4*i+2], self.c.dirs[4*i+3])
+                rtn = [self.c.delta[i], event(), event(), event(),
+                    AH, DRA]
+            else:
+                # all other cases
+                rtn = [self.c.delta[i]] + [event() for k in range(self.c.n)]
+            for k in range(self.c.n):
+                (<event>rtn[k+1]).set(self.c.events[k][i])
+            return rtn
         else:
             return (self.c.delta[i],)
 
@@ -81,10 +80,7 @@ coincidence object is also iterable, more in examples.
     property stations:
         'Get stations used to calculate direction of triple-coincidence.'
         def __get__(self):
-            if self.c.n==2:
-                return station(self.c.stations[0]), station(self.c.stations[1])
-            else:
-                return station(self.c.stations[0]), station(self.c.stations[1]), station(self.c.stations[2])
+            return [station(self.c.stations[i]) for i in range(self.c.n)]
 
     property events:
         'Get all events.'
@@ -93,10 +89,7 @@ coincidence object is also iterable, more in examples.
             cdef event ev
             if not self.c.events_saved:
                 raise AttributeError("You have calculated coincidences without events")
-            if self.c.n == 2:
-                rtn = [],[]
-            else:
-                rtn = [],[],[]
+            rtn = [[] for _ in range(self.c.n)]
             for i in range(self.c.n):
                 for e in self.c.events[i]:
                     ev = event()
@@ -127,20 +120,14 @@ coincidence object is also iterable, more in examples.
     property overlap_measure_time:
         "Total time of overlap measure."
         def __get__(self):
-            return self.c.overlap.measureTime;
+            return self.c.overlap.measureTime
 
     property overlap_normal_events:
         "Number of normal events on invidual stations."
         def __get__(self):
-            if self.c.n==2:
-                return (self.c.overlap.normal_events[0], self.c.overlap.normal_events[1])
-            else:
-                return (self.c.overlap.normal_events[0], self.c.overlap.normal_events[1], self.c.overlap.normal_events[2])
+            return [self.c.overlap.normal_events[i] for i in range(self.c.n)]
 
     property overlap_calibration_events:
         "Number of calibration events on invidual stations."
         def __get__(self):
-            if self.c.n==2:
-                return (self.c.overlap.calibration_events[0], self.c.overlap.calibration_events[1])
-            else:
-                return (self.c.overlap.calibration_events[0], self.c.overlap.calibration_events[1], self.c.overlap.calibration_events[2])
+            return [self.c.overlap.calibration_events[i] for i in range(self.c.n)]

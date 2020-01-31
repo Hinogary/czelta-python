@@ -86,10 +86,10 @@ bool EventReader::loadTxtFile(char* filename){
         in.getline(line,90);
         if(in.eof())break;
         if((d = sscanf(line,"%c %d %d %d %d %d %d %s %d %d %d %d %d %d %s %s %s %s",
-                &c,&year,&month,&day,&hour,&minute,&second,&_double,
+                &c,&year,&month,&day,&hour,&minute,&second,(char*)&_double,
                 &TDC0, &TDC1, &TDC2,
                 &ADC0, &ADC1, &ADC2,
-                &temp[0], &temp[1], &temp[2], &temp[3])
+                (char*)&temp[0], (char*)&temp[1], (char*)&temp[2], (char*)&temp[3])
                 )!=18 && c!='x'){
             cout<<d<<endl;
             cout<<"špatný formát na řádku "<<(events.size()+runs.size()+1)<<endl;

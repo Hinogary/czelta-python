@@ -5,6 +5,7 @@ version 1.0
 * config file can be in yaml
 * date_to_timestamp evaluate timezone if present
 * documentation on readthedocs.org
+* much better coincidence finding (works for more than 3 stations, works over seconds
 
 version 0.1
 ===========
