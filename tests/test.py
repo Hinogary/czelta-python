@@ -68,7 +68,7 @@ def test_last_event(last_event):
     assert e.temp_crate == 25.0
     assert not e.calibration
     assert e.timestamp == 1391126394
-    assert str(er[157]) == "c 2014 01 04 18 12 02 764.0 4095 1755 3773 908 862 661 10.5 10.0 10.5 24.0",str(er[157])
+    assert str(er[157]) == "c 2014 01 04 18 12 02 764.0 4095 1755 3773 908 862 661 10.5 10.0 10.5 24.0", str(er[157])
 
 
 def test_event_reader_copy(basic_er):
@@ -211,11 +211,10 @@ def test_basic_filters(basic_er):
     assert er.filter_maximum_ADC() == 2687
     assert er.filter_minimum_ADC() == 9
 
-er = czelta.event_reader('tests/test.dat')
-
 
 def test_basic_custom_filters(basic_er):
     er = copy(basic_er)
+
     # filter all calibrations
     def filter_calibrations(e):
         return e.calibration
@@ -223,7 +222,7 @@ def test_basic_custom_filters(basic_er):
     # filter events with maximum tdc
     def filter_func_maximum_tdc(e):
         tdc = e.TDC
-        return tdc[0]==4095 or tdc[1]==4095 or tdc[2]==4095
+        return tdc[0] == 4095 or tdc[1] == 4095 or tdc[2] == 4095
 
     assert er.filter(filter_calibrations) == 34016
     assert er.filter(filter_func_maximum_tdc) == 1842
@@ -244,7 +243,7 @@ def test_custom_filter(basic_er):
 
 
 def test_saving_and_loading():
-    #test saving
+    # test saving
     s_er = czelta.event_reader('tests/test.dat')
     s_er.set_station('pardubice_spse')
     s_er.filter(advanced_filter)
@@ -259,8 +258,8 @@ def test_saving_and_loading():
         assert str(dat[i]) == str(txt[i])
         assert str(dat[i]) == str(s_er[i])
     for i in range(len(s_er.runs())):
-        assert len(s_er.run(i))==len(txt.run(i))
-        assert len(s_er.run(i))==len(dat.run(i))
+        assert len(s_er.run(i)) == len(txt.run(i))
+        assert len(s_er.run(i)) == len(dat.run(i))
         assert s_er.run(i)[0].timestamp == txt.run(i)[0].timestamp
         assert s_er.run(i)[0].timestamp == dat.run(i)[0].timestamp
         assert s_er.run(i)[-1].timestamp == txt.run(i)[-1].timestamp
