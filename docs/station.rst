@@ -27,9 +27,9 @@
    .. automethod:: save(file, _format)
    .. automethod:: get_stations()
    .. automethod:: clear_config()
-   .. automethod:: id
-   .. automethod:: name
-   .. automethod:: detector_position
-   .. automethod:: gps_position
+   .. autoattribute:: id
+   .. autoattribute:: name
+   .. autoattribute:: detector_position
+   .. autoattribute:: gps_position
    .. automethod:: distance_to(other_station)
    .. automethod:: autofit_corrections(eventreader, confidence_level=0.0001, instability=25)

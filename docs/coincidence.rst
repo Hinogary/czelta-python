@@ -47,41 +47,13 @@
         >>> coin[0][5] #Right Ascention and Declination
         (28.959278106689453, 57.71996307373047)
 
-   .. data:: max_difference
-
-        Return used limit between coincidences.
-
-   .. data:: number_of_coincidences
-
-        Get number of coincidences, same effetct have ``len(coincidence)``.
-
-   .. data:: expected_value
-
-        Number of random coincidences expected.
-
-   .. data:: chance
-
-        Chance of finding ``len(coincidence)`` based on ``expected_value``.
-
-   .. data:: overlap_measure_time
-
-        Total time of overlap measure.
-
-   .. data:: overlap_normal_events
-
-        Number of normal events on invidual stations.
-   .. data:: overlap_calibration_events
-
-        Number of calibration events on invidual stations.
-
-   .. data:: delta
-
-        Return all deltas of coincidences.
-
-   .. data:: stations
-
-        Get stations used to calculate direction of triple-coincidence.
-
-   .. data:: events
-
-        Get all events.
+   .. autoattribute:: max_difference
+   .. autoattribute:: number_of_coincidences
+   .. autoattribute:: expected_value
+   .. autoattribute:: chance
+   .. autoattribute:: overlap_measure_time
+   .. autoattribute:: overlap_normal_events
+   .. autoattribute:: overlap_calibration_events
+   .. autoattribute:: delta
+   .. autoattribute:: stations
+   .. autoattribute:: events
