@@ -61,7 +61,7 @@ cdef class event:
             return self.e.tCrate()
 
     property calibration:
-        "Calibration events are events actived by LED diod in each detectors."
+        "Calibration events are events activated by LED diod in each detectors."
         def __get__(self):
             return self.e.isCalib()
 
@@ -84,6 +84,7 @@ cdef class event:
                 return (RAD[0], RAD[1])
 
     property station:
+        "Current station of event."
         def __get__(self):
             return station(self.e.getStation())
 

@@ -23,11 +23,13 @@
         distance of kladno_sps to praha_utef is 24347.04590484944 metres
 
 
-   .. automethod:: load(file = open("config_data.JSON"))
-   .. automethod:: get_stations
-   .. automethod:: clear_config
+   .. automethod:: load(file = open("config_data.JSON"), format)
+   .. automethod:: save(file, _format)
+   .. automethod:: get_stations()
+   .. automethod:: clear_config()
    .. automethod:: id
    .. automethod:: name
    .. automethod:: detector_position
    .. automethod:: gps_position
    .. automethod:: distance_to(other_station)
+   .. automethod:: autofit_corrections(eventreader, confidence_level=0.0001, instability=25)

@@ -211,7 +211,7 @@ cdef class station:
 
 
     @staticmethod
-    def load(file = None, _format = 'yaml'):
+    def load(file = None, _format = 'json'):
         "Loads configuration file of stations. Must be called if you want to work with ``czelta.station``."
         cdef Station st
         cdef object pos
@@ -254,7 +254,7 @@ cdef class station:
                 st = Station()
 
     @staticmethod
-    def save(file, _format):
+    def save(file, _format='json'):
         "Save current configuration in use. Main usage is with fitting TDC. Formatting of original file is not preserved, stations are just ordered by ID."
         dmp_all = {'stations':[]}
         cdef station st

@@ -306,6 +306,7 @@ cdef class event_reader_runs:
 
 
 cdef class event_reader_run:
+    "wrapper class for indexing invidual run"
     def __init__(self, event_reader reader, int run_id):
         self.er = reader
         self._run_id = run_id
