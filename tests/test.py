@@ -9,7 +9,7 @@ from copy import copy
 
 @pytest.fixture
 def basic_er():
-    return czelta.event_reader('test.dat')
+    return czelta.event_reader('tests/test.dat')
 
 
 @pytest.fixture
@@ -121,7 +121,7 @@ def test_runs_after_filter(basic_er):
 
 
 er = czelta.event_reader()
-er.load("test.dat")
+er.load("tests/test.dat")
 er.filter_calibrations()
 
 
@@ -185,7 +185,7 @@ def test_basic_directions(basic_er):
 
 
 def test_loading_txt_file():
-    txt = czelta.event_reader('test.txt')
+    txt = czelta.event_reader('tests/test.txt')
     assert str(txt[1000]) == 'a 2014 02 18 12 22 02 450020121.2 1712 2927 3776 139 136 145 15.0 13.5 12.5 23.5'
     assert str(txt[7999]) == 'a 2014 02 21 00 17 50 662546970.9 1532 2241 3772 856 479 722 4.5 5.0 5.0 22.5'
     try:
@@ -212,7 +212,7 @@ def test_basic_filters(basic_er):
     assert er.filter_maximum_ADC() == 2687
     assert er.filter_minimum_ADC() == 9
 
-er = czelta.event_reader('test.dat')
+er = czelta.event_reader('tests/test.dat')
 
 
 def test_basic_custom_filters(basic_er):
@@ -246,14 +246,14 @@ def test_custom_filter(basic_er):
 
 def test_saving_and_loading():
     #test saving
-    s_er = czelta.event_reader('test.dat')
+    s_er = czelta.event_reader('tests/test.dat')
     s_er.set_station('pardubice_spse')
     s_er.filter(advanced_filter)
     assert len(s_er) == 2176
-    s_er.save('some_test.txt')
-    txt = czelta.event_reader('some_test.txt')
-    s_er.save('some_test.dat')
-    dat = czelta.event_reader('some_test.dat')
+    s_er.save('tests/some_test.txt')
+    txt = czelta.event_reader('tests/some_test.txt')
+    s_er.save('tests/some_test.dat')
+    dat = czelta.event_reader('tests/some_test.dat')
     assert len(dat) == len(txt)
     assert len(dat) == len(s_er)
     for i in range(len(s_er)):
@@ -293,7 +293,7 @@ def test_station_get_correction():
 
 
 def test_station_autofitting_corrections(basic_er):
-    er = czelta.event_reader('pardubice_gd.dat')
+    er = czelta.event_reader('tests/pardubice_gd.dat')
     st = czelta.station('pardubice_gd')
     st.clear_corrections()
     assert st.get_corrections() == []
@@ -306,7 +306,7 @@ def test_station_autofitting_corrections(basic_er):
            {'corrections': [0, 398, -174],
             'from': '07.01.2008 12:01'},
            {'corrections': [0, 790, -1539],
-            'from': '20.02.2008 17:45'},
+            'from': '20.02.2008 17:46'},
            {'corrections': [0, 979, -1370],
             'from': '26.02.2008 12:45'},
            {'corrections': [0, 14, -27],
@@ -317,16 +317,14 @@ def test_station_autofitting_corrections(basic_er):
             'from': '26.06.2008 16:49'},
            {'corrections': [0, 1386, -1127],
             'from': '09.06.2009 15:25'},
-           {'corrections': [0, 1476, -1000],
+           {'corrections': [0, 1471, -1004],
             'from': '09.06.2009 17:41'},
-           {'corrections': [0, 1420, -1002],
-            'from': '01.04.2017 19:42'},
           ]
 
 
 def test_coincidence():
-    er2 = czelta.event_reader('testb.txt')
-    er = czelta.event_reader('test.dat')
+    er2 = czelta.event_reader('tests/testb.txt')
+    er = czelta.event_reader('tests/test.dat')
     c = czelta.coincidence((er, er2), 2.2e-6)
     assert len(c) == 3
     assert c[0][0] == 6.529e-07
