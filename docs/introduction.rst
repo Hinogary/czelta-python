@@ -2,37 +2,11 @@
 Introduction
 ============
 
-Downloads
-=========
+This library is for analysis data of CZELTA project. Czelta project is network of stations which records showers of secondary particles from cosmic rays. It focused on recording high energy showers, where original particle had more than 10^14 eV. Every station is having 3 detectors situated in triangle with edges of length around 10 metres.
 
-Binary
-------
-* `Win32 + Python 2.7 <http://czelta.quarda.cz/downloads/0.1-beta/czelta-0.1.win32-py2.7.exe>`_
-
-Source
-------
-* `version 0.1 <http://czelta.quarda.cz/downloads/0.1-beta/czelta-0.1-beta.zip>`_
-* `newest development version <https://github.com/Hinogary/czelta>`_
+One of important influences for sensitivity is weather. Temperature affects eletronics sensitivity, and pressure influences absobtion of atmposphere.
 
 Installation
 ============
 
-Windows - from Binary
----------------------
-#. install `Python <https://www.python.org/>`_
-#. download installation for your python version
-#. install from .exe file
-
-Windows - from Source
----------------------
-#. install `Mingw32 <http://www.mingw.org/>`_
-#. install `Python <https://www.python.org/>`_
-#. (Optional) install `Cython <http://cython.org/>`_
-#. launch in cmd ``python setup.py install build_ext --compiler=mingw32``
-
-Ubuntu - from Source
---------------------
-#. install `build-essential` package
-#. install `python-dev` package
-#. (Optional) install `Cython <http://cython.org/>`_ package
-#. run ``python setup.py install`` in console within source directory
+Download it from pypi, maybe compiler for C++ is needed when it's not available for your platform. ``pip install czelta``.

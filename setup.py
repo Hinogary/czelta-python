@@ -3,7 +3,7 @@
 from distutils.core import setup
 from distutils.extension import Extension
 import distutils.sysconfig
-import platform
+
 
 from Cython.Build import cythonize
 
@@ -15,15 +15,22 @@ ext_modules = [
                          'czelta/station.c',
                          'czelta/coincidence.cpp'],
               language='c++',
+              # current compilers are auto compiling C++11 or newer
               extra_compile_args=['--std=c11'],
     )
 ]
 ext_modules = cythonize(ext_modules)
 
-if platform.system() == 'Windows':
-    data_files = [(distutils.sysconfig.get_python_lib(), ['libgcc_s_dw2-1.dll', 'libstdc++-6.dll', 'config_data.JSON', 'LICENSE.txt'])]
-else:
-    data_files = [(distutils.sysconfig.get_python_lib(), ['config_data.JSON', 'LICENSE.txt'])]
+
+# implicit config_data with distribution
+data_files = [(distutils.sysconfig.get_python_lib(), ['config_data.JSON', 'LICENSE.txt'])]
+
+
+# hoping this is not needed anymore
+# import platform
+# if platform.system() == 'Windows':
+#    data_files = [(distutils.sysconfig.get_python_lib(), ['libgcc_s_dw2-1.dll', 'libstdc++-6.dll', 'config_data.JSON', 'LICENSE.txt'])]
+
 
 setup(
   name='czelta',

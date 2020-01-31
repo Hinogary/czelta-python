@@ -1,6 +1,8 @@
 Czelta file loading and analysis library
 ========================================
 
+documentation: (czelta-python.readthedocs.io)[https://czelta-python.readthedocs.io/en/latest/]
+
 Compilation requirement:
 ------------------------
 * C++11 compiler for use with C++ code

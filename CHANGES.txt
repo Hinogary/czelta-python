@@ -1,3 +1,11 @@
+version 1.0
+===========
+* autofit feature for station
+* better tests
+* config file can be in yaml
+* date_to_timestamp evaluate timezone if present
+* documentation on readthedocs.org
+
 version 0.1
 ===========
 * created class event (memory efficient, one event use only 23 bytes)
