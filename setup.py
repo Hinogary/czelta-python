@@ -52,6 +52,7 @@ setup(
   license='LICENSE.txt',
   install_requires=['scipy', 'PyYAML'],
   long_description=open('README.md').read(),
+  long_description_content_type='text/markdown',
   ext_modules=ext_modules,
   data_files=data_files,
 )
